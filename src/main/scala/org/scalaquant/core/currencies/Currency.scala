@@ -4,14 +4,15 @@ import org.scalaquant.math.{ NoRounding, Rounding }
 
 trait Currency {
   def definition: CurrencyDefinition
-
-  def ==(other: Currency): Boolean = this.definition.numericCode == other.definition.numericCode
-
-  def !=(other: Currency): Boolean = this.definition.numericCode != other.definition.numericCode
+  override def hashCode = definition.hashCode
+  override def equals(other: Any) = other match {
+    case that: Currency => this.definition.numericCode == that.definition.numericCode
+    case _ => false
+  }
 }
 
 object Currency {
-  val NullCurrency = new Currency {
+  val Null = new Currency {
     val definition: CurrencyDefinition = CurrencyDefinition("", "", 0, "", "", 0)
   }
 }

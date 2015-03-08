@@ -74,29 +74,21 @@ object DefaultExchangeRateManager extends ExchangeRateManager {
     entries.get(Key(source, target)).filter(_.isValidAt(date)).map(_.rate).getOrElse(ExchangeRate.Unknown)
   }
   private def smartLookUp(source: Currency, target: Currency, date: LocalDate): ExchangeRate = {
-    val attempt = directLookup(source, target, date)
-    if (attempt != ExchangeRate.Unknown) {
-      attempt
-    } else {
-      val left = entries.keys.filter(key => (key.c1 == source && key.c2 != target) || (key.c2 == source && key.c1 != target))
+     directLookup(source, target, date) match {
+       case ExchangeRate.Unknown =>
+           val left = entries.keys.filter(key => (key.c1 == source && key.c2 != target) || (key.c2 == source && key.c1 != target))
+           val right = entries.keys.filter(key => (key.c1 == target && key.c2 != source) || (key.c2 == target && key.c1 != source))
 
-      val right = entries.keys.filter(key => (key.c1 == target && key.c2 != source) || (key.c2 == target && key.c1 != source))
-
-      val rate = (left zip right).filter { pair =>
-        val (key1, key2) = pair
-        if (key1.c1 == source)
-          key1.c2 == key2.c1 || key1.c2 == key2.c2
-        else
-          key1.c1 == key2.c1 || key1.c1 == key2.c2
-      }.collectFirst {
-        case (key1, key2) =>
-          ExchangeRate.chain(entries(key1).rate, entries(key2).rate)
-      }.getOrElse {
-        ExchangeRate.UnChainable
-      }
-
-      rate
+            (left zip right).filter{ case (key1, key2) =>
+              if (key1.c1 == source) key1.c2 == key2.c1 || key1.c2 == key2.c2 else key1.c1 == key2.c1 || key1.c1 == key2.c2
+            }.collectFirst {
+              case (key1, key2) => ExchangeRate.chain(entries(key1).rate, entries(key2).rate)
+            }.getOrElse {
+              ExchangeRate.UnChainable
+            }
+       case attempt => attempt
     }
+
   }
   def lookup(source: Currency, target: Currency,
     date: LocalDate = Settings.evaluationDate,
@@ -107,31 +99,22 @@ object DefaultExchangeRateManager extends ExchangeRateManager {
         exchangeType match {
           case ExchangeRate.Direct => directLookup(source, target, date)
           case ExchangeRate.Derived(_, _) =>
-            val linkFromSource = source.definition.triangulationCurrency
-            val linkFromTarget = target.definition.triangulationCurrency
-            if (linkFromSource.isEmpty && linkFromTarget.isEmpty) {
-              // no triangulationCurrency is given, so we will need to be "smart" about it
-              smartLookUp(source, target, date)
-            } else if (linkFromSource.isDefined) {
-              linkFromSource.map {
-                link =>
-                  if (link == target) {
-                    directLookup(source, link, date)
-                  } else {
-                    ExchangeRate.chain(directLookup(source, link, date), directLookup(link, target, date))
-                  }
-              } getOrElse (ExchangeRate.UnChainable)
-            } else {
-              linkFromTarget.map {
-                link =>
-                  if (link == source) {
-                    directLookup(link, target, date)
-                  } else {
-                    ExchangeRate.chain(directLookup(source, link, date), directLookup(link, target, date))
-                  }
-              } getOrElse (ExchangeRate.UnChainable)
+            (source.definition.triangulationCurrency, target.definition.triangulationCurrency) match {
+              case (Some(link), None) =>
+                if (link == target) {
+                  directLookup(source, link, date)
+                } else {
+                  ExchangeRate.chain(directLookup(source, link, date), lookup(link, target, date))
+                }
+              case (None, Some(link)) =>
+                if (link == source) {
+                  directLookup(link, target, date)
+                } else {
+                  ExchangeRate.chain(lookup(source, link, date), directLookup(link, target, date))
+                }
+              case _ => smartLookUp(source, target, date)
             }
-
+//
         }
 
     }

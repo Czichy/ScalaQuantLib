@@ -24,10 +24,13 @@ trait Instrument[T] extends Observer[T] {
 
   def isExpired: Boolean = this._isCompleted
   def priceEngine_[A](priceEngine: PricingEngine[A, T]): Unit = {
+    _isCompleted = false
+    setupExpired()
     _engineSubscription = Some(priceEngine.subscribe(this))
     priceEngine.reset()
     priceEngine.arguments.validate()
     priceEngine.calculate()
+
   }
 
   protected def setupExpired(): Unit = {
@@ -38,9 +41,8 @@ trait Instrument[T] extends Observer[T] {
     _engineSubscription.map(_.unsubscribe())
   }
 
-  override protected def onCompleted(): Unit = {
+  override def onCompleted(): Unit = {
     _isCompleted = true
-    setupExpired()
   }
 
 }

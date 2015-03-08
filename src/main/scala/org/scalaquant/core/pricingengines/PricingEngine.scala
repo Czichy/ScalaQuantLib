@@ -5,10 +5,10 @@ import rx.lang.scala.Observable
  * Created by neo on 2015-02-28.
  */
 trait PricingEngine[A, R] extends Observable[R] {
-  trait Results extends R {
+  trait Results {
     def reset(): Unit
   }
-  trait Arguments extends A {
+  trait Arguments {
     def validate(): Unit
   }
   def results: Results
@@ -17,7 +17,7 @@ trait PricingEngine[A, R] extends Observable[R] {
   def calculate(): Unit
 }
 
-trait GenericEngine extends PricingEngine {
+trait GenericEngine[A, R] extends PricingEngine[A, R] {
   protected var _arguments: Arguments
   protected var _result: Results
 

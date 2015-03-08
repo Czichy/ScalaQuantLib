@@ -3,7 +3,7 @@ package org.scalaquant.core.common.time
 /**
  * Created by neo on 2015-03-02.
  */
-trait BusinessDayConvention
+sealed trait BusinessDayConvention
 
 object BusinessDayConvention {
   case object Following extends BusinessDayConvention

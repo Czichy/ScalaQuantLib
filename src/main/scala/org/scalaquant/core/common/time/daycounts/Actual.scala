@@ -2,6 +2,7 @@ package org.scalaquant.core.common.time.daycounts
 
 import org.joda.time.DateTimeConstants._
 import org.joda.time.{ Days, LocalDate }
+import org.scalaquant.core.common.time.Frequency
 
 import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
@@ -77,9 +78,9 @@ object ActualActual {
   private val ICMAImplement = new DayCountConvention {
     override def name: String = "Actual/Actual (ICMA)"
 
-    override def fraction(date1: LocalDate, date2: LocalDate) = fraction(date1, date2, date2, DayCountConvention.Frequency.Annual)
+    override def fraction(date1: LocalDate, date2: LocalDate) = fraction(date1, date2, date2, Frequency.Annual)
 
-    override def fraction(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: DayCountConvention.Frequency): Double = {
+    override def fraction(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
       (date1, date2) match {
         case (date1, date2) if (date1 == date2) => 0.0
         case (date1, date2) if (date1 > date2) => fraction(date2, date1, date3, freq)
