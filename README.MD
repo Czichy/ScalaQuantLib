@@ -11,8 +11,6 @@ There are lots of bugs, missing documents and features, even missing test cases.
 A full adaption of the original project will need helps from anyone whom believe in this project could be a welcomed
 change to both the worlds of Scala and quantitative finance.
 
-While now
-
 License
 --------
 
