@@ -6,9 +6,7 @@ import org.scalaquant.core.common.time.TimeUnit._
  * Created by neo on 2015-03-07.
  */
 
-case class Period(length: Int = 0, units: TimeUnit = Days){
-  def unary_- = Period(-length,units)
-}
+case class Period(length: Int = 0, units: TimeUnit = Days)
 
 object Period {
   val Empty = Period()
@@ -27,6 +25,7 @@ object Period {
   }
 
   implicit class PeriodOperation(val period: Period) extends AnyVal {
+    def unary_- = Period(-period.length,period.units)
     def *(n: Int) = Period(n * period.length, period.units)
     def *:(n: Int) = *(n)
 //    def *(other: Period) =

@@ -17,9 +17,8 @@ trait Event {
       date is the same as the refDate, i.e. this method returns false if
       the event date is the same as the refDate.
   */
-  def hasOccurred(refDate: Option[LocalDate], includeRefDate: Boolean = true): Boolean = {
-    val actualRefDate = refDate.getOrElse(Settings.evaluationDate)
-    if (includeRefDate) date < actualRefDate else date <= actualRefDate
+  def hasOccurred(refDate: LocalDate = Settings.evaluationDate, includeRefDate: Boolean = true): Boolean = {
+    if (includeRefDate) date < refDate else date <= refDate
   }
 }
 

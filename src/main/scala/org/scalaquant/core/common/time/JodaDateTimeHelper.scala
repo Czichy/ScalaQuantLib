@@ -2,6 +2,10 @@ package org.scalaquant.core.common.time
 
 import org.joda.time.{ DateTime, LocalTime, LocalDate }
 import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
+import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
+
+
+
 /**
  * Created by neo on 2015-03-02.
  */
@@ -37,6 +41,14 @@ object JodaDateTimeHelper {
   }
 
   def min(date1: LocalDate, date2: LocalDate): LocalDate = Set(date1, date2).min
+
+
+  def nthWeekday(nth:Int, dayOfWeek: DayOfWeek, month: Int, year: Int): LocalDate = {
+    require( nth>0 && nth < 6, "no more than 5 weekdays for given month year")
+    val first = new LocalDate(year, month, 1).getDayOfWeek
+    val skip = if (dayOfWeek.id >= first) nth - 1 else nth
+    new LocalDate(year, month, (1 + dayOfWeek.id + skip * 7) - first )
+  }
 
   val MonthOffset = List(
     0, 31, 59, 90, 120, 151, // Jan - Jun

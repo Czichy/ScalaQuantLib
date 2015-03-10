@@ -4,10 +4,12 @@ package org.scalaquant.core.common.time.calendars
  * Created by neo on 2015-03-06.
  */
 
-import org.joda.time.{PeriodType, DateTimeConstants, LocalDate}
+import org.joda.time.LocalDate
+import org.scalaquant.core.common.time.DayOfWeek._
 import org.scalaquant.core.common.time.{TimeUnit, BusinessDayConvention}
 import org.scalaquant.core.common.time.TimeUnit._
 import org.scalaquant.core.common.time.BusinessDayConvention._
+import org.scalaquant.core.common.time.JodaDateTimeHelper._
 
 trait BusinessCalendar {
   def isEmpty: Boolean
@@ -64,39 +66,16 @@ trait BusinessCalendar {
 
   def businessDaysBetween(from: LocalDate, to: LocalDate,
                           includeFirst: Boolean = true, includeLast: Boolean = false): Int = {
+    val isPositiveFlow = from < to
 
+    def adjustment(date: LocalDate, offset: Int) = if (isPositiveFlow) date.plusDays(offset) else date.minusDays(offset)
 
-//    BigInteger wd = 0;
-//    if (from != to) {
-//      if (from < to) {
-//        // the last one is treated separately to avoid
-//        // incrementing Date::maxDate()
-//        for (Date d = from; d < to; ++d) {
-//          if (isBusinessDay(d))
-//            ++wd;
-//        }
-//        if (isBusinessDay(to))
-//          ++wd;
-//      } else if (from > to) {
-//        for (Date d = to; d < from; ++d) {
-//          if (isBusinessDay(d))
-//            ++wd;
-//        }
-//        if (isBusinessDay(from))
-//          ++wd;
-//      }
-//
-//      if (isBusinessDay(from) && !includeFirst)
-//        wd--;
-//      if (isBusinessDay(to) && !includeLast)
-//        wd--;
-//
-//      if (from > to)
-//        wd = -wd;
-//    }
-//
-//    return wd;
-    1
+    val startDate = if (includeFirst) from else adjustment(from, 1)
+    val endDate = if (includeLast) to else adjustment(to, -1)
+
+    def inRange(date: LocalDate) = if (isPositiveFlow) date <= endDate else date >= endDate
+
+    Stream.from(0).map(adjustment(startDate, _)).filter(inRange).count(considerBusinessDay)
   }
 
   override def equals(other: Any) = other match{
@@ -105,11 +84,17 @@ trait BusinessCalendar {
 }
 
 trait WeekEndSatSun {
-  protected def isWeekEnd(day: Int): Boolean = day == DateTimeConstants.SATURDAY || day == DateTimeConstants.SUNDAY
+  protected def isWeekEnd(day: DayOfWeek): Boolean = day match {
+      case Sun | Sat => true
+      case _ => false
+    }
 }
 
 trait WeekEndThursFri {
-  protected def isWeekEnd(day: Int): Boolean = day == DateTimeConstants.THURSDAY || day == DateTimeConstants.FRIDAY
+  protected def isWeekEnd(day: DayOfWeek): Boolean = day match {
+    case Thu | Fri => true
+    case _ => false
+  }
 }
 
 object Western {

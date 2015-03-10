@@ -1,6 +1,8 @@
 package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
+import scala.language.implicitConversions
+import org.scalaquant.core.common.time.JodaDateTimeHelper._
 import org.scalaquant.core.common.{ Event, Settings }
 
 /**
@@ -9,23 +11,8 @@ import org.scalaquant.core.common.{ Event, Settings }
 
 trait CashFlow extends Event {
   def amount: Double
-
-  override def hasOccurred(refDate: Option[LocalDate], includeRefDate: Boolean = true) = {
-    refDate.map {
-      this.date.isBefore(_)
-    } getOrElse {
-      super.hasOccurred(refDate)
-    }
-  }
-
-  def tradingExCoupon(refDate: Option[LocalDate]): Boolean = {
-    val actualRefDate = refDate.getOrElse(Settings.evaluationDate)
-    this.exCouponDate.isBefore(actualRefDate) || this.exCouponDate.isEqual(actualRefDate)
-  }
-
+  def tradingExCoupon(refDate: LocalDate = Settings.evaluationDate ): Boolean = this.exCouponDate <= refDate
   def exCouponDate: LocalDate
-
-  def isBefore(other: CashFlow): Boolean = this.isBefore(other)
 }
 
 object CashFlow {
@@ -34,7 +21,7 @@ object CashFlow {
 
   implicit class CashFlowOperation(val cf: CashFlow) extends AnyVal {
     def <(other: CashFlow) = {
-      cf.date.isBefore(other.date)
+      cf.date < other.date
     }
   }
 }

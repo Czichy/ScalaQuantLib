@@ -1,17 +1,15 @@
 package org.scalaquant.core.common.time
 
-import org.joda.time.LocalDate
 import org.joda.time.DateTimeConstants._
 
-/**
- * Created by neo on 2015-03-08.
- */
+object DayOfWeek extends Enumeration(1) {
+  type DayOfWeek = Value
 
-object WeekDay{
+  val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
 
-  implicit class WeekdayWrapper(val date: LocalDate) extends AnyVal{
+  implicit class WeekdayWrapper(val dayOfWeek: DayOfWeek) extends AnyVal{
     def asLongWeekDay: String = {
-      date.getDayOfWeek match {
+      dayOfWeek.id match {
         case SUNDAY => "Sunday"
         case MONDAY => "Monday"
         case TUESDAY => "Tuesday"
@@ -22,8 +20,8 @@ object WeekDay{
         case _ => ""
       }
     }
-    def asShortWeekDay:String = {
-      date.getDayOfWeek match {
+    def asShortWeekDay: String = {
+      dayOfWeek.id match {
         case SUNDAY => "Sun"
         case MONDAY => "Mon"
         case TUESDAY => "Tue"
@@ -34,8 +32,8 @@ object WeekDay{
         case _ => ""
       }
     }
-    def asShortestWeekDay:String = {
-      date.getDayOfWeek match {
+    def asShortestWeekDay: String = {
+      dayOfWeek.id match {
         case SUNDAY => "Su"
         case MONDAY => "Mo"
         case TUESDAY => "Tu"
