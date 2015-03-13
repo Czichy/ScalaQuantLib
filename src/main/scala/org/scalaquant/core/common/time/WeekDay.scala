@@ -5,7 +5,7 @@ import org.joda.time.DateTimeConstants._
 object DayOfWeek extends Enumeration(1) {
   type DayOfWeek = Value
 
-  val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
+  val Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday = Value
 
   implicit class WeekdayWrapper(val dayOfWeek: DayOfWeek) extends AnyVal{
     def asLongWeekDay: String = {

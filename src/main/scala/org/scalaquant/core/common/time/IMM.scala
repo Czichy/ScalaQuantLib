@@ -75,7 +75,7 @@ object IMM {
       (refYear, refYearMonth)
     }
 
-    val result = nthWeekday(3, DayOfWeek.Wed, month, year)
+    val result = nthWeekday(3, DayOfWeek.Wednesday, month, year)
     if (result <= date) nextDate(new LocalDate(year, month, 22), mainCycle) else result
   }
 

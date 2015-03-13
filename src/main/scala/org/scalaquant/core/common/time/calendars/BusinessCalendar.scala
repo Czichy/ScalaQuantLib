@@ -1,33 +1,51 @@
 package org.scalaquant.core.common.time.calendars
 
-/**
- * Created by neo on 2015-03-06.
- */
 
+import java.util.concurrent.ConcurrentSkipListSet
+
+import org.joda.time.DateTimeConstants._
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.time.DayOfWeek._
-import org.scalaquant.core.common.time.{TimeUnit, BusinessDayConvention}
+
+import org.scalaquant.core.common.time.TimeUnit
 import org.scalaquant.core.common.time.TimeUnit._
+import org.scalaquant.core.common.time.BusinessDayConvention
 import org.scalaquant.core.common.time.BusinessDayConvention._
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 
 trait BusinessCalendar {
-  def isEmpty: Boolean
+
+  protected def considerBusinessDayShadow(implicit date: LocalDate): Boolean
 
   def name: String
+  protected val addedHolidays: java.util.Set[LocalDate] =  new ConcurrentSkipListSet[LocalDate]()
+  protected val removedHolidays: java.util.Set[LocalDate] = new ConcurrentSkipListSet[LocalDate]()
 
-  def considerBusinessDay(date: LocalDate): Boolean
+  def isWeekend(date: LocalDate): Boolean
+
+  def considerBusinessDay(date: LocalDate): Boolean = {
+    if (addedHolidays.contains(date)) {
+      false
+    } else {
+      if (removedHolidays.contains(date)){
+        true
+      } else {
+        considerBusinessDayShadow(date)
+      }
+    }
+  }
 
   def considerHoliday(date: LocalDate): Boolean = !considerBusinessDay(date)
 
-  def considerWeekend(date: LocalDate): Boolean
-//  bool isEndOfMonth(const Date& d) const;
-//  Date endOfMonth(const Date& d) const;
+  def isEndOfMonth(date: LocalDate): Boolean = date.getMonthOfYear != adjust(date.plusDays(1)).getMonthOfYear
+  def endOfMonth(date: LocalDate): LocalDate =  adjust(date.dayOfMonth().withMaximumValue(), Preceding)
 
-  def addHoliday(date: LocalDate): Unit
-  def removeHoliday(date: LocalDate): Unit
+  def addHoliday(date: LocalDate): Unit = {
+    addedHolidays.add(date)
+  }
+  def removeHoliday(date: LocalDate): Unit = {
+    removedHolidays.add(date)
+  }
 
-  def holidays(from: LocalDate, to: LocalDate, includeWeekEnd: Boolean = false): List[LocalDate]
 
   def adjust(date: LocalDate, convention: BusinessDayConvention = Following): LocalDate = {
 
@@ -54,18 +72,18 @@ trait BusinessCalendar {
     if (n == 0) {
        adjust(date, convention)
     } else {
-      val function = unit match {
-        case Days => date.plusDays(_)
-        case Weeks => date.plusWeeks(_)
-        case Months => date.plusMonths(_)
-        case Years => date.plusYears(_)
+      unit match {
+        case Days => adjust(date.plusDays(n), convention)
+        case Weeks => adjust(date.plusWeeks(n), convention)
+        case Months | Years =>
+          val advancedDate = if (unit == Months) date.plusMonths(n) else date.plusYears(n)
+          if (endOfMonth && isEndOfMonth(date)) this.endOfMonth(advancedDate) else adjust(advancedDate, convention)
       }
-      adjust(function.apply(n), convention)
     }
   }
 
-  def businessDaysBetween(from: LocalDate, to: LocalDate,
-                          includeFirst: Boolean = true, includeLast: Boolean = false): Int = {
+  private def dayRanges(from: LocalDate, to: LocalDate,
+                         includeFirst: Boolean = true, includeLast: Boolean = false) ={
     val isPositiveFlow = from < to
 
     def adjustment(date: LocalDate, offset: Int) = if (isPositiveFlow) date.plusDays(offset) else date.minusDays(offset)
@@ -75,7 +93,17 @@ trait BusinessCalendar {
 
     def inRange(date: LocalDate) = if (isPositiveFlow) date <= endDate else date >= endDate
 
-    Stream.from(0).map(adjustment(startDate, _)).filter(inRange).count(considerBusinessDay)
+    Stream.from(0).map(adjustment(startDate, _)).filter(inRange)
+  }
+
+  def holidays(from: LocalDate, to: LocalDate, includeWeekEnd: Boolean = false): List[LocalDate] = {
+    def isHoliday(date: LocalDate) = considerHoliday(date) && (includeWeekEnd || !isWeekend(date))
+    dayRanges(from, to, true, true).filter(isHoliday).toList
+  }
+
+  def businessDaysBetween(from: LocalDate, to: LocalDate,
+                          includeFirst: Boolean = true, includeLast: Boolean = false): Int = {
+    dayRanges(from, to, includeFirst, includeLast).count(considerBusinessDay)
   }
 
   override def equals(other: Any) = other match{
@@ -84,20 +112,25 @@ trait BusinessCalendar {
 }
 
 trait WeekEndSatSun {
-  protected def isWeekEnd(day: DayOfWeek): Boolean = day match {
-      case Sun | Sat => true
+  self: BusinessCalendar =>
+  def isWeekend(date: LocalDate): Boolean = date.getDayOfWeek match {
+      case SUNDAY | SATURDAY => true
       case _ => false
     }
 }
 
 trait WeekEndThursFri {
-  protected def isWeekEnd(day: DayOfWeek): Boolean = day match {
-    case Thu | Fri => true
+  self: BusinessCalendar =>
+  def isWeekend(date: LocalDate): Boolean = date.getDayOfWeek match {
+    case THURSDAY | FRIDAY => true
     case _ => false
   }
 }
+object BusinessCalendar{
 
-object Western {
+  trait Market
+
+  object Western {
   private val EasterMonday = Array(
     98,  90, 103,  95, 114, 106,  91, 111, 102,   // 1901-1909
     87, 107,  99,  83, 103,  95, 115,  99,  91, 111,   // 1910-1919
@@ -133,7 +166,63 @@ object Western {
   def easterMonday(year: Int): Int = EasterMonday(year-1901)
 }
 
-object Orthodox{
+object GeneralHolidays{
+
+  def inDecember(implicit date: LocalDate) = date.getMonthOfYear == DECEMBER
+
+  def inJanuary(implicit date: LocalDate) = date.getMonthOfYear == JANUARY
+
+  def inFebruary(implicit date: LocalDate) = date.getMonthOfYear == FEBRUARY
+
+  def inJune(implicit date: LocalDate) = date.getMonthOfYear == JUNE
+
+  def inJuly(implicit date: LocalDate) = date.getMonthOfYear == JULY
+
+  def inApril(implicit date: LocalDate) = date.getMonthOfYear == APRIL
+
+  def inAugust(implicit date: LocalDate) = date.getMonthOfYear == AUGUST
+
+  def inSeptember(implicit date: LocalDate) = date.getMonthOfYear == SEPTEMBER
+
+  def inOctober(implicit date: LocalDate) = date.getMonthOfYear == OCTOBER
+
+  def inNovember(implicit date: LocalDate) = date.getMonthOfYear == NOVEMBER
+
+  def inMay(implicit date: LocalDate) = date.getMonthOfYear == MAY
+
+  def isNewYear(implicit date: LocalDate) = date.getDayOfMonth == 1 && inJanuary
+
+  def isNewYearOnMonday(implicit date: LocalDate) = date.getDayOfMonth == 2 && isMonday && inJanuary
+
+  def isMonday(implicit date: LocalDate) = date.getDayOfWeek == MONDAY
+
+  def isTuesDay(implicit date: LocalDate) = date.getDayOfWeek == TUESDAY
+
+  def isFriday(implicit date: LocalDate) = date.getDayOfWeek == FRIDAY
+
+  def isFirstMonday(implicit date: LocalDate) = date.getDayOfMonth <= 7 && isMonday
+
+  def isSecondMonday(implicit date: LocalDate) = {
+    val dom = date.getDayOfMonth
+    (dom > 7 && dom <= 14) && isMonday
+  }
+
+  def isChristmas(implicit date: LocalDate) = {
+      val dom = date.getDayOfMonth
+      (dom == 25 || dom == 27 && (isMonday || isTuesDay)) && inDecember
+  }
+
+  def isBoxingDay(implicit date: LocalDate) = {
+      val dom = date.getDayOfMonth
+      (dom == 26 || dom == 28 && (isMonday || isTuesDay)) && inDecember
+  }
+
+  def isGoodFriday(implicit date: LocalDate) = date.getDayOfYear == Western.easterMonday(date.getYear) - 3
+
+  def isEasterMonday(implicit date: LocalDate) = date.getDayOfYear == Western.easterMonday(date.getYear)
+
+}
+  object Orthodox{
   private val EasterMonday = Array(
     105, 118, 110, 102, 121, 106, 126, 118, 102,   // 1901-1909
     122, 114,  99, 118, 110,  95, 115, 106, 126, 111,   // 1910-1919
@@ -167,4 +256,5 @@ object Orthodox{
     116, 108, 128, 119, 104, 124, 116, 100, 120, 112    // 2190-2199
   )
   def easterMonday(year: Int): Int = EasterMonday(year-1901)
+}
 }
