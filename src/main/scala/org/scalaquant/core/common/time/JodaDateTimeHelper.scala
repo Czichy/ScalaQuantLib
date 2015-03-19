@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time
 
-import org.joda.time.{ DateTime, LocalTime, LocalDate }
+import org.joda.time.{LocalDate, DateTime, LocalTime}
 import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
 import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
 
@@ -49,6 +49,9 @@ object JodaDateTimeHelper {
     val skip = if (dayOfWeek.id >= first) nth - 1 else nth
     new LocalDate(year, month, (1 + dayOfWeek.id + skip * 7) - first )
   }
+
+  val farPass = LocalDate.now.year.withMinimumValue
+  val farFuture = LocalDate.now.year.withMaximumValue
 
   val MonthOffset = List(
     0, 31, 59, 90, 120, 151, // Jan - Jun

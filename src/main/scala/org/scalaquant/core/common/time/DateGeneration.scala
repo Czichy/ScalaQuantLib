@@ -1,8 +1,9 @@
 package org.scalaquant.core.common.time
 
-/**
- * Created by neo on 2015-03-01.
- */
+/** Date-generation rule
+  *
+  * These conventions specify the rule used to generate dates in a Schedule.
+  * */
 object DateGeneration {
 
   sealed trait Rule

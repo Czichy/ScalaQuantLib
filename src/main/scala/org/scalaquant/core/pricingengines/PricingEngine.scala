@@ -4,21 +4,28 @@ import rx.lang.scala.Observable
 /**
  * Created by neo on 2015-02-28.
  */
-trait PricingEngine[A, R] extends Observable[R] {
-  trait Results {
-    def reset(): Unit
-  }
-  trait Arguments {
-    def validate(): Unit
-  }
+import PricingEngine._
+
+trait PricingEngine[T] extends Observable[T] {
   def results: Results
   def arguments: Arguments
-  def reset(): Unit
+  def reset(): Unit = {
+    if (arguments.validated) this.calculate()
+  }
   def calculate(): Unit
 }
 
-trait GenericEngine[A, R] extends PricingEngine[A, R] {
-  protected var _arguments: Arguments
-  protected var _result: Results
+trait GenericEngine[T] extends PricingEngine[T] {
+  protected val _arguments: Arguments
+  protected val _result: Results
+  def results: Results = _result
+  def arguments: Arguments = _arguments
+}
 
+object PricingEngine{
+  trait Results
+
+  trait Arguments {
+    def validated: Boolean
+  }
 }

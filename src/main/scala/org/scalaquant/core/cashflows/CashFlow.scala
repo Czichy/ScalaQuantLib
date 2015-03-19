@@ -12,7 +12,7 @@ import org.scalaquant.core.common.{ Event, Settings }
 trait CashFlow extends Event {
   def amount: Double
   def tradingExCoupon(refDate: LocalDate = Settings.evaluationDate ): Boolean = this.exCouponDate <= refDate
-  def exCouponDate: LocalDate
+  def exCouponDate: LocalDate = date
 }
 
 object CashFlow {

@@ -7,15 +7,13 @@ import org.scalaquant.core.common.Settings
 import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 
-/**
- * Created by neo on 2015-03-02.
- */
-object IMM {
 
+/** Main cycle of the International %Money Market (a.k.a. %IMM) months */
+object IMM {
   private val MonthCodes = "FGHJKMNQUVXZ"
   private val Months = MonthCodes.toList.map(_.toString)
   private val codeRegex = ("(["+MonthCodes+"])(\\d)").r
-  private val mainCyclecRegex =  "([HMZU])(\\d)".r
+  private val mainCycleRegex =  "([HMZU])(\\d)".r
 
   def isIMMdate(date: LocalDate, mainCycle: Boolean): Boolean = {
     date.getDayOfWeek match{
@@ -36,7 +34,7 @@ object IMM {
   }
 
   def isIMMcode(code: String, mainCycle: Boolean): Boolean = {
-    val matching = if (mainCycle) mainCyclecRegex else codeRegex
+    val matching = if (mainCycle) mainCycleRegex else codeRegex
     code.toUpperCase match {
         case matching(c,y) => true
         case _ => false

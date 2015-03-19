@@ -5,6 +5,7 @@ import org.scalaquant.core.common.Settings
 import org.scalaquant.core.currencies.America.{ PEHCurrency, PENCurrency, PEICurrency }
 import org.scalaquant.core.currencies.Europe._
 
+import scala.collection.concurrent.TrieMap
 import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 /**
@@ -34,24 +35,23 @@ trait DailyRates {
 }
 object ExchangeRateManager {
   import org.joda.time.DateTimeConstants._
-
-  private val knownRates = Map(
-    Key(EURCurrency(), ATSCurrency()) -> Entry(ExchangeRate(EURCurrency(), ATSCurrency(), 13.7603), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), BEFCurrency()) -> Entry(ExchangeRate(EURCurrency(), BEFCurrency(), 40.3399), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), DEMCurrency()) -> Entry(ExchangeRate(EURCurrency(), DEMCurrency(), 1.95583), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), ESPCurrency()) -> Entry(ExchangeRate(EURCurrency(), ESPCurrency(), 166.386), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), FIMCurrency()) -> Entry(ExchangeRate(EURCurrency(), FIMCurrency(), 5.94573), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), FRFCurrency()) -> Entry(ExchangeRate(EURCurrency(), FRFCurrency(), 6.55957), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), GRDCurrency()) -> Entry(ExchangeRate(EURCurrency(), GRDCurrency(), 340.750), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), IEPCurrency()) -> Entry(ExchangeRate(EURCurrency(), IEPCurrency(), 0.787564), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), ITLCurrency()) -> Entry(ExchangeRate(EURCurrency(), ITLCurrency(), 1936.27), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), LUFCurrency()) -> Entry(ExchangeRate(EURCurrency(), LUFCurrency(), 40.3399), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), NLGCurrency()) -> Entry(ExchangeRate(EURCurrency(), NLGCurrency(), 2.20371), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(EURCurrency(), PTECurrency()) -> Entry(ExchangeRate(EURCurrency(), PTECurrency(), 200.482), new LocalDate(1999, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(TRYCurrency(), TRLCurrency()) -> Entry(ExchangeRate(TRYCurrency(), TRLCurrency(), 1000000.0), new LocalDate(2005, JANUARY, 1), new LocalDate(Long.MaxValue)),
-    Key(RONCurrency(), ROLCurrency()) -> Entry(ExchangeRate(RONCurrency(), ROLCurrency(), 10000.0), new LocalDate(2005, JULY, 1), new LocalDate(Long.MaxValue)),
-    Key(PENCurrency(), PEICurrency()) -> Entry(ExchangeRate(PENCurrency(), PEICurrency(), 1000000.0), new LocalDate(1991, JULY, 1), new LocalDate(Long.MaxValue)),
-    Key(PEICurrency(), PEHCurrency()) -> Entry(ExchangeRate(PEICurrency(), PEHCurrency(), 1000.0), new LocalDate(1985, FEBRUARY, 1), new LocalDate(Long.MaxValue))
+  private val knownRates = TrieMap(
+    Key(EURCurrency(), ATSCurrency()) -> Entry(ExchangeRate(EURCurrency(), ATSCurrency(), 13.7603), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), BEFCurrency()) -> Entry(ExchangeRate(EURCurrency(), BEFCurrency(), 40.3399), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), DEMCurrency()) -> Entry(ExchangeRate(EURCurrency(), DEMCurrency(), 1.95583), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), ESPCurrency()) -> Entry(ExchangeRate(EURCurrency(), ESPCurrency(), 166.386), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), FIMCurrency()) -> Entry(ExchangeRate(EURCurrency(), FIMCurrency(), 5.94573), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), FRFCurrency()) -> Entry(ExchangeRate(EURCurrency(), FRFCurrency(), 6.55957), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), GRDCurrency()) -> Entry(ExchangeRate(EURCurrency(), GRDCurrency(), 340.750), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), IEPCurrency()) -> Entry(ExchangeRate(EURCurrency(), IEPCurrency(), 0.787564), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), ITLCurrency()) -> Entry(ExchangeRate(EURCurrency(), ITLCurrency(), 1936.27), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), LUFCurrency()) -> Entry(ExchangeRate(EURCurrency(), LUFCurrency(), 40.3399), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), NLGCurrency()) -> Entry(ExchangeRate(EURCurrency(), NLGCurrency(), 2.20371), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(EURCurrency(), PTECurrency()) -> Entry(ExchangeRate(EURCurrency(), PTECurrency(), 200.482), new LocalDate(1999, JANUARY, 1), farFuture),
+    Key(TRYCurrency(), TRLCurrency()) -> Entry(ExchangeRate(TRYCurrency(), TRLCurrency(), 1000000.0), new LocalDate(2005, JANUARY, 1), farFuture),
+    Key(RONCurrency(), ROLCurrency()) -> Entry(ExchangeRate(RONCurrency(), ROLCurrency(), 10000.0), new LocalDate(2005, JULY, 1), farFuture),
+    Key(PENCurrency(), PEICurrency()) -> Entry(ExchangeRate(PENCurrency(), PEICurrency(), 1000000.0), new LocalDate(1991, JULY, 1), farFuture),
+    Key(PEICurrency(), PEHCurrency()) -> Entry(ExchangeRate(PEICurrency(), PEHCurrency(), 1000.0), new LocalDate(1985, FEBRUARY, 1), farFuture)
   )
   case class Entry(rate: ExchangeRate, startDate: LocalDate, endDate: LocalDate) {
     def isValidAt(date: LocalDate): Boolean = {

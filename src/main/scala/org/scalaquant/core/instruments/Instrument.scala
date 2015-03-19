@@ -1,6 +1,6 @@
 package org.scalaquant.core.instruments
 
-import org.joda.time.{ DateTime, LocalDate }
+import org.joda.time. LocalDate
 import org.scalaquant.core.pricingengines.PricingEngine
 import rx.lang.scala.{ Subscription, Observer }
 
@@ -9,28 +9,26 @@ import rx.lang.scala.{ Subscription, Observer }
  */
 trait Instrument[T] extends Observer[T] {
   protected var _isCompleted = true
-  protected var _NPV: Double = Double.NaN
-  protected var _errorEstimate: Double = Double.NaN
-  protected var _valuationDate: Option[DateTime] = None
+  protected var _NPV: Double = 0.0
+  protected var _errorEstimate: Double = 0.0
+  protected var _valuationDate: Option[LocalDate] = None
   protected var _additionalResults: Map[String, T] = Map.empty
   protected var _engineSubscription: Option[Subscription] = None
 
   def NPV: Double = _NPV
   def errorEstimate: Double = _errorEstimate
-  def valuationDate: Option[DateTime] = _valuationDate
+  def valuationDate: Option[LocalDate] = _valuationDate
 
   def result(tag: String): Option[T] = _additionalResults.get(tag)
   def additionalResults: Map[String, Any] = _additionalResults
 
   def isExpired: Boolean = this._isCompleted
-  def priceEngine_[A](priceEngine: PricingEngine[A, T]): Unit = {
+
+  def priceEngine_(priceEngine: PricingEngine[T]): Unit = {
     _isCompleted = false
     setupExpired()
     _engineSubscription = Some(priceEngine.subscribe(this))
     priceEngine.reset()
-    priceEngine.arguments.validate()
-    priceEngine.calculate()
-
   }
 
   protected def setupExpired(): Unit = {
@@ -44,5 +42,6 @@ trait Instrument[T] extends Observer[T] {
   override def onCompleted(): Unit = {
     _isCompleted = true
   }
-
 }
+
+

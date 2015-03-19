@@ -10,7 +10,7 @@ case class Money(value: Double, currency: Currency) {
 }
 
 object Money {
-  trait ConversionType
+  sealed trait ConversionType
 
   case class BaseCurrencyConversion(base: Currency) extends ConversionType
   case object AutomatedConversion extends ConversionType
