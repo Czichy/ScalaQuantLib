@@ -1,9 +1,6 @@
 package org.scalaquant.core.common
-import org.scalaquant.core.currencies.{ DefaultExchangeRateManager, Currency }
 
-/**
- * Created by neo on 2015-02-28.
- */
+import org.scalaquant.core.currencies.{ DefaultExchangeRateManager, Currency }
 
 case class Money(value: Double, currency: Currency) {
   def rounded: Money = Money(currency.definition.rounding.apply(value), currency)
@@ -14,6 +11,7 @@ object Money {
 
   case class BaseCurrencyConversion(base: Currency) extends ConversionType
   case object AutomatedConversion extends ConversionType
+
   private def convert(money: Money, target: Currency): Money = {
     if (money.currency != target) {
       val exRate = DefaultExchangeRateManager.lookup(money.currency, target)

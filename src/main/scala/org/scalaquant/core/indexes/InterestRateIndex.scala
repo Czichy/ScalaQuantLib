@@ -15,7 +15,7 @@ abstract class InterestRateIndex(familyName: String,
                         fixingDays: Int,
                         currency: Currency,
                         fixingCalendar: BusinessCalendar,
-                        dayCounter: DayCountConvention) extends Index[Double] with Observer[Double]{
+                        dayCounter: DayCountConvention) extends Index with Observer[Double]{
 
   def isValidFixingDate(fixingDate: LocalDate): Boolean = fixingCalendar.considerBusinessDay(fixingDate)
 

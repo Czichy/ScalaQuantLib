@@ -9,7 +9,8 @@ class Option[T](payoff: Payoff, exercise: Exercise) extends Instrument[T]
 
 object Option{
 
-  sealed class Type(value:Int) extends AnyVal
+  class Type(val value: Int) extends AnyVal
+
   val Call = new Type(1)
   val Put = new Type(-1)
 

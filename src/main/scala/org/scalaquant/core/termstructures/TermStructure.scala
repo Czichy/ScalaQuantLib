@@ -1,4 +1,4 @@
-package org.scalaquant.core.instruments.termstructures
+package org.scalaquant.core.termstructures
 
 import org.joda.time.LocalDate
 import org.scalaquant.core.common.Settings

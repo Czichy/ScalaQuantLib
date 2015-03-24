@@ -1,8 +1,9 @@
 package org.scalaquant.core.instruments.equities
 
-import org.scalaquant.core.instruments.{Quote, Instrument}
+import org.scalaquant.core.instruments.Instrument
+import org.scalaquant.core.quotes.Quote
 
-class Stock(quote: Quote[Double]) extends Instrument[Double] {
+class Stock(quote: Quote) extends Instrument[Double] {
 
   protected override var _engineSubscription = Some(quote.subscribe(this))
   override val isExpired: Boolean = false
