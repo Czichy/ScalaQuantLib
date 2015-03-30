@@ -2,16 +2,19 @@ package org.scalaquant.core.common
 
 import org.joda.time.ReadablePartial
 
-case class TimeSeries[T <: ReadablePartial, V <: AnyVal](timeSeq: Vector[T], valueSeq: Vector[V]) {
-  private val pairs = (timeSeq zip valueSeq).toMap
+case class TimeSeries[T <: ReadablePartial, V <: AnyVal](pairs: Map[T, V]) {
+  //private val pairs = (timeSeq zip valueSeq).toMap
 
   def firstDate: Option[T] = if (pairs.isEmpty) None else pairs.keys.headOption
   def lastDate: Option[T] = if (pairs.isEmpty) None else pairs.keys.lastOption
 
   def size: Int = pairs.size
   def isEmpty: Boolean = pairs.isEmpty
+  def nonEmpty: Boolean = pairs.nonEmpty
 
   def find(key: T): Option[V] = pairs.get(key)
+
+  def get(key: T): V = pairs.apply(key)
 
   def dates: Seq[T] = pairs.keys.toSeq
   def values: Seq[V] = pairs.values.toSeq

@@ -5,20 +5,25 @@ import org.scalaquant.math.Constants._
 object ErrorFunction {
 
   private val tiny = QL_EPSILON
+
   private val one =  1.00000000000000000000e+00
+
   private val erx =  8.45062911510467529297e-01
   private val efx  =  1.28379167095512586316e-01
   private val efx8 =  1.02703333676410069053e+00
+
   private val pp0  =  1.28379167095512558561e-01
   private val pp1  = -3.25042107247001499370e-01
   private val pp2  = -2.84817495755985104766e-02
   private val pp3  = -5.77027029648944159157e-03
   private val pp4  = -2.37630166566501626084e-05
+
   private val qq1  =  3.97917223959155352819e-01
   private val qq2  =  6.50222499887672944485e-02
   private val qq3  =  5.08130628187576562776e-03
   private val qq4  =  1.32494738004321644526e-04
   private val qq5  = -3.96022827877536812320e-06
+
   private val pa0  = -2.36211856075265944077e-03
   private val pa1  =  4.14856118683748331666e-01
   private val pa2  = -3.72207876035701323847e-01
@@ -26,12 +31,14 @@ object ErrorFunction {
   private val pa4  = -1.10894694282396677476e-01
   private val pa5  =  3.54783043256182359371e-02
   private val pa6  = -2.16637559486879084300e-03
+
   private val qa1  =  1.06420880400844228286e-01
   private val qa2  =  5.40397917702171048937e-01
   private val qa3  =  7.18286544141962662868e-02
   private val qa4  =  1.26171219808761642112e-01
   private val qa5  =  1.36370839120290507362e-02
   private val qa6  =  1.19844998467991074170e-02
+
   private val ra0  = -9.86494403484714822705e-03
   private val ra1  = -6.93858572707181764372e-01
   private val ra2  = -1.05586262253232909814e+01
@@ -40,6 +47,7 @@ object ErrorFunction {
   private val ra5  = -1.84605092906711035994e+02
   private val ra6  = -8.12874355063065934246e+01
   private val ra7  = -9.81432934416914548592e+00
+
   private val sa1  =  1.96512716674392571292e+01
   private val sa2  =  1.37657754143519042600e+02
   private val sa3  =  4.34565877475229228821e+02
@@ -48,6 +56,7 @@ object ErrorFunction {
   private val sa6  =  1.08635005541779435134e+02
   private val sa7  =  6.57024977031928170135e+00
   private val sa8  = -6.04244152148580987438e-02
+
   private val rb0  = -9.86494292470009928597e-03
   private val rb1  = -7.99283237680523006574e-01
   private val rb2  = -1.77579549177547519889e+01
@@ -55,6 +64,7 @@ object ErrorFunction {
   private val rb4  = -6.37566443368389627722e+02
   private val rb5  = -1.02509513161107724954e+03
   private val rb6  = -4.83519191608651397019e+02
+
   private val sb1  =  3.03380607434824582924e+01
   private val sb2  =  3.25792512996573918826e+02
   private val sb3  =  1.53672958608443695994e+03

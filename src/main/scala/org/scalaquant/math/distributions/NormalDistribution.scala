@@ -4,11 +4,11 @@ import org.scalaquant.math.Constants._
 import org.scalaquant.math.Comparison._
 import org.scalaquant.math.ErrorFunction
 
-abstract class Distribution(average: Double, sigma: Double) extends (Double => Double){
+sealed abstract class AbstractNormalDistribution(average: Double, sigma: Double) extends (Double => Double){
   require(sigma>0.0, s"sigma must be greater than 0.0 ($sigma not allowed)")
 }
 
-class NormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends Distribution(average, sigma) {
+class NormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
 
   private val normalizationFactor = M_SQRT_2 * M_1_SQRTPI / sigma
   private val derNormalizationFactor  = sigma * sigma
@@ -24,7 +24,7 @@ class NormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends Dis
 
 }
 
-class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends Distribution(average, sigma) {
+class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
 
   private val gaussian = new NormalDistribution()
 
@@ -50,7 +50,7 @@ class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) e
         g = g * y
         i = i + 1
         a = Math.abs(a)
-      } while ((lasta > a) && (a >= Math.abs( sum * QL_EPSILON)))
+      } while ((lasta > a) && (a >= Math.abs(sum * QL_EPSILON)))
 
       -gaussian.apply(_z) / _z * sum
     } else {
@@ -62,7 +62,7 @@ class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) e
 }
 
 
-class InverseCumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends Distribution(average, sigma) {
+class InverseCumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
 
   def apply(x: Double): Double = average + sigma * InverseCumulativeNormalDistribution.standardValue(x)
 }
@@ -128,7 +128,7 @@ object InverseCumulativeNormalDistribution{
       // try to recover if due to numerical error
       if (x ~= 1.0) {
          Double.MaxValue // largest value available
-      } else if (Math.abs(x) < QL_EPSILON) {
+      } else if (x.abs < QL_EPSILON) {
          Double.MinValue // largest negative value available
       } else {
 //        QL_FAIL("InverseCumulativeNormal(" << x
@@ -178,10 +178,10 @@ object InverseCumulativeNormalDistribution{
   }
 }
 
-class MoroInverseCumulativeNormal(average: Double = 0.0, sigma: Double = 1.0) extends Distribution(average, sigma) {
+class MoroInverseCumulativeNormal(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
   def apply(x: Double): Double = ???
 }
 
-class MaddockCumulativeNormal(average: Double = 0.0, sigma: Double = 1.0) extends Distribution(average, sigma) {
+class MaddockCumulativeNormal(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
   def apply(x: Double): Double = ???
 }

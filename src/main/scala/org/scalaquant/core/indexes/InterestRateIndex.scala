@@ -42,13 +42,30 @@ abstract class InterestRateIndex(familyName: String,
     fixingCalendar.advance(fixingDate, fixingDays, TimeUnit.Days)
   }
 
-  def maturityDate(fixingDate: LocalDate): LocalDate = ???
+  def maturityDate(fixingDate: LocalDate): LocalDate
 
   def pastFixing(fixingDate: LocalDate): Option[Double] = {
     require(isValidFixingDate(fixingDate), fixingDate + "is not a valid fixing date.")
     timeSeries.find(fixingDate)
   }
 
-  def forecastFixing(fixingDate: LocalDate): Option[Double] = ???
+  def forecastFixing(fixingDate: LocalDate): Option[Double]
 
+  def name: String = {
+    val days = {
+      val normalizedTenor = tenor.normalize
+      if (normalizedTenor.units == TimeUnit.Days) {
+        fixingDays match{
+          case 0 => "ON"
+          case 1 => "TN"
+          case 2 => "SN"
+          case _ => normalizedTenor.shortDescription
+        }
+      } else {
+        normalizedTenor.shortDescription
+      }
+    }
+
+    familyName + " " + days + " "+ dayCounter.name
+  }
 }

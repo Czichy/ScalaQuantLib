@@ -1,8 +1,11 @@
 package org.scalaquant.core.quotes
 
 trait Quote {
-  def value: Double
   def isValid: Boolean
+  def value: Double
 }
 
-trait Quote extends
+case object InvalidQuote extends Quote{
+  val isValid = false
+  def value: Double = throw new Exception("Invalid Quote")
+}

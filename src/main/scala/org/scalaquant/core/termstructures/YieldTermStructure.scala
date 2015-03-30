@@ -100,6 +100,10 @@ abstract class YieldTermStructure(private var _referenceDate: LocalDate,
 
   def jumpDates: Seq[LocalDate] = _jumps.map(_._2)
   def jumpTimes: Seq[Double] = _jumpWithTimes.map(_._2)
+
+  override def isEmpty: Boolean = jumps.isEmpty
+
+  override def nonEmpty: Boolean = jumps.nonEmpty
 }
 
 object YieldTermStructure{

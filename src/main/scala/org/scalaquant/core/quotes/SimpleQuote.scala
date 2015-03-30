@@ -1,6 +1,6 @@
 package org.scalaquant.core.quotes
 
-case class SimpleQuote(value: Double = Double.NaN) extends Quote {
+case class SimpleQuote(value: Double) extends Quote {
   override def isValid: Boolean = value != Double.NaN
 
 //  def updateValue(newValue: Double): Double = {
@@ -11,4 +11,6 @@ case class SimpleQuote(value: Double = Double.NaN) extends Quote {
 //  }
 //
 //  //def reset(): Unit = _value = Double.NaN
+
 }
+
