@@ -1,6 +1,7 @@
 package org.scalaquant.core.instruments.options
 
-import org.scalaquant.core.common.{Exercise, Payoff}
+import org.scalaquant.core.common.Exercise
+import org.scalaquant.core.instruments.payoffs.Payoff
 import org.scalaquant.core.pricingengines.PricingEngine
 
 /**

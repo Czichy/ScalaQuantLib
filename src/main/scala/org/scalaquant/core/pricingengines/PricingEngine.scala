@@ -1,23 +1,23 @@
 package org.scalaquant.core.pricingengines
 
 import PricingEngine._
+import org.scalaquant.core.models.Model
 
-trait PricingEngine {
+trait PricingEngine[-A, +R] {
+  def calculate[A](a: A): R
+}
+
+trait GenericEngine extends PricingEngine[Arguments, Results] {
   def results: Results
   def arguments: Arguments
-  def calculate(): Unit
 }
 
-trait GenericEngine extends PricingEngine {
-  protected val _arguments: Arguments
-  protected val _result: Results
-  def results: Results = _result
-  def arguments: Arguments = _arguments
-}
+abstract class GenericModelEngine(model: Model) extends GenericEngine
 
-object PricingEngine{
+object PricingEngine {
   trait Results
-  trait Arguments {
-    def validated: Boolean
-  }
+  trait Arguments
+
+  //def validate(a: Arguments): Validation[]
+  //def
 }

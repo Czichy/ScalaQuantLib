@@ -5,11 +5,9 @@ import org.scalaquant.core.common.Compounding._
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.Frequency._
 import org.scalaquant.core.common.time.daycounts._
-import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
-/**
- * Created by neo on 2015-03-15.
- */
+import scala.language.implicitConversions
+
 case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding, freq: Frequency) {
   if (comp == Compounded || comp == SimpleThenCompounded) require(freq!= Once && freq!= NoFrequency, "frequency not allowed for this interest rate")
 

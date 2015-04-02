@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentSkipListSet
 import org.joda.time.DateTimeConstants._
 import org.joda.time.LocalDate
 
+import org.joda.time.Days
+
 import org.scalaquant.core.common.time.TimeUnit
 import org.scalaquant.core.common.time.TimeUnit._
 import org.scalaquant.core.common.time.BusinessDayConvention
@@ -91,9 +93,10 @@ trait BusinessCalendar {
     val startDate = if (includeFirst) from else adjustment(from, 1)
     val endDate = if (includeLast) to else adjustment(to, -1)
 
-    def inRange(date: LocalDate) = if (isPositiveFlow) date <= endDate else date >= endDate
+    //val range = (0 to Days.daysBetween(startDate, endDate).getDays)
+    //def inRange(date: LocalDate) = if (isPositiveFlow) date <= endDate else date >= endDate
 
-    Stream.from(0).map(adjustment(startDate, _)).filter(inRange)
+    Stream.from(0, Days.daysBetween(startDate, endDate).getDays).map(adjustment(startDate, _))
   }
 
   def holidays(from: LocalDate, to: LocalDate, includeWeekEnd: Boolean = false): List[LocalDate] = {

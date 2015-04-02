@@ -7,10 +7,10 @@ import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 
-abstract class Coupon(paymentDate: LocalDate,
-                      nominal: Double,
-                      accrualStartDate: LocalDate,
-                      accrualEndDate: LocalDate,
+abstract class Coupon(val paymentDate: LocalDate,
+                      val nominal: Double,
+                      val accrualStartDate: LocalDate,
+                      val accrualEndDate: LocalDate,
                       exCouponDate: LocalDate = Settings.evaluationDate) extends CashFlow {
 
   override def date: LocalDate = paymentDate

@@ -5,9 +5,6 @@ import org.scalaquant.core.common.time.BusinessDayConvention.Following
 import org.scalaquant.core.common.time.Period
 import org.scalaquant.core.indexes.swap.SwapIndex
 
-/**
- * Created by neo on 2015-03-22.
- */
 case class ForwardSwapQuote(swapIndex: SwapIndex, spread: Quote, fwdStart: Period) extends Quote{
   private val evaluationDate = Settings.evaluationDate
   private val swap = swapIndex.underlyingSwap(fixingDate)

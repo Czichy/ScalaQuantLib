@@ -2,10 +2,6 @@ package org.scalaquant.core.common
 
 import org.joda.time.LocalDate
 
-/**
- * Created by neo on 2015-02-28.
- */
-
 import scala.language.implicitConversions
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 

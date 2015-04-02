@@ -1,7 +1,8 @@
 package org.scalaquant.core.instruments.options
 
-import org.scalaquant.core.common.{Exercise, Payoff}
+import org.scalaquant.core.common.Exercise
 import org.scalaquant.core.instruments.Instrument
+import org.scalaquant.core.instruments.payoffs.Payoff
 import org.scalaquant.core.pricingengines.PricingEngine
 
 
@@ -18,6 +19,13 @@ object Option{
     override def validated: Boolean = true
   }
 
+  implicit def typeToString(optionType: Type): String = {
+    optionType match {
+      case Call => "call option"
+      case Put => "put option"
+      case _ => ""
+    }
+  }
   trait Greeks extends PricingEngine.Results {
       def delta: Double
       def gamma: Double
