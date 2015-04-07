@@ -57,13 +57,27 @@ object JodaDateTimeHelper {
     def >=(otherTime: DateTime): Boolean = time.isEqual(otherTime) || time.isAfter(otherTime)
   }
 
-  def min(date1: LocalDate, date2: LocalDate): LocalDate = Set(date1, date2).min
-  def max(date1: LocalDate, date2: LocalDate): LocalDate = Set(date1, date2).max
+  def min(date1: LocalDate, date2: LocalDate): LocalDate = {
+    require(date1 != null && date2 != null)
+    if (date1.isEqual(date2)) {
+      date1
+    } else if (date1.isBefore(date2)) {
+      date1
+    } else {
+      date2
+    }
+  }
+  def max(date1: LocalDate, date2: LocalDate): LocalDate = {
+    require(date1 != null && date2 != null)
+    if (date1.equals(min(date1,date2))) date2 else date1
+  }
 
   def nthWeekday(nth:Int, dayOfWeek: DayOfWeek, month: Int, year: Int): LocalDate = {
     require( nth>0 && nth < 6, "no more than 5 weekdays for given month year")
+
     val first = new LocalDate(year, month, 1).getDayOfWeek
     val skip = if (dayOfWeek.id >= first) nth - 1 else nth
+
     new LocalDate(year, month, (1 + dayOfWeek.id + skip * 7) - first )
   }
 

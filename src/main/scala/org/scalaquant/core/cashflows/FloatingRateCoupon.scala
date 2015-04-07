@@ -5,13 +5,12 @@ import org.joda.time.LocalDate
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.indexes.InterestRateIndex
+import org.scalaquant.core.termstructures.YieldTermStructure
 import rx.lang.scala.Observer
 
-/**
- * Created by neo on 2015-03-17.
- */
-class FloatingRateCoupon( val paymentDate: LocalDate,
-                          val nominal: Double,
+
+abstract class FloatingRateCoupon( override val paymentDate: LocalDate,
+                          override val nominal: Double,
                           val startDate: LocalDate,
                           val endDate: LocalDate,
                           val fixingDays: Int,
@@ -26,5 +25,11 @@ class FloatingRateCoupon( val paymentDate: LocalDate,
 
   override def accruedAmount(date: LocalDate): Double = ???
 
-  override def amount: Double = date
+  override def amount: Double = rate * accrualPeriod * nominal
+
+  def price(discountingCurve: YieldTermStructure): Double = ???
+
+  def indexFixing: Double
+
+  def convexityAdjustment: Double
 }

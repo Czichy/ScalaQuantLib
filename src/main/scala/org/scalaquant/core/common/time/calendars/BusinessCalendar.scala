@@ -51,8 +51,8 @@ trait BusinessCalendar {
 
   def adjust(date: LocalDate, convention: BusinessDayConvention = Following): LocalDate = {
 
-    lazy val nextBusinessDay = Stream.from(0).map(date.plusDays(_)).find(considerBusinessDay(_)).get
-    lazy val priorBusinessDay = Stream.from(0).map(date.minusDays(_)).find(considerBusinessDay(_)).get
+    val nextBusinessDay = Stream.from(0).map(date.plusDays).find(considerBusinessDay).get
+    val priorBusinessDay = Stream.from(0).map(date.minusDays).find(considerBusinessDay).get
 
     def intoNextMonth = nextBusinessDay.getMonthOfYear != date.getMonthOfYear
     def intoPrevMonth = priorBusinessDay.getMonthOfYear != date.getMonthOfYear
@@ -101,7 +101,7 @@ trait BusinessCalendar {
 
   def holidays(from: LocalDate, to: LocalDate, includeWeekEnd: Boolean = false): List[LocalDate] = {
     def isHoliday(date: LocalDate) = considerHoliday(date) && (includeWeekEnd || !isWeekend(date))
-    dayRanges(from, to, true, true).filter(isHoliday).toList
+    dayRanges(from, to, includeFirst = true, includeLast = true).filter(isHoliday).toList
   }
 
   def businessDaysBetween(from: LocalDate, to: LocalDate,

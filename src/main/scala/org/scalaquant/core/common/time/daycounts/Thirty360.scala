@@ -26,7 +26,7 @@ sealed trait Thirty360 extends DayCountConvention {
 
     360 * (yy2 - yy1) + 30 * (M2 - mm1 - 1) + Math.max(0, 30 - D1) + Math.min(30, D2)
   }
-  override def fraction(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
+  override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
     dayCount(date1, date2) / 360.0
   }
 }
@@ -74,7 +74,7 @@ object SimpleDayCountConvention{
     val name: String = "Simple"
     private val fallBack = Thirty360()
     override def dayCount(date1: LocalDate, date2: LocalDate): Int = fallBack.dayCount(date1, date2)
-    override def fraction(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
+    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
       val dm1 = date1.getDayOfMonth
       val dm2 = date2.getDayOfMonth
 
@@ -85,7 +85,7 @@ object SimpleDayCountConvention{
         (dm1 < dm2 && date1.isEndOfMoth)) {
         (date2.getYear - date1.getYear) + (date2.getMonthOfYear - date1.getMonthOfYear) / 12.0
       } else {
-        fallBack.fraction(date1, date2, date3, freq)
+        fallBack.fractionOfYear(date1, date2, date3, freq)
       }
     }
   }

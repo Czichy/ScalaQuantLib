@@ -1,7 +1,7 @@
 package org.scalaquant.core.pricingengines
 
 import org.scalaquant.core.instruments.options.Option
-import org.scalaquant.math.distributions.CumulativeNormalDistribution
+
 
 object BlackFormula {
 

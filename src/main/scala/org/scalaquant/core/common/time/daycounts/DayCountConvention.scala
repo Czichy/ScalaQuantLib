@@ -18,7 +18,7 @@ trait DayCountConvention {
 
   def dayCount(startDate: LocalDate, endDate: LocalDate): Int = Days.daysBetween(startDate, endDate).getDays
 
-  def fraction(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency = Frequency.Annual): Double
+  def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency = Frequency.Annual): Double
 
   override def equals(other: Any): Boolean = other match {
     case that: DayCountConvention => this.name == that.name

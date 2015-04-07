@@ -69,7 +69,7 @@ abstract class YieldTermStructure(private var _referenceDate: LocalDate,
     if (date1 == date2) {
       val t1 = Math.max(timeFromReference(date1)-YieldTermStructure.dt/2.0, 0.0)
       val t2 = t1 + YieldTermStructure.dt
-      InterestRate.impliedRate(discount(t1, true) / discount(t2, true), dc, comp, freq, YieldTermStructure.dt)
+      InterestRate.impliedRate(discount(t1, extrapolate = true) / discount(t2, extrapolate = true), dc, comp, freq, YieldTermStructure.dt)
     } else {
       InterestRate.impliedRate(discount(date1, extrapolate)/discount(date2, extrapolate), dc, comp, freq, date1, date2, date2)
     }
@@ -91,7 +91,7 @@ abstract class YieldTermStructure(private var _referenceDate: LocalDate,
     val (interval, compound) = if (time1 == time2) {
       val t1 = Math.max(time1-YieldTermStructure.dt/2.0, 0.0)
       val t2 = t1 + YieldTermStructure.dt
-      (t2 - t1, discount(t1, true) / discount(t2, true))
+      (t2 - t1, discount(t1, extrapolate = true) / discount(t2, extrapolate = true))
     } else {
       (time2 - time1, discount(time1, extrapolate) / discount(time2, extrapolate))
     }

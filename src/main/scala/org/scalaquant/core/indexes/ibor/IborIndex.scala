@@ -1,6 +1,7 @@
 package org.scalaquant.core.indexes.ibor
 
 import org.joda.time.LocalDate
+import org.scalaquant.core.common.time.BusinessDayConvention.Following
 import org.scalaquant.core.common.time.calendars.BusinessCalendar
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.common.time.{BusinessDayConvention, Period}
@@ -13,10 +14,10 @@ class IborIndex(val familyName: String,
                 settlementDays: Int,
                 currency: Currency ,
                 val fixingCalendar: BusinessCalendar ,
-                convention: BusinessDayConvention ,
+                val convention: BusinessDayConvention ,
                 endOfMonth: Boolean,
                 dayCounter: DayCountConvention,
-                forwardingTermStructure: YieldTermStructure)
+                val forwardingTermStructure: YieldTermStructure)
           extends InterestRateIndex(familyName,
                                     tenor,
                                     settlementDays,
@@ -45,3 +46,16 @@ class IborIndex(val familyName: String,
   }
 }
 
+
+case class OvernightIndex(override val familyName: String,
+                          settlementDays: Int,
+                          currency: Currency ,
+                          override val fixingCalendar: BusinessCalendar,
+                           dayCounter: DayCountConvention,
+                          h: YieldTermStructure) extends IborIndex(familyName,
+                                                                    Period(1),
+                                                                    settlementDays,
+                                                                    currency,
+                                                                    fixingCalendar,
+                                                                    Following,
+                                                                    false, dayCounter, h)

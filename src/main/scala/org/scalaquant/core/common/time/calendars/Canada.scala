@@ -4,10 +4,6 @@ import org.joda.time.LocalDate
 import org.scalaquant.core.common.time.calendars.BusinessCalendar._
 
 
-/**
- * Created by neo on 2015-03-07.
- */
-
 object Canada{
 
 

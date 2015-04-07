@@ -6,22 +6,26 @@ import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.Frequency._
 import org.scalaquant.core.common.time.daycounts._
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
-import scala.language.implicitConversions
 
 case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding, freq: Frequency) {
-  if (comp == Compounded || comp == SimpleThenCompounded) require(freq!= Once && freq!= NoFrequency, "frequency not allowed for this interest rate")
+  if (comp == Compounded || comp == SimpleThenCompounded)
+    require(freq!= Once && freq!= NoFrequency, "frequency not allowed for this interest rate")
 
   def discountFactor(time: Double): Double = 1.0 / compoundFactor(time)
 
   def discountFactor(d1: LocalDate, d2: LocalDate, d3: LocalDate): Double = {
     require(d2 >= d1, s"date1($d1) later than date2($d2)")
+
     discountFactor(dc.fraction(d1, d2, d3, freq))
   }
 
   def compoundFactor(time: Double): Double = {
     require(time >= 0.0, "negative time not allowed")
+
     def simple = 1.0 * rate * time
+
     def compounded = Math.pow(1.0 + rate / freq.value, freq.value * time)
+
     comp match {
       case Simple => simple
       case Compounded => compounded
@@ -32,6 +36,7 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
 
   def compoundFactor(d1: LocalDate, d2: LocalDate, d3: LocalDate): Double = {
     require(d2 >= d1, s"date1($d1) later than date2($d2)")
+
     compoundFactor(dc.fraction(d1, d2, d3, freq))
   }
 
@@ -39,9 +44,17 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
     InterestRate.impliedRate(compoundFactor(time),dc,comp,freq,time)
   }
 
-  def equivalentRate(resultDc: DayCountConvention, comp: Compounding, freq: Frequency, date1: LocalDate, date2: LocalDate, date3: LocalDate): InterestRate  = {
+  def equivalentRate(resultDc: DayCountConvention,
+                     comp: Compounding,
+                     freq: Frequency,
+                     date1: LocalDate,
+                     date2: LocalDate,
+                     date3: LocalDate): InterestRate  = {
     require(date2 >= date1, s"date1($date1) later than date2($date2)")
-    InterestRate.impliedRate(compoundFactor(dc.fraction(date1, date2, date3, freq)), dc, comp, freq, resultDc.fraction(date1,date2, date3, freq))
+
+    val compound = compoundFactor(dc.fraction(date1, date2, date3, freq))
+
+    InterestRate.impliedRate(compound, dc, comp, freq, resultDc.fraction(date1,date2, date3, freq))
   }
 
   override def toString: String = {
@@ -57,13 +70,18 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
 
 object InterestRate{
 
-  def impliedRate(compound: Double, dc: DayCountConvention, comp: Compounding, freq: Frequency, time: Double): InterestRate = {
+  def impliedRate(compound: Double,
+                  dc: DayCountConvention,
+                  comp: Compounding,
+                  freq: Frequency,
+                  time: Double): InterestRate = {
 
     require(compound > 0.0, "positive compound factor required")
     require(compound == 1.0 && time >= 0.0, s"non negative time ($time) required when compound is 1")
     require(compound != 1.0 && time > 0.0, s"positive time ($time) required when compound is not 1")
 
     def simpleRate = (compound - 1.0) / time
+
     def compoundedRate = (Math.pow(compound, 1.0/ freq.value.toDouble * time) - 1.0) * freq.value.toDouble
 
     val rate = if (compound == 1.0) {
@@ -73,15 +91,22 @@ object InterestRate{
         case Simple => simpleRate
         case Compounded => compoundedRate
         case Continuous => Math.log(compound) / time
-        case SimpleThenCompounded =>
-          if (time <= 1.0 / freq.value.toDouble) simpleRate else compoundedRate
+        case SimpleThenCompounded => if (time <= 1.0 / freq.value.toDouble) simpleRate else compoundedRate
       }
     }
+
     InterestRate(rate, dc, comp, freq)
   }
 
-  def impliedRate(compound: Double, dc: DayCountConvention, comp: Compounding, freq: Frequency, date1: LocalDate, date2: LocalDate, date3: LocalDate): InterestRate = {
+  def impliedRate(compound: Double,
+                  dc: DayCountConvention,
+                  comp: Compounding,
+                  freq: Frequency,
+                  date1: LocalDate,
+                  date2: LocalDate,
+                  date3: LocalDate): InterestRate = {
     require(date2 >= date1, s"date1($date1) later than date2($date2)")
+
     impliedRate(compound, dc, comp, freq, dc.fraction(date1, date2, date3, freq))
   }
 }
