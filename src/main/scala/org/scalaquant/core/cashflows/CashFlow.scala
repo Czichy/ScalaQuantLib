@@ -21,4 +21,8 @@ object CashFlow {
       cf.date < other.date
     }
   }
+
+  implicit object CashFlowOrdering extends Ordering[CashFlow]{
+    override def compare(x: CashFlow, y: CashFlow): Int = x.date compareTo y.date
+  }
 }

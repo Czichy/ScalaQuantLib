@@ -15,9 +15,7 @@ object Option{
   val Call = new Type(1)
   val Put = new Type(-1)
 
-  class Arguments(val payoff: Payoff, val exercise: Exercise) extends PricingEngine.Arguments {
-    override def validated: Boolean = true
-  }
+  class Arguments(val payoff: Payoff, val exercise: Exercise) extends PricingEngine.Arguments
 
   implicit def typeToString(optionType: Type): String = {
     optionType match {
@@ -26,6 +24,7 @@ object Option{
       case _ => ""
     }
   }
+
   trait Greeks extends PricingEngine.Results {
       def delta: Double
       def gamma: Double

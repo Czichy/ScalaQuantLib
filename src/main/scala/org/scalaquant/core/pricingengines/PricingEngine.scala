@@ -4,7 +4,7 @@ import PricingEngine._
 import org.scalaquant.core.models.Model
 
 trait PricingEngine[-A, +R] {
-  def calculate[A](a: A): R
+  def calculate(a: A): R
 }
 
 trait GenericEngine extends PricingEngine[Arguments, Results] {
@@ -12,7 +12,7 @@ trait GenericEngine extends PricingEngine[Arguments, Results] {
   def arguments: Arguments
 }
 
-abstract class GenericModelEngine(model: Model) extends GenericEngine
+abstract class GenericModelEngine(val model: Model) extends GenericEngine
 
 object PricingEngine {
   trait Results

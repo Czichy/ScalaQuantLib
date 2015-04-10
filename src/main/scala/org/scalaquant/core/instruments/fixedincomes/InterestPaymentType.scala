@@ -1,6 +1,6 @@
 package org.scalaquant.core.instruments.fixedincomes
 
-trait InterestPaymentType
+sealed trait InterestPaymentType
 
 object InterestPaymentType{
   case object Fixed
