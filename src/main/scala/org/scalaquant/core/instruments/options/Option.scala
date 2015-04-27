@@ -9,11 +9,16 @@ import org.scalaquant.core.pricingengines.PricingEngine
 class Option[T](payoff: Payoff, exercise: Exercise) extends Instrument[T]
 
 object Option{
+  sealed trait Type {
+    def value: Int
+  }
+  case object Call extends Type{
+    final val value = 1
+  }
 
-  class Type(val value: Int) extends AnyVal
-
-  val Call = new Type(1)
-  val Put = new Type(-1)
+  case object Put extends Type{
+    final val value = -1
+  }
 
   class Arguments(val payoff: Payoff, val exercise: Exercise) extends PricingEngine.Arguments
 
@@ -21,7 +26,6 @@ object Option{
     optionType match {
       case Call => "call option"
       case Put => "put option"
-      case _ => ""
     }
   }
 

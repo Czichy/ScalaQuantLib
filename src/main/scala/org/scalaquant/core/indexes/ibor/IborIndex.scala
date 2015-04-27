@@ -16,7 +16,7 @@ class IborIndex(val familyName: String,
                 val fixingCalendar: BusinessCalendar ,
                 val convention: BusinessDayConvention ,
                 endOfMonth: Boolean,
-                dayCounter: DayCountConvention,
+                val dayCounter: DayCountConvention,
                 val forwardingTermStructure: YieldTermStructure)
           extends InterestRateIndex(familyName,
                                     tenor,

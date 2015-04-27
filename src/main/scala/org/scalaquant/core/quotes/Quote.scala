@@ -1,17 +1,32 @@
 package org.scalaquant.core.quotes
 
+
 trait Quote {
-  def isValid: Boolean
   def value: Double
+  protected def isValid: Boolean
+
+  def flatMap(f: Double => ValidQuote): Quote = {
+    if (isValid) f(value) else InvalidQuote
+  }
+
+  def map(f: Double => Double): Quote
 }
 
-case class SimpleQuote(value: Double) extends Quote {
-  val isValid: Boolean = true
+trait ValidQuote extends Quote {
+  final protected val isValid = true
 }
 
-case object InvalidQuote extends Quote{
-  val isValid = false
-  def value: Double = throw new Exception("Invalid Quote")
+case object InvalidQuote extends Quote {
+  final protected val isValid = false
+  final val value = Double.NaN
+  def map(f: Double => Double): Quote = this
+}
+
+
+case class SimpleQuote(value: Double) extends ValidQuote {
+  def map(f: Double => Double): Quote = {
+    if (isValid) SimpleQuote(f(value)) else InvalidQuote
+  }
 }
 
 object Quote {

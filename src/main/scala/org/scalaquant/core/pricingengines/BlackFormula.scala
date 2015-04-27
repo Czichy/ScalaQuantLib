@@ -1,7 +1,9 @@
 package org.scalaquant.core.pricingengines
 
 import org.scalaquant.core.instruments.options.Option
-
+import
+import org.scalaquant.core.instruments.payoffs.PlainVanillaPayoff
+import org.scalaquant.math.distributions.CumulativeNormalDistribution
 
 object BlackFormula {
 
@@ -23,7 +25,7 @@ object BlackFormula {
    *  warning instead of volatility it uses standard deviation,
    *  i.e. volatility*sqrt(timeToMaturity)
    **/
-  def blackFormula(optionType: Option.Type,
+  def apply(optionType: Option.Type,
                    strike: Double,
                    forward: Double,
                    stdDeviation: Double,
@@ -60,7 +62,7 @@ object BlackFormula {
     * warning instead of volatility it uses standard deviation,
     * i.e. volatility*sqrt(timeToMaturity)
     **/
-  def blackFormula(payoff: PlainVanillaPayoff,
+  def apply(payoff: PlainVanillaPayoff,
                    forward: Double,
                    stdDeviation: Double,
                    discount: Double = 1.0,
@@ -73,7 +75,7 @@ object BlackFormula {
    *   (1988) approximation for at-the-money forward option, with the
    *   extended moneyness approximation by Corrado and Miller (1996)
    **/
-  def blackFormulaImpliedStdDevApproximation(optionType: Option.Type,
+  def impliedStdDevApproximation(optionType: Option.Type,
                                              strike: Double,
                                              forward: Double,
                                              blackPrice: Double,
@@ -86,7 +88,7 @@ object BlackFormula {
    *   (1988) approximation for at-the-money forward option, with the
    *   extended moneyness approximation by Corrado and Miller (1996)
   **/
-  def blackFormulaImpliedStdDevApproximation(payoff: PlainVanillaPayoff,
+  def impliedStdDevApproximation(payoff: PlainVanillaPayoff,
                                              forward: Double,
                                              blackPrice: Double,
                                              discount: Double = 1.0,
@@ -95,25 +97,25 @@ object BlackFormula {
   /** Black 1976 implied standard deviation,
    *  i.e. volatility*sqrt(timeToMaturity)
    */
-  def blackFormulaImpliedStdDev(optionType: Option.Type,
+  def impliedStdDev(optionType: Option.Type,
                                 strike: Double,
                                 forward: Double,
                                 blackPrice: Double,
                                 discount: Double = 1.0,
                                 displacement: Double = 0.0,
-                                guess: Option[Double],
+                                guess: Double,
                                 accuracy: Double = 1.0e-6,
                                 maxIterations: Int = 100): Double = ???
 
   /** Black 1976 implied standard deviation,
    *  i.e. volatility*sqrt(timeToMaturity)
    */
-  def blackFormulaImpliedStdDev(payoff: PlainVanillaPayoff,
+  def impliedStdDev(payoff: PlainVanillaPayoff,
                                 forward: Double,
                                 blackPrice: Double,
                                 discount: Double = 1.0,
                                 displacement: Double = 0.0,
-                                guess: Option[Double],
+                                guess: Double,
                                 accuracy: Double = 1.0e-6,
                                 maxIterations: Int = 100): Double = ???
 
@@ -124,7 +126,7 @@ object BlackFormula {
     * \warning instead of volatility it uses standard deviation,
     *             i.e. volatility*sqrt(timeToMaturity)
     */
-  def blackFormulaCashItmProbability(optionType: Option.Type,
+  def cashItmProbability(optionType: Option.Type,
                                       strike: Double,
                                       forward: Double,
                                       stdDeviation: Double,
@@ -136,7 +138,7 @@ object BlackFormula {
     *  \warning instead of volatility it uses standard deviation,
     *           i.e. volatility*sqrt(timeToMaturity)
     */
-  def blackFormulaCashItmProbability(payoff: PlainVanillaPayoff,
+  def cashItmProbability(payoff: PlainVanillaPayoff,
                                      forward: Double,
                                      stdDeviation: Double,
                                      displacement: Double = 0.0): Double = ???
@@ -148,7 +150,7 @@ object BlackFormula {
                If T is the time to maturity Black vega would be
                blackStdDevDerivative(strike, forward, stdDev)*sqrt(T)
   */
-  def blackFormulaStdDevDerivative(strike: Double,
+  def stdDevDerivative(strike: Double,
                                     forward: Double,
                                     stdDeviation: Double,
                                     discount: Double = 1.0,
@@ -157,7 +159,7 @@ object BlackFormula {
   /*! Black 1976 formula for  derivative with respect to implied vol, this
       is basically the vega, but if you want 1% change multiply by 1%
  */
-  def blackFormulaVolDerivative(Real strike,
+  def volDerivative(Real strike,
     Real forward,
     Real stdDev,
     Real expiry,
@@ -172,7 +174,7 @@ object BlackFormula {
                If T is the time to maturity Black vega would be
                blackStdDevDerivative(strike, forward, stdDev)*sqrt(T)
   */
-  def blackFormulaStdDevDerivative(
+  def stdDevDerivative(
     const boost::shared_ptr<PlainVanillaPayoff>& payoff,
     Real forward,
     Real stdDev,
@@ -187,7 +189,7 @@ object BlackFormula {
                percentage volatility. Standard deviation is
                absoluteVolatility*sqrt(timeToMaturity)
   */
-  def bachelierBlackFormula(Option::Type optionType,
+  def bachelier(Option::Type optionType,
     Real strike,
     Real forward,
     Real stdDev,
@@ -200,7 +202,7 @@ object BlackFormula {
                percentage volatility. Standard deviation is
                absoluteVolatility*sqrt(timeToMaturity)
   */
-  def bachelierBlackFormula(
+  def bachelier(
     const boost::shared_ptr<PlainVanillaPayoff>& payoff,
     Real forward,
     Real stdDev,
@@ -212,7 +214,7 @@ object BlackFormula {
       Implied Volatility Under Arithmetic Brownian Motion”,
       Applied Math. Finance, 16(3), pp. 261-268.
   */
-  def bachelierBlackFormulaImpliedVol(Option::Type optionType,
+  def bachelierimpliedVol(Option::Type optionType,
     Real strike,
     Real forward,
     Real tte,

@@ -1,6 +1,6 @@
 package org.scalaquant.core.instruments.fixedincomes
 
-import org.scalaquant.core.cashflows.{CashFlows, CashFlow, Leg}
+import org.scalaquant.core.cashflows.{Coupon, CashFlows, CashFlow, Leg}
 import org.scalaquant.core.common.Compounding
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.calendars.BusinessCalendar
@@ -12,7 +12,7 @@ import org.scalaquant.core.pricingengines.PricingEngine
 
 class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDate: LocalDate, val coupons: Leg = Nil ) extends Instrument{
 
-  def notionals
+  def notionals: List[Double]
   def notional(date: LocalDate)
 
   def cashflows: Leg = coupons.sorted
@@ -113,25 +113,21 @@ class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDat
 
   def previousCashFlowDate(date: LocalDate): LocalDate
 
-  protected def addRedemptionsToCashflows(const std::vector<Real>& redemptions
-    = std::vector<Real>());
+  protected def addRedemptionsToCashflows(redemptions: List[Double]): Bond = ???
 
   /*! This method can be called by derived classes in order to
       build a bond with a single redemption payment.  It will
       fill the notionalSchedule_, notionals_, and redemptions_
       data members.
   */
-  protected def setSingleRedemption(Real notional,
-    Real redemption,
-    const Date& date);
+  protected def setSingleRedemption(notional: Double, redemption: Double, date: LocalDate): Bond = ???
 
   /*! This method can be called by derived classes in order to
       build a bond with a single redemption payment.  It will
       fill the notionalSchedule_, notionals_, and redemptions_
       data members.
   */
-  protected def  setSingleRedemption(Real notional,
-    const boost::shared_ptr<CashFlow>& redemption);
+  protected def setSingleRedemption(notional: Double, redemption: CashFlow): Bond = ???
 
   /*! used internally to collect notional information from the
       coupons. It should not be called by derived classes,
@@ -140,7 +136,50 @@ class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDat
       independently).  It will fill the notionalSchedule_ and
       notionals_ data members.
   */
-  protected def  calculateNotionalsFromCashflows();
+  private final def  calculateNotionalsFromCashflows: List[Double] = {
+//    notionalSchedule_.clear();
+//    notionals_.clear();
+//
+//    Date lastPaymentDate = Date();
+//    notionalSchedule_.push_back(Date());
+    cashflows.collect{
+        case coupon: Coupon =>
+          val notional = coupon.nominal
+          val
+
+      }
+    }
+    for (Size i=0; i<cashflows_.size(); ++i) {
+      shared_ptr<Coupon> coupon =
+        boost::dynamic_pointer_cast<Coupon>(cashflows_[i]);
+      if (!coupon)
+        continue;
+
+      Real notional = coupon->nominal();
+      // we add the notional only if it is the first one...
+      if (notionals_.empty()) {
+        notionals_.push_back(coupon->nominal());
+        lastPaymentDate = coupon->date();
+      } else if (!close(notional, notionals_.back())) {
+        // ...or if it has changed.
+        QL_REQUIRE(notional < notionals_.back(),
+          "increasing coupon notionals");
+        notionals_.push_back(coupon->nominal());
+        // in this case, we also add the last valid date for
+        // the previous one...
+        notionalSchedule_.push_back(lastPaymentDate);
+        // ...and store the candidate for this one.
+        lastPaymentDate = coupon->date();
+      } else {
+        // otherwise, we just extend the valid range of dates
+        // for the current notional.
+        lastPaymentDate = coupon->date();
+      }
+    }
+    QL_REQUIRE(!notionals_.empty(), "no coupons provided");
+    notionals_.push_back(0.0);
+    notionalSchedule_.push_back(lastPaymentDate);
+  }
 }
 
 

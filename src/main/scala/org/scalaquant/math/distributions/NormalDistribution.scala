@@ -24,7 +24,7 @@ class NormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends Abs
 
 }
 
-class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
+case class CumulativeNormalDistribution(average: Double = 0.0, sigma: Double = 1.0) extends AbstractNormalDistribution(average, sigma) {
 
   private val gaussian = new NormalDistribution()
 

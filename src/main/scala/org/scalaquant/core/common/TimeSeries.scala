@@ -5,8 +5,8 @@ import org.joda.time.ReadablePartial
 case class TimeSeries[T <: ReadablePartial, V <: AnyVal](pairs: Map[T, V]) {
   //private val pairs = (timeSeq zip valueSeq).toMap
 
-  def firstDate: Option[T] = if (pairs.isEmpty) None else pairs.keys.headOption
-  def lastDate: Option[T] = if (pairs.isEmpty) None else pairs.keys.lastOption
+  def firstDate: T = pairs.keys.head
+  def lastDate: T = pairs.keys.last
 
   def size: Int = pairs.size
   def isEmpty: Boolean = pairs.isEmpty

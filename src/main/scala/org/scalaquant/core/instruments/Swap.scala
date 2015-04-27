@@ -25,7 +25,7 @@ abstract class Swap(val firstLeg: Leg, val secondLeg: Leg, results: Swap.Results
                                                 List.fill(_legs.size)(0.0),
                                                 List.fill(_legs.size)(0.0),
                                                 0.0)
-  def startDate: LocalDate ={
+  def startDate: LocalDate = {
     require(_legs.nonEmpty, "no legs given")
     _legs.map(_._1)
   }

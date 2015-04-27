@@ -19,7 +19,7 @@ abstract class InterestRateIndex(familyName: String,
 
   def isValidFixingDate(fixingDate: LocalDate): Boolean = fixingCalendar.considerBusinessDay(fixingDate)
 
-  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Option[Double] = {
+  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Double = {
     require(isValidFixingDate(fixingDate), "Fixing date " + fixingDate + " is not valid")
 
     val today = Settings.evaluationDate
@@ -29,7 +29,7 @@ abstract class InterestRateIndex(familyName: String,
     } else if (fixingDate < today || Settings.enforcesTodaysHistoricFixings ) {
        pastFixing(fixingDate)
     } else {
-       pastFixing(fixingDate).orElse(forecastFixing(fixingDate))
+       pastFixing(fixingDate).getOrElse(forecastFixing(fixingDate))
     }
   }
 
@@ -49,7 +49,7 @@ abstract class InterestRateIndex(familyName: String,
     timeSeries.find(fixingDate)
   }
 
-  def forecastFixing(fixingDate: LocalDate): Option[Double]
+  def forecastFixing(fixingDate: LocalDate): Double
 
   def name: String = {
     val days = {

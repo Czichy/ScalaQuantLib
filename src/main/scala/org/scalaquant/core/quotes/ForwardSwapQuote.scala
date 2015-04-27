@@ -12,9 +12,11 @@ case class ForwardSwapQuote(swapIndex: SwapIndex, spread: Quote, fwdStart: Perio
   val startDate = swapIndex.fixingCalendar.advance(valueDate, fwdStart.length, fwdStart.units, Following)
   val fixingDate = swapIndex.fixingDate(startDate)
 
-  val isValid = {
 
-    swapIndexIsValid && spread.isValid
-  }
 }
+
+object ForwardSwapQuote{
+  def apply(swapIndex: SwapIndex, spread: Quote, fwdStart: Period): Quote = {
+
+  }
 }
