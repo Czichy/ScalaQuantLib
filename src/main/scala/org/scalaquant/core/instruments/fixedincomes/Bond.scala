@@ -1,6 +1,7 @@
 package org.scalaquant.core.instruments.fixedincomes
 
-import org.scalaquant.core.cashflows.{Coupon, CashFlows, CashFlow, Leg}
+import org.scalaquant.core.cashflows.coupons.Coupon
+import org.scalaquant.core.cashflows.{CashFlows, CashFlow, Leg}
 import org.scalaquant.core.common.Compounding
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.calendars.BusinessCalendar

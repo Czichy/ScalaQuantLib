@@ -1,6 +1,7 @@
 package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
+import org.scalaquant.core.cashflows.coupons.Coupon
 
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
@@ -19,9 +20,9 @@ abstract class FloatingRateCoupon( override val paymentDate: LocalDate,
                           val spread: Double = 0.0,
                           val freq: Frequency,
                           val dayCounter: DayCountConvention,
-                          val isInArrears: Boolean = false) extends Coupon(paymentDate, nominal, startDate, endDate)
-                                                            with Observer[Double]{
-      require(gearing != 0.0, "empty gearing not allowed")
+                          val pricer: FloatingRateCouponPricer,
+                          val isInArrears: Boolean = false) extends Coupon(paymentDate, nominal, startDate, endDate) {
+  require(gearing != 0.0, "empty gearing not allowed")
 
   override def accruedAmount(date: LocalDate): Double = ???
 
@@ -33,3 +34,4 @@ abstract class FloatingRateCoupon( override val paymentDate: LocalDate,
 
   def convexityAdjustment: Double
 }
+

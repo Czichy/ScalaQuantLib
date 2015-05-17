@@ -2,6 +2,7 @@ package org.scalaquant.math
 
 import org.scalaquant.math.distributions.GammaFunction
 import Constants._
+import math._
 
 object Functions {
 
@@ -96,21 +97,21 @@ object Functions {
       m2=2*m;
       aa=m*(b-m)*x/((qam+m2)*(a+m2));
       d=1.0+aa*d;
-      if (std::fabs(d) < QL_EPSILON) d=QL_EPSILON;
+      if (abs(d) < QL_EPSILON) d=QL_EPSILON;
       c=1.0+aa/c;
-      if (std::fabs(c) < QL_EPSILON) c=QL_EPSILON;
+      if (abs(c) < QL_EPSILON) c=QL_EPSILON;
       d=1.0/d;
       result *= d*c;
       aa = -(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
       d=1.0+aa*d;
-      if (std::fabs(d) < QL_EPSILON) d=QL_EPSILON;
+      if (abs(d) < QL_EPSILON) d=QL_EPSILON;
       c=1.0+aa/c;
-      if (std::fabs(c) < QL_EPSILON) c=QL_EPSILON;
+      if (abs(c) < QL_EPSILON) c=QL_EPSILON;
       d=1.0/d;
       del=d*c;
       result *= del;
-      if (std::fabs(del-1.0) < accuracy)
-        return result;
+      if (abs(del - 1.0) < accuracy)
+        return result
 
     }
     QL_FAIL("a or b too big, or maxIteration too small in betacf");

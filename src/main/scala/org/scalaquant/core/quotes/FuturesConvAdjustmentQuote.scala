@@ -4,9 +4,6 @@ import org.joda.time.LocalDate
 import org.scalaquant.core.common.Settings
 import org.scalaquant.core.indexes.ibor.IborIndex
 
-/**
- * Created by neo on 2015-04-27.
- */
 case class FuturesConvAdjustmentQuote(value: Double,
                                       futuresValue: Double,
                                       volatility: Double,
@@ -32,7 +29,7 @@ object FuturesConvAdjustmentQuote{
       val settlementDate = Settings.evaluationDate
       val startTime = dc.fractionOfYear(settlementDate, futuresDate, futuresDate)
       val indexMaturity = dc.fractionOfYear(settlementDate, index.maturityDate(futuresDate), index.maturityDate(futuresDate))
-      val value = NaN
+      val value = Double.NaN
       FuturesConvAdjustmentQuote(value,fValue,vValue,meanValue,futuresDate)
     }
   }

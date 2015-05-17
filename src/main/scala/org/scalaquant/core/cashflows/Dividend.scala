@@ -14,3 +14,4 @@ class FractionalDividend(rate: Double, nominal: Double, date: LocalDate) extends
   override def amount: Double =  rate * nominal
   override def amount(underlying: Double): Double = rate * underlying
 }
+

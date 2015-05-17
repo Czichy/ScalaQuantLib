@@ -1,8 +1,8 @@
 package org.scalaquant.core.pricingengines
 
-import org.scalaquant.core.instruments.payoffs.StrikedTypePayoff
+import org.scalaquant.core.instruments.payoffs.StrikedPayoff
 
-class BlackScholesCalculator(payoff :StrikedTypePayoff,
+class BlackScholesCalculator(payoff :StrikedPayoff,
                              val spot: Double,
                              val growth: Double,
                              override val stdDev: Double,

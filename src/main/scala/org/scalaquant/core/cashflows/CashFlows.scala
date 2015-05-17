@@ -2,6 +2,7 @@ package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
 import org.scalaquant.core.cashflows._
+import org.scalaquant.core.cashflows.coupons.Coupon
 import org.scalaquant.core.common.InterestRate
 import org.scalaquant.core.common.time.JodaDateTimeHelper
 import org.scalaquant.core.termstructures.YieldTermStructure

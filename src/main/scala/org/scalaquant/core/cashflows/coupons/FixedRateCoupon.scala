@@ -1,11 +1,11 @@
-package org.scalaquant.core.cashflows
+package org.scalaquant.core.cashflows.coupons
 
 import org.joda.time.LocalDate
 import org.scalaquant.core.common.Compounding.Simple
 import org.scalaquant.core.common.InterestRate
 import org.scalaquant.core.common.time.Frequency
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 
 class FixedRateCoupon(val paymentDate: LocalDate,
                       val nominal: Double,

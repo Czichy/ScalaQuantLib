@@ -3,6 +3,7 @@ package org.scalaquant.math
 import Constants._
 
 object Comparison {
+
   implicit class DoubleOps(val value: Double) extends AnyVal{
     def ~=(other: Double): Boolean = ~=(other, 42)
     def ~=(other: Double, size: Int):Boolean = {
@@ -18,4 +19,5 @@ object Comparison {
       }
     }
   }
+
 }

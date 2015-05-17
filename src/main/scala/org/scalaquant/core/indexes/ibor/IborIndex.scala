@@ -35,8 +35,8 @@ class IborIndex(val familyName: String,
   override def forecastFixing(fixingDate: LocalDate): Double = {
     val d1 = valueDate(fixingDate)
     val d2 = maturityDate(d1)
-    val t = dayCounter.fraction(d1, d2, d2)
-    require(t>0.0,
+    val t = dayCounter.fractionOfYear(d1, d2, d2)
+    require(t > 0.0,
       s"cannot calculate forward rate between $d1 and $d2 non positive time ($t) using  ${dayCounter.name} daycounter")
      forecastFixing(d1, d2, t)
   }
@@ -51,7 +51,7 @@ case class OvernightIndex(override val familyName: String,
                           settlementDays: Int,
                           currency: Currency ,
                           override val fixingCalendar: BusinessCalendar,
-                           dayCounter: DayCountConvention,
+                          override val dayCounter: DayCountConvention,
                           h: YieldTermStructure) extends IborIndex(familyName,
                                                                     Period(1),
                                                                     settlementDays,
