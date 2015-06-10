@@ -3,9 +3,10 @@ package org.scalaquant.core.quotes
 import org.scalaquant.core.instruments.options.Option._
 import org.scalaquant.core.pricingengines.BlackFormula
 import org.scalaquant.core.instruments.options.Option
+import Quote.Calculation
 
 case class EurodollarFuturesImpliedStdDevQuote(value: Double) extends ValidQuote {
-  override def map(f: (Double) => Double): Quote = if (isValid) EurodollarFuturesImpliedStdDevQuote(f(value)) else InvalidQuote
+  override def map(f: Calculation): Quote = if (isValid) EurodollarFuturesImpliedStdDevQuote(f(value)) else InvalidQuote
 }
 
 object EurodollarFuturesImpliedStdDevQuote{

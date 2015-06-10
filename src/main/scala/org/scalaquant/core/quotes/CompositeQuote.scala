@@ -1,7 +1,8 @@
 package org.scalaquant.core.quotes
 
 case class CompositeQuote(value1: Double, value2: Double, value: Double) extends ValidQuote {
-  override def map(f: (Double) => Double): Quote = if (isValid) CompositeQuote(value1, value2, f(value)) else InvalidQuote
+  import Quote.Calculation
+  override def map(f: Calculation): Quote = if (isValid) CompositeQuote(value1, value2, f(value)) else InvalidQuote
 }
 
 object CompositeQuote{

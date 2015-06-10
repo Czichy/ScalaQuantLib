@@ -13,7 +13,6 @@ trait CashFlow extends Event {
 }
 
 
-
 object CashFlow {
 
   implicit class CashFlowOperation(val cf: CashFlow) extends AnyVal {

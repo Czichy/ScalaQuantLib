@@ -61,6 +61,7 @@ object CashFlows {
 
   val accrualStartDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualStartDate }
   val accrualEndDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualEndDate }
+
   val accrualDays: CashFlowFunction[Int] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualDays }.sum
   val accrualPeriod: CashFlowFunction[Double] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualPeriod }.sum
 
