@@ -1,8 +1,8 @@
 package org.scalaquant.core.termstructures.inflation
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.time.Frequency
-import org.scalaquant.core.common.time.Frequency._
+import org.scalaquant.common.time.Frequency
+import org.scalaquant.common.time.Frequency._
 import org.scalaquant.core.termstructures.InflationTermStructure
 
 trait Seasonality {

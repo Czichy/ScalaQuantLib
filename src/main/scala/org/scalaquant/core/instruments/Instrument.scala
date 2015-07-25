@@ -1,29 +1,35 @@
 package org.scalaquant.core.instruments
 
-import org.joda.time. LocalDate
-import org.scalaquant.core.pricingengines.PricingEngine
-import rx.lang.scala.{ Subscription, Observer }
+import org.joda.time.LocalDate
 
-trait Instrument[T] {
+abstract class Instrument {
 
-  def NPV: Double
-  def errorEstimate: Double
-  def valuationDate: Option[LocalDate]
-
-  def result(tag: String): T
-  def additionalResults: Map[String, T]
-
+ // def NPV: Double
+  def valuationDate: LocalDate
   def isExpired: Boolean
 
-}
-
-object Instrument{
-
-  trait Results[T] extends PricingEngine.Results{
-    def value: Double
-    def errorEstimate: Double
-    def valuationDate: LocalDate
-    def additionalResults: Map[String, T]
-  }
+  //  def errorEstimate: Double
+  //  def result(tag: String): T
+  //  def additionalResults: Map[String, T]
 
 }
+
+trait ExpirationDate {
+  def expirationDate: LocalDate
+  def isExpired: Boolean = false
+}
+
+trait NoExpiration {
+  def isExpired: Boolean = false
+}
+
+//object Instrument{
+//
+//  trait Results[T] extends PricingEngine.Results{
+//    def value: Double
+//    def errorEstimate: Double
+//    def valuationDate: LocalDate
+//    def additionalResults: Map[String, T]
+//  }
+//
+//}

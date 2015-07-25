@@ -11,5 +11,6 @@ package object cashflows {
   case class Redemption(amount: Double, date: LocalDate) extends CashFlow
 
   case class AmortizingPayment(amount: Double, date: LocalDate) extends CashFlow
+
 }
 

@@ -1,6 +1,6 @@
 package org.scalaquant.core.currencies
 
-import org.scalaquant.core.common.Money
+import org.scalaquant.common.Money
 import org.scalaquant.core.currencies.ExchangeRate.{ Derived, Direct, ExchangeType }
 
 /**

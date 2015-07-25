@@ -1,18 +1,19 @@
 package org.scalaquant.core.cashflows.coupons
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.Compounding.Simple
-import org.scalaquant.core.common.InterestRate
-import org.scalaquant.core.common.time.Frequency
-import org.scalaquant.core.common.time.JodaDateTimeHelper._
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.Compounding.Simple
+import org.scalaquant.common.InterestRate
+import org.scalaquant.common.time.Frequency
+import org.scalaquant.common.time.JodaDateTimeHelper._
+import org.scalaquant.common.time.daycounts.DayCountConvention
 
 class FixedRateCoupon(val paymentDate: LocalDate,
                       val nominal: Double,
                       val rate: InterestRate,
                       val accrualStartDate: LocalDate,
                       val accrualEndDate: LocalDate,
-                      override val exCouponDate: LocalDate) extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, exCouponDate) {
+                      override val exCouponDate: LocalDate)
+  extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, exCouponDate) {
 
   def dayCounter = rate.dc
 

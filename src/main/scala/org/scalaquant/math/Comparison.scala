@@ -1,23 +1,47 @@
 package org.scalaquant.math
 
-import Constants._
 
 object Comparison {
 
-  implicit class DoubleOps(val value: Double) extends AnyVal{
-    def ~=(other: Double): Boolean = ~=(other, 42)
-    def ~=(other: Double, size: Int):Boolean = {
-      if (value == other) {
-        true
-      } else {
-        val diff = Math.abs( value - other )
-        val tolerance = size * QL_EPSILON
-        if (value * other == 0.0) // x or y = 0.0
-          diff < (tolerance * tolerance)
-        else
-          diff <= tolerance * Math.abs(value) || diff <= tolerance * Math.abs(other)
-      }
-    }
+  trait Equality[A]{
+    def ==(x: A, y: A): Boolean
   }
+
+  trait EqualityOps[A]{
+    def ===(other: A): Boolean
+  }
+
+  trait InEquality[A]{
+    def !=(x: A, y: A): Boolean
+    def >(x: A, y: A): Boolean
+    def <(x: A, y: A): Boolean
+  }
+
+  trait InEqualityOps[A]{
+    def =/=(other: A): Boolean
+    def >(other: A): Boolean
+    def <(other: A): Boolean
+  }
+
+  trait Relational[A] extends Equality[A] with InEquality[A] {
+    def >=(x: A, y: A): Boolean = >(x,y) || ==(x,y)
+    def <=(x: A, y: A): Boolean = <(x,y) || ==(x,y)
+  }
+
+  trait RelationalOps[A] extends EqualityOps[A] with InEqualityOps[A] {
+    def >=(other: A): Boolean = >(other) || ===(other)
+    def <=(other: A): Boolean = <(other) || ===(other)
+  }
+
+  trait Proximity[A]{
+    def ~=(x: A, y: A): Boolean = ~=(x,y, 42)
+    def ~=(x: A, y: A, size: Int): Boolean
+  }
+
+  trait ProximityOps[A]{
+    def ~=(other: A): Boolean = ~=(other, 42)
+    def ~=(other: A, size: Int): Boolean
+  }
+
 
 }

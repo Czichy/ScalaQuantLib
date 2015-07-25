@@ -1,7 +1,7 @@
 package org.scalaquant.core.indexes.inflation
 
-import org.scalaquant.core.common.time.calendars.{ NullCalendar, BusinessCalendar }
-import org.scalaquant.core.common.time.{Period, Frequency}
+import org.scalaquant.common.time.calendars.{ NullCalendar, BusinessCalendar }
+import org.scalaquant.common.time.{Period, Frequency}
 import org.scalaquant.core.currencies.Currency
 import org.scalaquant.core.indexes.Region
 import org.scalaquant.core.indexes.Index
@@ -31,7 +31,7 @@ class ZeroInflationIndex(val familyName: String,
                          val revised: Boolean,
                          val interpolated: Boolean,
                          val frequency: Frequency,
-                         val availabilitiyLag: Period ,
+                         val availabilityLag: Period,
                          val currency: Currency,
                          ts: ZeroInflationTermStructure) extends InflationIndex {
 

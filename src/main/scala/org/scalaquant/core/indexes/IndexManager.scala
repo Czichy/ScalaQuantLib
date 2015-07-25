@@ -1,7 +1,7 @@
 package org.scalaquant.core.indexes
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.TimeSeries
+import org.scalaquant.common.TimeSeries
 
 import scala.collection.concurrent._
 

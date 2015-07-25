@@ -2,19 +2,24 @@ package org.scalaquant.core.instruments.fixedincomes
 
 import org.scalaquant.core.cashflows.coupons.Coupon
 import org.scalaquant.core.cashflows.{CashFlows, CashFlow, Leg}
-import org.scalaquant.core.common.Compounding
-import org.scalaquant.core.common.time.Frequency
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
-import org.scalaquant.core.instruments.Instrument
+import org.scalaquant.common.{Settings, Compounding}
+import org.scalaquant.common.time.Frequency
+import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.instruments.{ExpirationDate, Instrument}
 import org.joda.time.LocalDate
 import org.scalaquant.core.pricingengines.PricingEngine
 
 
-class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDate: LocalDate, val coupons: Leg = Nil ) extends Instrument{
+class Bond(val faceAmount: Double,
+           val settlementDays: Int,
+           val calendar: BusinessCalendar,
+           val issueDate: LocalDate,
+           val coupons: Leg = Nil )
+  extends Instrument with ExpirationDate {
 
   def notionals: List[Double]
-  def notional(date: LocalDate)
+  def notionalAt(date: LocalDate): Double
 
   def cashflows: Leg = coupons.sorted
   def redemptions: Leg
@@ -24,10 +29,10 @@ class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDat
   def startDate: LocalDate
   def maturityDate: LocalDate
 
-  def isTradable(date: LocalDate): Boolean
+  def isTradeableAt(date: LocalDate): Boolean
   def settlementDate(date: LocalDate): LocalDate
 
-  def isExpired: Boolean = CashFlows.isExpired(coupons, includeSettlementDateFlows = true, Settings.evaluationDate)
+  override def isExpired: Boolean = CashFlows.isExpired(coupons, includeSettlementDateFlows = true, expirationDate )
   def cleanPrice: Double
 
   //! theoretical dirty price
@@ -183,9 +188,3 @@ class Bond(val settlementDays: Int, val calendar: BusinessCalendar, val issueDat
   }
 }
 
-
-object Bond {
-  case class Arguments(settlementDate: LocalDate, cashflows: Leg, calendar: BusinessCalendar) extends PricingEngine.Arguments
-  case class Results(settlementValue: Double) extends PricingEngine.Results
-
-}

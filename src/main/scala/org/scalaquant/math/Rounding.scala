@@ -1,9 +1,11 @@
 package org.scalaquant.math
 
 sealed trait Rounding {
+  import Rounding._
+
   def precision: Int
   def digit: Int
-  def roundingType: RoundingType
+  def roundingType: Type
 
   def apply(oldValue: Double): Double = {
     val multiplier = Math.pow(10.0, precision)
@@ -17,42 +19,49 @@ sealed trait Rounding {
     def roundToClosest = if (fractional >= (digit / 10.0)) roundUp else roundDown
 
     val newValue = this.roundingType match {
-      case RoundingType.Up => roundUp
-      case RoundingType.Down => roundDown
-      case RoundingType.Closest => roundToClosest
-      case RoundingType.Floor => if (!isNegative) roundToClosest else roundDown
-      case RoundingType.Ceiling => if (isNegative) roundToClosest else roundDown
-      case RoundingType.None => Math.abs(oldValue)
+      case Up => roundUp
+      case Down => roundDown
+      case Closest => roundToClosest
+      case Floor => if (!isNegative) roundToClosest else roundDown
+      case Ceiling => if (isNegative) roundToClosest else roundDown
+      case None => Math.abs(oldValue)
     }
     if (isNegative) -newValue else newValue
   }
+
 }
 
-sealed trait RoundingType
-object RoundingType {
-  case object None extends RoundingType
-  case object Up extends RoundingType
-  case object Down extends RoundingType
-  case object Closest extends RoundingType
-  case object Floor extends RoundingType
-  case object Ceiling extends RoundingType
+object Rounding {
+
+  sealed trait Type
+  case object None extends Type
+  case object Up extends Type
+  case object Down extends Type
+  case object Closest extends Type
+  case object Floor extends Type
+  case object Ceiling extends Type
 }
 
 case class NoRounding(precision: Int = 0, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.None
+  val roundingType: Rounding.Type = Rounding.None
 }
+
 case class DownRounding(precision: Int, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.Down
+  val roundingType: Rounding.Type = Rounding.Down
 }
+
 case class UpRounding(precision: Int, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.Up
+  val roundingType: Rounding.Type = Rounding.Up
 }
+
 case class ClosestRounding(precision: Int, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.Closest
+  val roundingType: Rounding.Type = Rounding.Closest
 }
+
 case class CeilingRounding(precision: Int, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.Ceiling
+  val roundingType: Rounding.Type = Rounding.Ceiling
 }
+
 case class FloorRounding(precision: Int, digit: Int = 5) extends Rounding {
-  val roundingType: RoundingType = RoundingType.Floor
+  val roundingType: Rounding.Type = Rounding.Floor
 }

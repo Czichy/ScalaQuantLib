@@ -1,9 +1,9 @@
 package org.scalaquant.core.termstructures
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.time.{TimeUnit, Period, BusinessDayConvention}
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.time.{TimeUnit, Period, BusinessDayConvention}
+import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.common.time.daycounts.DayCountConvention
 
 
 abstract class VolatilityTermStructure(private var _referenceDate: LocalDate,

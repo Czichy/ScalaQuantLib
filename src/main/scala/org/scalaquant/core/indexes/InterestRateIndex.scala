@@ -1,21 +1,21 @@
 package org.scalaquant.core.indexes
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.Settings
-import org.scalaquant.core.common.time.{TimeUnit, Period}
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.Settings
+import org.scalaquant.common.time.{TimeUnit, Period}
+import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.currencies.Currency
-import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.common.time.JodaDateTimeHelper._
 import rx.lang.scala.Observer
 
 
 abstract class InterestRateIndex(familyName: String,
-                        tenor: Period,
-                        fixingDays: Int,
-                        currency: Currency,
-                        fixingCalendar: BusinessCalendar,
-                        dayCounter: DayCountConvention) extends{
+                                  tenor: Period,
+                                  fixingDays: Int,
+                                  currency: Currency,
+                                  val fixingCalendar: BusinessCalendar,
+                                  val dayCounter: DayCountConvention){
 
   def isValidFixingDate(fixingDate: LocalDate): Boolean = fixingCalendar.considerBusinessDay(fixingDate)
 
@@ -66,6 +66,6 @@ abstract class InterestRateIndex(familyName: String,
       }
     }
 
-    familyName + " " + days + " "+ dayCounter.name
+    familyName + " " + days + " " + dayCounter.name
   }
 }

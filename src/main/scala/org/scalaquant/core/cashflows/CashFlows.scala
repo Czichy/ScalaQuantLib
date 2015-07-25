@@ -3,30 +3,29 @@ package org.scalaquant.core.cashflows
 import org.joda.time.LocalDate
 import org.scalaquant.core.cashflows._
 import org.scalaquant.core.cashflows.coupons.Coupon
-import org.scalaquant.core.common.InterestRate
-import org.scalaquant.core.common.time.JodaDateTimeHelper
+import org.scalaquant.common.{Settings, InterestRate}
+import org.scalaquant.common.time.JodaDateTimeHelper
 import org.scalaquant.core.termstructures.YieldTermStructure
+import org.scalaquant.core.types.YearFraction
 
 object CashFlows {
 
-  type CashFlowFunction[T] = (Leg, Boolean, LocalDate) => T
+  private val couponOrCashflow: PartialFunction[CashFlow, LocalDate] = {
+    case c: Coupon => c.accrualStartDate
+    case CashFlow(_, date) => date
+  }
+
 
   def startDate(leg: Leg): LocalDate = {
     require(leg.nonEmpty, "empty leg")
 
-    leg.collect{
-        case c: Coupon => c.accrualStartDate
-        case cashFlow => cashFlow.date
-    }.fold(JodaDateTimeHelper.farFuture)(JodaDateTimeHelper.min)
+    leg.collect(couponOrCashflow).fold(JodaDateTimeHelper.farFuture)(JodaDateTimeHelper.min)
   }
 
   def maturityDate(leg: Leg): LocalDate = {
     require(leg.nonEmpty, "empty leg")
 
-    leg.collect{
-      case c: Coupon => c.accrualEndDate
-      case cashFlow => cashFlow.date
-    }.fold(JodaDateTimeHelper.theBeginningOfTime)(JodaDateTimeHelper.max)
+    leg.collect(couponOrCashflow).fold(JodaDateTimeHelper.theBeginningOfTime)(JodaDateTimeHelper.max)
   }
 
   def isExpired(leg: Leg, includeSettlementDateFlows: Boolean, settlementDate: LocalDate): Boolean = {
@@ -37,7 +36,7 @@ object CashFlows {
     }
   }
 
-
+  type CashFlowFunction[T] = (Leg, Boolean, LocalDate) => T
   //! \name CashFlow functions
 
   val previousCashFlow: CashFlowFunction[Option[CashFlow]] = (leg, include, date) => leg.reverse.find(_.hasOccurred(date, include))
@@ -62,17 +61,19 @@ object CashFlows {
   val accrualStartDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualStartDate }
   val accrualEndDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualEndDate }
 
-  val accrualDays: CashFlowFunction[Int] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualDays }.sum
   val accrualPeriod: CashFlowFunction[Double] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualPeriod }.sum
+  val accruedPeriod: CashFlowFunction[YearFraction] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedPeriod(x.date) }.sum
 
-  val accruedPeriod: CashFlowFunction[Double] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedPeriod(x.date) }.sum
-  val accruedDays: CashFlowFunction[Double] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedDays(x.date) }.sum
-  val accruedAmount: CashFlowFunction[Double] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedAmount(x.date) }.sum
+  val accrualDays: CashFlowFunction[Int] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accrualDays }.sum
+  val accruedDays: CashFlowFunction[Long] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedDays(x.date) }.sum
+  val accruedAmount: CashFlowFunction[Long] = nextCashFlow(_,_,_).collect{ case x: Coupon => x.accruedAmount(x.date) }.sum
 
  // type ValueParameter = (Leg, YieldTermStructure, Boolean, LocalDate, LocalDate)
  // type ValueFunction[T] = ValueParameter => T
 
-  private val predicate = (cashFlow: CashFlow) => (date: LocalDate, include: Boolean) => cashFlow.hasOccurred(date, include) && cashFlow.tradingExCoupon(date)
+  private val predicate = (cashFlow: CashFlow) =>
+                            (date: LocalDate, include: Boolean) =>
+                              cashFlow.hasOccurred(date, include) && cashFlow.tradingExCoupon(date)
 
   private val basisPoint = 1.0e-4
 
@@ -93,55 +94,55 @@ object CashFlows {
         settlementDate: LocalDate,
         npvDate: LocalDate) = {
 
-    basisPoint * leg
-      .filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
+    basisPoint *
+      leg.filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
       .collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * discountCurve.discount(cp.date) }
       .sum / discountCurve.discount(npvDate)
-
   }
 
   def atmRate(leg: Leg,
       discountCurve: YieldTermStructure,
       includeSettlementDateFlows: Boolean,
       settlementDate: LocalDate,
-      npvDate: LocalDate, targetNpv: Option[Double]): Double = {
+      npvDate: LocalDate, targetNpv: Option[Rate]): Rate = {
+
     val filtered = leg
       .filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
 
     val npv = filtered.map(cashFlow => cashFlow.amount * discountCurve.discount(cashFlow.date)).sum
     val bps = filtered.collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * discountCurve.discount(cp.date)}.sum
+
     require(bps!=0.0, "null bps: impossible atm rate")
 
     targetNpv.map(_ * discountCurve.discount(npvDate) - npv).getOrElse(0.0) / bps
 
   }
 
-//  def npv(leg: Leg,
-//          y: InterestRate,
-//          includeSettlementDateFlows:Boolean,
-//          settlementDate: LocalDate,
-//          npvDate: LocalDate) = {
-//
-//    leg.filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
-//      .collect{
-//        case cp: Coupon => (cp.accrualStartDate, cp.accrualEndDate)
-//        case x =>
-//      }
-//      .sum / y.discountFactor(npvDate)
-//  }
-//
-//  def bps(leg: Leg,
-//          y: InterestRate,
-//          includeSettlementDateFlows:Boolean,
-//          settlementDate: LocalDate,
-//          npvDate: LocalDate) = {
-//
-//    basisPoint * leg
-//      .filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
-//      .collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * discountCurve.discount(cp.date) }
-//      .sum /  y.discountFactor.discount(npvDate)
-//
-//  }
+  def npv(leg: Leg,
+          y: InterestRate,
+          includeSettlementDateFlows: Boolean,
+          settlementDate: LocalDate,
+          npvDate: LocalDate) = {
+
+    leg.filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
+      .collect{
+        case cp: Coupon => (cp.accrualStartDate, cp.accrualEndDate)
+        case x =>
+      }.sum / y.discountFactor(npvDate)
+  }
+
+  def bps(leg: Leg,
+          y: InterestRate,
+          includeSettlementDateFlows:Boolean,
+          settlementDate: LocalDate,
+          npvDate: LocalDate) = {
+
+    basisPoint * leg
+      .filterNot(predicate(_)(settlementDate, includeSettlementDateFlows))
+      .collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * discountCurve.discount(cp.date) }
+      .sum /  y.discountFactor.discount(npvDate)
+
+  }
 
 
 //  //! At-the-money rate of the cash flows.

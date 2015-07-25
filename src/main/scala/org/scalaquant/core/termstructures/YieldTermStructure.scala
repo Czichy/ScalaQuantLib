@@ -1,11 +1,11 @@
 package org.scalaquant.core.termstructures
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.{InterestRate, Compounding}
-import org.scalaquant.core.common.time.{Period, Frequency}
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
-import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.common.{InterestRate, Compounding}
+import org.scalaquant.common.time.{Period, Frequency}
+import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.time.JodaDateTimeHelper._
 import org.scalaquant.core.quotes.Quote
 
 

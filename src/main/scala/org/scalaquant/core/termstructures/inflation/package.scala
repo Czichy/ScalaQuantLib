@@ -1,9 +1,9 @@
 package org.scalaquant.core.termstructures
 
 import org.joda.time.{Period, LocalDate}
-import org.scalaquant.core.common.time.Frequency
-import org.scalaquant.core.common.time.Frequency._
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.time.Frequency
+import org.scalaquant.common.time.Frequency._
+import org.scalaquant.common.time.daycounts.DayCountConvention
 
 package object inflation {
 

@@ -1,20 +1,26 @@
 package org.scalaquant.core.currencies
 
-import org.joda.time.{ LocalTime, DateTime, LocalDate }
-import org.scalaquant.core.common.Settings
+import org.joda.time.{DateTime, LocalTime, LocalDate}
+import org.scalaquant.common.Settings
 import org.scalaquant.core.currencies.America.{ PEHCurrency, PENCurrency, PEICurrency }
 import org.scalaquant.core.currencies.Europe._
 
 import scala.collection.concurrent.TrieMap
 import scala.language.implicitConversions
-import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.common.time.JodaDateTimeHelper._
+
 /**
  * Created by neo on 2015-03-03.
  */
 
 trait ExchangeRateManager {
+
   def add(rate: ExchangeRate, startDate: LocalDate, endDate: LocalDate): Unit //Daily Rate
-  def lookup(source: Currency, target: Currency, date: LocalDate, exchangeType: ExchangeRate.ExchangeType): ExchangeRate
+
+  def lookup(source: Currency, target: Currency,
+             date: LocalDate = Settings.evaluationDate,
+             exchangeType: ExchangeRate.ExchangeType = ExchangeRate.Derived()): ExchangeRate
+
   def clear(): Unit
 }
 
@@ -33,6 +39,7 @@ trait DailyRates {
     }
   }
 }
+
 object ExchangeRateManager {
   import org.joda.time.DateTimeConstants._
   private val knownRates = TrieMap(
@@ -61,18 +68,23 @@ object ExchangeRateManager {
 
   case class Key(c1: Currency, c2: Currency)
 }
+
 object DefaultExchangeRateManager extends ExchangeRateManager {
   import org.scalaquant.core.currencies.ExchangeRateManager.{ Key, Entry }
   private var entries = Map.empty[Key, Entry]
+
   def clear(): Unit = {
     entries = Map.empty[Key, Entry]
   }
+
   def add(rate: ExchangeRate, startDate: LocalDate, endDate: LocalDate): Unit = {
     entries = entries + (Key(rate.source, rate.target) -> Entry(rate, startDate, endDate))
   }
+
   private def directLookup(source: Currency, target: Currency, date: LocalDate): ExchangeRate = {
     entries.get(Key(source, target)).filter(_.isValidAt(date)).map(_.rate).getOrElse(ExchangeRate.Unknown)
   }
+
   private def smartLookUp(source: Currency, target: Currency, date: LocalDate): ExchangeRate = {
      directLookup(source, target, date) match {
        case ExchangeRate.Unknown =>
@@ -90,12 +102,13 @@ object DefaultExchangeRateManager extends ExchangeRateManager {
     }
 
   }
-  def lookup(source: Currency, target: Currency,
+
+  override def lookup(source: Currency, target: Currency,
     date: LocalDate = Settings.evaluationDate,
     exchangeType: ExchangeRate.ExchangeType = ExchangeRate.Derived()): ExchangeRate = {
-    (source, target) match {
-      case (source, target) if source == target => ExchangeRate(source, target, 1.0)
-      case (source, target) if source != target =>
+    source == target match {
+      case true  => ExchangeRate(source, target, 1.0)
+      case false =>
         exchangeType match {
           case ExchangeRate.Direct => directLookup(source, target, date)
           case ExchangeRate.Derived(_, _) =>

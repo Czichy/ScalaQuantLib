@@ -1,6 +1,6 @@
 package org.scalaquant.methods
 
-import org.scalaquant.core.common.{DiscretizedAsset, TimeGrid}
+import org.scalaquant.common.{DiscretizedAsset, TimeGrid}
 
 
 abstract class Lattice(val timeGrid: TimeGrid) {

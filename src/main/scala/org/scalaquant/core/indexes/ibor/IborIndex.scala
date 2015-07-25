@@ -1,29 +1,29 @@
 package org.scalaquant.core.indexes.ibor
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.common.time.BusinessDayConvention.Following
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
-import org.scalaquant.core.common.time.{BusinessDayConvention, Period}
+import org.scalaquant.common.time.BusinessDayConvention.Following
+import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.common.time.{BusinessDayConvention, Period}
 import org.scalaquant.core.currencies.Currency
 import org.scalaquant.core.indexes.InterestRateIndex
 import org.scalaquant.core.termstructures.YieldTermStructure
 
-class IborIndex(val familyName: String,
-                tenor: Period,
-                settlementDays: Int,
-                currency: Currency ,
-                val fixingCalendar: BusinessCalendar ,
-                val convention: BusinessDayConvention ,
-                endOfMonth: Boolean,
+class IBORIndex(val familyName: String,
+                    tenor: Period,
+                    settlementDays: Int,
+                    currency: Currency,
+                val fixingCalendar: BusinessCalendar,
+                val convention: BusinessDayConvention,
+                    endOfMonth: Boolean,
                 val dayCounter: DayCountConvention,
                 val forwardingTermStructure: YieldTermStructure)
-          extends InterestRateIndex(familyName,
-                                    tenor,
-                                    settlementDays,
-                                    currency,
-                                    fixingCalendar,
-                                    dayCounter) {
+  extends InterestRateIndex(familyName,
+                            tenor,
+                            settlementDays,
+                            currency,
+                            fixingCalendar,
+                            dayCounter) {
 
   private def forecastFixing(valueDate: LocalDate, endDate: LocalDate, atTime: Double): Double ={
     require(forwardingTermStructure.nonEmpty)
