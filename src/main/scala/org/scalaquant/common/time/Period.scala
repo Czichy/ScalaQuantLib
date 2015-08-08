@@ -58,7 +58,7 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
     }
   }
 
-  val shortDescription: String =
+  def shortDescription: String =
     descriptions { //toDays
       val week = length / 7 match {
         case 0 => ""
@@ -85,7 +85,7 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
       length + "Y"
     }
 
-  val longDescription: String =
+  def longDescription: String =
     descriptions { //toDays
       val week = length / 7 match {
         case 0 => ""
@@ -117,7 +117,7 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
     }
 
 
-  val frequency: Frequency =
+  def frequency: Frequency =
     Math.abs(length) match {
       case 0 =>
         units match {
@@ -160,16 +160,14 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
   private def unitsMatching(matches: TimeUnit => Double): Double =
     if (length == 0 ) 0.0 else matches.apply(units)
 
-  val years: Double =
-    unitsMatching {
+  def years: Double = unitsMatching {
       case Days => Double.NaN
       case Weeks => Double.NaN
       case Months => length / 12.0
       case Years => length
     }
 
-  val months: Double =
-    unitsMatching{
+  def months: Double = unitsMatching{
       case Days => Double.NaN
       case Weeks => Double.NaN
       case Months => length
@@ -177,16 +175,14 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
     }
 
 
-  val weeks: Double =
-    unitsMatching {
+  def weeks: Double = unitsMatching {
       case Days => length / 7.0
       case Weeks => length
       case Months => Double.NaN
       case Years => Double.NaN
     }
 
-  val days: Double =
-    unitsMatching {
+  def days: Double = unitsMatching {
       case Days => length
       case Weeks => length * 7.0
       case Months => Double.NaN

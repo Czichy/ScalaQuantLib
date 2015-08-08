@@ -2,16 +2,16 @@ package org.scalaquant.core.currencies
 
 import org.joda.time.{DateTime, LocalTime, LocalDate}
 import org.scalaquant.common.Settings
+import org.scalaquant.common.time.JodaDateTimeHelper
 import org.scalaquant.core.currencies.America.{ PEHCurrency, PENCurrency, PEICurrency }
 import org.scalaquant.core.currencies.Europe._
 
 import scala.collection.concurrent.TrieMap
-import scala.language.implicitConversions
-import org.scalaquant.common.time.JodaDateTimeHelper._
 
-/**
- * Created by neo on 2015-03-03.
- */
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
+
+import JodaDateTimeHelper._
 
 trait ExchangeRateManager {
 
@@ -33,11 +33,11 @@ trait DailyRates {
     }
   }
 
-  case class HourlyEntryWithDate(rate: ExchangeRate, startTime: DateTime, endTime: DateTime) {
-    def isValidAt(date: DateTime): Boolean = {
-      (date >= startTime) && (date <= endTime)
-    }
-  }
+//  case class HourlyEntryWithDate(rate: ExchangeRate, startTime: DateTime, endTime: DateTime) {
+//    def isValidAt(date: DateTime): Boolean = {
+//      (date >= startTime) && (date <= endTime)
+//    }
+//  }
 }
 
 object ExchangeRateManager {
@@ -127,7 +127,6 @@ object DefaultExchangeRateManager extends ExchangeRateManager {
                 }
               case _ => smartLookUp(source, target, date)
             }
-//
         }
 
     }

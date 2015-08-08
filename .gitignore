@@ -16,7 +16,7 @@ project/boot/
 *.log
 
 # sbt specific
-
+.ensime*
 .lib/
 dist/*
 

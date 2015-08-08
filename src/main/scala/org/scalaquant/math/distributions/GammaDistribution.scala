@@ -30,7 +30,7 @@ object GammaFunction{
     } else {
       if (x > -20.0) {
         // \Gamma(x) = \frac{\Gamma(x+1)}{x}
-         value(x+1.0)/x
+         value(x+1.0) / x
       } else {
         // \Gamma(-x) = -\frac{\pi}{\Gamma(x)\sin(\pi x) x}
          -M_PI / ( value(-x) * x * Math.sin(M_PI * x) )

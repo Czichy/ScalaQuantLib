@@ -1,71 +1,31 @@
 package org.scalaquant.common.time.daycounts
 
 import org.joda.time.DateTimeConstants._
-import org.joda.time.{ Days, LocalDate }
-import org.scalaquant.common.time.Frequency._
+import org.joda.time.{Days, LocalDate}
+
+import org.scalaquant.common.time.JodaDateTimeHelper._
+import org.scalaquant.core.types._
 
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
+import scala.annotation.tailrec
 
-object Actual365Fixed {
+//! Actual/Actual day count
+/*! The day count can be calculated according to:
 
-  private val actual365Impl = new DayCountConvention {
-    val name: String = "Actual/365 (Fixed)"
-    def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = dayCount(date1, date2).toDouble / 365.0
-  }
+    - the ISDA convention, also known as "Actual/Actual (Historical)",
+      "Actual/Actual", "Act/Act", and according to ISDA also "Actual/365",
+      "Act/365", and "A/365";
+    - the ISMA and US Treasury convention, also known as
+      "Actual/Actual (Bond)";
+    - the AFB convention, also known as "Actual/Actual (Euro)".
 
-  def apply(): DayCountConvention = actual365Impl
-}
+    For more details, refer to
+    http://www.isda.org/publications/pdf/Day-Count-Fracation1999.pdf
 
-object Actual364 {
-
-  private val actual364Impl = new DayCountConvention {
-     val name: String = "Actual/364 "
-     def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = dayCount(date1, date2).toDouble / 364.0
-     def fractionOfYear(date1: LocalDate, date2: LocalDate, refDate1: LocalDate, refDate2: LocalDate): Double = dayCount(date1, date2).toDouble / 364.0
-
-  }
-
-  def apply(): DayCountConvention = actual364Impl
-}
-
-object Actual360 {
-
-  private val actual360Impl =  new DayCountConvention {
-    val name: String = "Actual/360 "
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = dayCount(date1, date2).toDouble / 360.0
-  }
-
-  def apply(): DayCountConvention = actual360Impl
-}
-
-object Actual365NoLeap {
-
-  private def S(date: LocalDate) = {
-    val s = date.getDayOfMonth + MonthOffset(date.getMonthOfYear - 1) + (date.getYear * 365)
-    if (date.getMonthOfYear == FEBRUARY && date.getDayOfMonth == 29) s - 1 else s
-  }
-
-  private val actual365NoLeapImplt = new DayCountConvention {
-    val name: String = "Actual/365 (NL)"
-    override def dayCount(date1: LocalDate, date2: LocalDate): Int = S(date2) - S(date1)
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = dayCount(date1, date2).toDouble / 365.0
-
-  }
-  def apply(): DayCountConvention = actual365NoLeapImplt
-}
-
-object OneDay {
-
-  private val oneImpl = new DayCountConvention {
-    val name: String = "1/1"
-    override def dayCount(date1: LocalDate, date2: LocalDate): Int = if (date1 > date2) -1 else 1
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = dayCount(date1, date2).toDouble
-  }
-
-  def apply(): DayCountConvention = oneImpl
-}
+    \test the correctness of the results is checked against known good values.
+*/
 
 object ActualActual {
 
@@ -81,13 +41,79 @@ object ActualActual {
   private val ICMAImplement = new DayCountConvention {
     val name: String = "Actual/Actual (ICMA)"
 
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
-      require(date2 <= date3, "Date 3 is The coupon payment date following Date2")
+    def fractionOfYear(date1: LocalDate,
+                       date2: LocalDate,
+                       refDate1: Option[LocalDate] = None,
+                       refDate2: Option[LocalDate] = None): YearFraction = {
 
       date1 compareTo date2 match {
         case 0 => 0.0
-        case 1 => -fractionOfYear(date2, date1, date3, freq)
-        case -1  => dayCount(date1,date2) / (freq.value * dayCount(date1,date3))
+        case 1 => -fractionOfYear(date2, date1, refDate1, refDate2)
+        case -1  =>
+          val refPeriodStart = refDate1 getOrElse date1
+          val refPeriodEnd = refDate2 getOrElse date2
+
+          require(refPeriodEnd > refPeriodStart && refPeriodEnd > date1,
+              s"invalid reference period: date 1: $date1, date 2: $date2" +
+              s", reference period start: $refPeriodStart, reference period end: $refPeriodEnd")
+
+          val range = Days.daysBetween(refPeriodStart, refPeriodEnd).getDays
+          val (months, refStart, refEnd) = (0.5 + 12 * range.toDouble / 365).toInt match {
+            case 0 => (12, date1, date1.plusYears(1))
+            case i => (i, refPeriodStart, refPeriodEnd)
+          }
+
+          val period = months / 12.0
+
+          if (date2 <= refEnd) {
+            // here refPeriodEnd is a future (notional?) payment date
+            if (date1 >= refStart) {
+              // here refPeriodStart is the last (maybe notional)
+              // payment date.
+              // refPeriodStart <= d1 <= d2 <= refPeriodEnd
+              // [maybe the equality should be enforced, since
+              // refPeriodStart < d1 <= d2 < refPeriodEnd
+              // could give wrong results] ???
+              period * dayCount(date1,date2) / dayCount(refPeriodStart,refPeriodEnd)
+            } else {
+              // here refPeriodStart is the next (maybe notional)
+              // payment date and refPeriodEnd is the second next
+              // (maybe notional) payment date.
+              // d1 < refPeriodStart < refPeriodEnd
+              // AND d2 <= refPeriodEnd
+              // this case is long first coupon
+
+              // the last notional payment date
+              val previousRef = refStart.plusMonths(-months)
+              if (date2 > refStart)
+                fractionOfYear(date1, refStart, Some(previousRef), Some(refStart)) +
+                  fractionOfYear(refStart, date2, Some(refStart), Some(refEnd))
+              else
+                fractionOfYear(date1,date2,Some(previousRef),Some(refStart))
+            }
+          } else {
+            // here refPeriodEnd is the last (notional?) payment date
+            // d1 < refPeriodEnd < d2 AND refPeriodStart < refPeriodEnd
+            require(refStart <= date1, "invalid dates: date1 < refPeriodStart < refPeriodEnd < date2");
+            // now it is: refPeriodStart <= d1 < refPeriodEnd < d2
+
+            // the part from d1 to refPeriodEnd
+            val date1ToRefEnd = fractionOfYear(date1, refEnd, Some(refStart), Some(refEnd))
+
+            // the part from refPeriodEnd to d2
+            // count how many regular periods are in [refPeriodEnd, d2],
+            // then add the remaining time
+
+            @tailrec
+            def sumUp(i:Int, sum: Double): (Double, LocalDate, LocalDate) = {
+              val newRefStart = refEnd.plusMonths(months*i)
+              val newRefEnd = refEnd.plusMonths(months*(i+1))
+              if (date2 < newRefEnd) (sum, newRefStart, newRefEnd) else sumUp(i+1, sum+period)
+            }
+            val (remaining, newRefStart, newRefEnd) = sumUp(0, date1ToRefEnd)
+
+            remaining + fractionOfYear(newRefStart, date2, Some(newRefStart), Some(newRefEnd))
+          }
       }
     }
   }
@@ -97,10 +123,13 @@ object ActualActual {
 
     private def base(date: LocalDate) = if (date.inLeapYear) 366.0 else 365.0
 
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
+    override def fractionOfYear(date1: LocalDate,
+                                date2: LocalDate,
+                                refDate1: Option[LocalDate] = None,
+                                refDate2: Option[LocalDate] = None): YearFraction = {
       date1 compareTo date2 match {
         case 0 => 0.0
-        case 1 => fractionOfYear(date2, date1, date3, freq)
+        case 1 => -fractionOfYear(date2, date1, None, None)
         case -1  =>
           val years = Days.daysBetween(date1, date2).toPeriod.getYears
 
@@ -115,10 +144,13 @@ object ActualActual {
   private val AFBImplement = new DayCountConvention {
     val name: String = "Actual/Actual (AFB)"
 
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
+    override def fractionOfYear(date1: LocalDate,
+                                date2: LocalDate,
+                                refDate1: Option[LocalDate] = None,
+                                refDate2: Option[LocalDate] = None): YearFraction = {
       date1 compareTo date2 match {
         case 0 => 0.0
-        case 1 => fractionOfYear(date2, date1, date3, freq)
+        case 1 => fractionOfYear(date2, date1, refDate1, refDate2)
         case -1 =>
           val (yy1, mm1, dd1) = date1.YMD
           val (yy2, mm2, dd2) = date2.YMD

@@ -13,6 +13,9 @@ object JodaDateTimeHelper {
 
     def YMD: (Int, Int, Int) = (date.getYear, date.getMonthOfYear, date.getDayOfMonth)
 
+    def -(period: Period) = date.plusDays(-period.days.toInt)
+
+    def +(period: Period) = date.plusDays(period.days.toInt)
   }
 
   def min(date1: LocalDate, date2: LocalDate): LocalDate = {

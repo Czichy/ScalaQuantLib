@@ -5,7 +5,9 @@ import org.scalaquant.common.Compounding._
 
 import org.scalaquant.common.time.Frequency._
 import org.scalaquant.common.time.daycounts._
-import org.scalaquant.common.time.JodaDateTimeHelper._
+
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
 
 case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding, freq: Frequency) {
 
@@ -14,10 +16,13 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
 
   def discountFactor(time: Double): Double = 1.0 / compoundFactor(time)
 
-  def discountFactor(d1: LocalDate, d2: LocalDate, d3: LocalDate): Double = {
+  def discountFactor(d1: LocalDate,
+                     d2: LocalDate,
+                     refStart: Option[LocalDate] = None,
+                     refEnd: Option[LocalDate] = None): Double  = {
     require(d2 >= d1, s"date1($d1) later than date2($d2)")
 
-    discountFactor(dc.fractionOfYear(d1, d2, d3, freq))
+    discountFactor(dc.fractionOfYear(d1, d2, refStart, refEnd))
   }
 
   def compoundFactor(time: Double): Double = {
@@ -35,10 +40,13 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
     }
   }
 
-  def compoundFactor(d1: LocalDate, d2: LocalDate, d3: LocalDate): Double = {
+  def compoundFactor(d1: LocalDate,
+                     d2: LocalDate,
+                     refStart: Option[LocalDate] = None,
+                     refEnd: Option[LocalDate] = None): Double = {
     require(d2 >= d1, s"date1($d1) later than date2($d2)")
 
-    compoundFactor(dc.fractionOfYear(d1, d2, d3, freq))
+    compoundFactor(dc.fractionOfYear(d1, d2, refStart, refEnd))
   }
 
   def equivalentRate(comp: Compounding, freq: Frequency, time: Double): InterestRate = {
@@ -50,12 +58,13 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
                      freq: Frequency,
                      date1: LocalDate,
                      date2: LocalDate,
-                     date3: LocalDate): InterestRate  = {
+                     refStart: Option[LocalDate] = None,
+                       refEnd: Option[LocalDate] = None): InterestRate  = {
     require(date2 >= date1, s"date1($date1) later than date2($date2)")
 
-    val compound = compoundFactor(dc.fractionOfYear(date1, date2, date3, freq))
+    val compound = compoundFactor(dc.fractionOfYear(date1, date2, refStart, refEnd))
 
-    InterestRate.impliedRate(compound, dc, comp, freq, resultDc.fractionOfYear(date1,date2, date3, freq))
+    InterestRate.impliedRate(compound, dc, comp, freq, resultDc.fractionOfYear(date1,date2, refStart, refEnd))
   }
 
   override def toString: String = {
@@ -105,9 +114,10 @@ object InterestRate{
                   freq: Frequency,
                   date1: LocalDate,
                   date2: LocalDate,
-                  date3: LocalDate): InterestRate = {
+                  refStart: Option[LocalDate] = None,
+                  refEnd: Option[LocalDate] = None): InterestRate = {
     require(date2 >= date1, s"date1($date1) later than date2($date2)")
 
-    impliedRate(compound, dc, comp, freq, dc.fractionOfYear(date1, date2, date3, freq))
+    impliedRate(compound, dc, comp, freq, dc.fractionOfYear(date1, date2, refStart, refEnd))
   }
 }

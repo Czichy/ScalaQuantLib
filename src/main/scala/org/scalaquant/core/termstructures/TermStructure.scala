@@ -1,45 +1,36 @@
 package org.scalaquant.core.termstructures
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.Settings
-import org.scalaquant.common.time.TimeUnit
+
 import org.scalaquant.common.time.calendars.BusinessCalendar
 import org.scalaquant.common.time.daycounts.DayCountConvention
-import rx.lang.scala.Subject
+import org.scalaquant.core.types.YearFraction
 
-abstract class TermStructure[T] extends Subject[T] {
-  private var moving = false
-  protected var _settlementDays: Int = 0
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
+import org.scalaquant.math.interpolations.Extrapolator
 
-
-  def this(dc: DayCountConvention) = {
-
-  }
-  def this(referenceDate: LocalDate, calendar: BusinessCalendar, dc: DayCountConvention) = {
-
-  }
-  def this(settlementDays: Int, calendar: BusinessCalendar, dc: DayCountConvention)  = {
-    this(Settings.evaluationDate, calendar, dc)
-    this.moving = true
-    this._settlementDays = settlementDays
-  }
-
-//  protected def checkRage(date: LocalDate, extrapolate: Boolean): Unit = {
-//    require(date >= _referenceDate, "")
-//  }
+abstract class TermStructure(val settlementDays: Int,
+                             val referenceDate: LocalDate,
+                             val calendar: BusinessCalendar,
+                             val dc: DayCountConvention) extends Extrapolator {
 
   def maxDate: LocalDate
 
-  def maxTime: Double = timeFromReference(maxDate)
+  def maxTime: YearFraction = timeFromReference(maxDate)
 
-  def timeFromReference(date: LocalDate): Double = dc.fractionOfYear(referenceDate, date , date)
+  def timeFromReference(date: LocalDate): Double = dc.fractionOfYear(referenceDate, date)
 
-  def settlementDays: Int = _settlementDays
+  protected def checkRange(date: LocalDate, extrapolate: Boolean) = {
+    require(date >= referenceDate, s"date ($date) before reference date ($referenceDate)")
+    require(extrapolate || allowsExtrapolation || date <= maxDate,
+            s"date ($date) is past max curve date ($maxDate)")
+  }
 
-  def referenceDate: LocalDate = {
-    _settlementDays.fold[LocalDate](_referenceDate){ settlementDays =>
-      calendar.advance(Settings.evaluationDate, settlementDays, TimeUnit.Days)
-    }
+  protected def checkRange(time: YearFraction, extrapolate: Boolean) = {
+    require(time >= 0.0, s"negative ($time) given")
+    require(extrapolate || allowsExtrapolation || time <= maxTime,
+       s"time ($time) is past max curve time ($maxTime)")
   }
 
 }

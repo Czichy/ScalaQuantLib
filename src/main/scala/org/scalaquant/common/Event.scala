@@ -2,8 +2,9 @@ package org.scalaquant.common
 
 import org.joda.time.LocalDate
 
-import scala.language.implicitConversions
-import org.scalaquant.common.time.JodaDateTimeHelper._
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
+
 
 abstract class Event {
 
@@ -14,8 +15,7 @@ abstract class Event {
       date is the same as the refDate, i.e. this method returns false if
       the event date is the same as the refDate.
   */
-  def hasOccurred(refDate: LocalDate = Settings.evaluationDate,
-                  includeRefDate: Boolean = true): Boolean = {
+  def hasOccurred(refDate: LocalDate, includeRefDate: Boolean = true): Boolean = {
     if (includeRefDate) date < refDate else date <= refDate
   }
 }

@@ -1,14 +1,16 @@
 package org.scalaquant.core.instruments.fixedincomes
 
+import org.scalaquant.common.Compounding.Compounding
+import org.scalaquant.common.time.Frequency.Frequency
+import org.scalaquant.core.cashflows.CashFlowsFunction._
 import org.scalaquant.core.cashflows.coupons.Coupon
-import org.scalaquant.core.cashflows.{CashFlows, CashFlow, Leg}
-import org.scalaquant.common.{Settings, Compounding}
-import org.scalaquant.common.time.Frequency
+import org.scalaquant.core.cashflows._
+
 import org.scalaquant.common.time.calendars.BusinessCalendar
 import org.scalaquant.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.instruments.{ExpirationDate, Instrument}
 import org.joda.time.LocalDate
-import org.scalaquant.core.pricingengines.PricingEngine
+
 
 
 class Bond(val faceAmount: Double,
@@ -16,7 +18,7 @@ class Bond(val faceAmount: Double,
            val calendar: BusinessCalendar,
            val issueDate: LocalDate,
            val coupons: Leg = Nil )
-  extends Instrument with ExpirationDate {
+  extends Instrument with ExpirationDate with CashFlowBearing {
 
   def notionals: List[Double]
   def notionalAt(date: LocalDate): Double
@@ -26,13 +28,8 @@ class Bond(val faceAmount: Double,
 
   def redemption: CashFlow
 
-  def startDate: LocalDate
-  def maturityDate: LocalDate
-
-  def isTradeableAt(date: LocalDate): Boolean
   def settlementDate(date: LocalDate): LocalDate
 
-  override def isExpired: Boolean = CashFlows.isExpired(coupons, includeSettlementDateFlows = true, expirationDate )
   def cleanPrice: Double
 
   //! theoretical dirty price

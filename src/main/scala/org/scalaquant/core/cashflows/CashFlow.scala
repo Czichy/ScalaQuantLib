@@ -1,8 +1,10 @@
 package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
-import scala.language.implicitConversions
-import org.scalaquant.common.time.JodaDateTimeHelper._
+
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
+
 import org.scalaquant.common.Event
 
 abstract class CashFlow extends Event {

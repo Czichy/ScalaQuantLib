@@ -38,7 +38,9 @@ object ExchangeRate {
   val UnChainable = ExchangeRate(Currency.Null, Currency.Null, 0.0, Derived(Unknown, Unknown))
 
   def chain(rate1: ExchangeRate, rate2: ExchangeRate): ExchangeRate = {
+
     val exchangeType = Derived(rate1, rate2)
+
     if (rate1.source == rate2.source) {
       ExchangeRate(rate1.target, rate2.target, rate2.rate / rate1.rate, exchangeType)
     } else if (rate1.source == rate2.target) {

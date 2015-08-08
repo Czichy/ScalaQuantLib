@@ -2,35 +2,32 @@ package org.scalaquant.math
 
 
 object Comparison {
-
   trait Equality[A]{
     def ==(x: A, y: A): Boolean
+  }
+
+  trait InEquality[A]{
+    def !=(x: A, y: A): Boolean
+  }
+
+  trait Order[A]{
+    def >(x: A, y: A): Boolean
+    def <(x: A, y: A): Boolean
   }
 
   trait EqualityOps[A]{
     def ===(other: A): Boolean
   }
 
-  trait InEquality[A]{
-    def !=(x: A, y: A): Boolean
-    def >(x: A, y: A): Boolean
-    def <(x: A, y: A): Boolean
-  }
-
   trait InEqualityOps[A]{
     def =/=(other: A): Boolean
+  }
+
+  trait OrderOps[A] {
     def >(other: A): Boolean
     def <(other: A): Boolean
-  }
-
-  trait Relational[A] extends Equality[A] with InEquality[A] {
-    def >=(x: A, y: A): Boolean = >(x,y) || ==(x,y)
-    def <=(x: A, y: A): Boolean = <(x,y) || ==(x,y)
-  }
-
-  trait RelationalOps[A] extends EqualityOps[A] with InEqualityOps[A] {
-    def >=(other: A): Boolean = >(other) || ===(other)
-    def <=(other: A): Boolean = <(other) || ===(other)
+    def >=(other: A): Boolean
+    def <=(other: A): Boolean
   }
 
   trait Proximity[A]{

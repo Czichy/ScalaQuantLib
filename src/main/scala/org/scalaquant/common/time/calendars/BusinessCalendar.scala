@@ -8,11 +8,10 @@ import org.joda.time.LocalDate
 
 import org.joda.time.Days
 
-import org.scalaquant.common.time.TimeUnit
 import org.scalaquant.common.time.TimeUnit._
 import org.scalaquant.common.time.BusinessDayConvention
 import org.scalaquant.common.time.BusinessDayConvention._
-import org.scalaquant.common.time.JodaDateTimeHelper._
+
 
 trait BusinessCalendar {
 

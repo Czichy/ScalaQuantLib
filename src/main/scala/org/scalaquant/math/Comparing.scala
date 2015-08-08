@@ -1,49 +1,43 @@
 package org.scalaquant.math
 
-import org.joda.time.{LocalTime, LocalDate}
-import org.scalaquant.core.currencies.Currency
+import org.joda.time.{LocalDate, LocalTime}
 import org.scalaquant.math.Comparison._
 
 object Comparing {
 
   object ImplicitsOps{
     
-    implicit class EqualityOpsClass[T](val self: T)(implicit val F: Equality[T]) extends EqualityOps[T] {
-      def ===(other: T): Boolean = F.==(self, other)
+    implicit class EqualityOpsClass[T: Equality](val self: T) extends EqualityOps[T] {
+      def ===(other: T): Boolean = implicitly[Equality[T]].==(self, other)
     }
 
-    implicit class InEqualityOpsClass[T](val self: T)(implicit val F: InEquality[T]) extends InEqualityOps[T] {
-      def =/=(other: T): Boolean = F.!=(self, other)
+    implicit class InEqualityOpsClass[T: InEquality](val self: T) extends InEqualityOps[T] {
+      def =/=(other: T): Boolean = implicitly[Equality[T]].!=(self, other)
+    }
+
+    implicit class OrderOpsClass[T : Equality with InEquality with Order](val self: T) extends OrderOps[T] {
+      private val F = implicitly[Equality[T] with InEquality[T] with Order[T]]
       def >(other: T): Boolean = F.>(self, other)
       def <(other: T): Boolean = F.<(self, other)
+      def >=(other: T): Boolean =  >(other) || F.==(other)
+      def <=(other: T): Boolean =  <(other) || F.==(other)
     }
 
-    implicit class RelationalOpsClass[T](val self: T)(implicit val F: Relational[T]) extends RelationalOps[T] {
-      override def =/=(other: T): Boolean = F.!=(self, other)
-      override def >(other: T): Boolean = F.>(self, other)
-      override def <(other: T): Boolean = F.<(self, other)
-      override def ===(other: T): Boolean = F.==(self, other)
-    }
-
-    implicit class ProximityOpsClass[T](val self: T)(implicit val F: Proximity[T]) extends ProximityOps[T]{
-      def ~=(other: T, size: Int): Boolean = F.~=(self, other, size)
+    implicit class ProximityOpsClass[T: Proximity](val self: T) extends ProximityOps[T]{
+      def ~=(other: T, size: Int): Boolean = implicitly[Proximity[T]].~=(self, other, size)
     }
   }
 
   object Implicits {
 
-    implicit object CurrencyEquality extends Equality[Currency] {
-      def ==(x: Currency, y: Currency): Boolean = x.definition.numericCode == y.definition.numericCode
-    }
-
-    implicit object LocalDateRelational extends Relational[LocalDate]{
+    implicit object LocalDateRelational extends Equality[LocalDate] with InEquality[LocalDate] with Order[LocalDate]{
       def ==(x: LocalDate, y: LocalDate): Boolean = x.isEqual(y)
       def <(x: LocalDate, y: LocalDate): Boolean = x.isBefore(y)
       def >(x: LocalDate, y: LocalDate): Boolean = x.isAfter(y)
-      def !=(x: LocalDate, y: LocalDate): Boolean = ! ==(x, y)
+      def !=(x: LocalDate, y: LocalDate): Boolean = !x.isEqual(y)
     }
 
-    implicit object LocalTimeRelational extends Relational[LocalTime]{
+    implicit object LocalTimeRelational extends  Equality[LocalTime] with InEquality[LocalTime] with Order[LocalTime]{
       def ==(x: LocalTime, y: LocalTime): Boolean = x.isEqual(y)
       def <(x: LocalTime, y: LocalTime): Boolean = x.isBefore(y)
       def >(x: LocalTime, y: LocalTime): Boolean = x.isAfter(y)
@@ -51,11 +45,11 @@ object Comparing {
     }
 
     type D = {def date: LocalDate}
-    implicit object RelationalWithDate extends Relational[D] {
-      import Implicits.{ LocalDateRelational => F}
 
-      def !=(x: D, y: D): Boolean = F.!=(x.date, y.date)
+    implicit object RelationalWithDate extends Equality[D] with  InEquality[D]  with Order[D] {
+      import Implicits.{ LocalDateRelational => F}
       def ==(x: D, y: D): Boolean = F.==(x.date, y.date)
+      def !=(x: D, y: D): Boolean = F.!=(x.date, y.date)
       def <(x: D,y: D): Boolean = F.<(x.date, y.date)
       def >(x: D,y: D): Boolean = F.>(x.date, y.date)
     }

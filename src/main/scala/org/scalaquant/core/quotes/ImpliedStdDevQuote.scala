@@ -14,7 +14,7 @@ object ImpliedStdDevQuote{
             strike: Double,
             guess: Double,
             accuracy: Double = 1.0E-6,
-            maxIter: Int = 100): Quote = {
+            maxIter: Int = 100): ImpliedStdDevQuote = {
     for{
       fValue <- forward
       pValue <- price

@@ -1,11 +1,6 @@
 package org.scalaquant.common.time.daycounts
 
-/**
- * Created by neo on 2015-03-02.
- */
-
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.Frequency.Frequency
 import org.scalaquant.core.types.YearFraction
 
 import scala.language.implicitConversions
@@ -27,9 +22,12 @@ sealed trait Thirty360 extends DayCountConvention {
 
     360 * (yy2 - yy1) + 30 * (M2 - mm1 - 1) + Math.max(0, 30 - D1) + Math.min(30, D2)
   }
-  override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): Double = {
-    dayCount(date1, date2) / 360.0
-  }
+
+  override def fractionOfYear(date1: LocalDate,
+                              date2: LocalDate,
+                              refDate1: Option[LocalDate] = None,
+                              refDate2: Option[LocalDate] = None): YearFraction = dayCount(date1, date2) / 360.0
+
 }
 
 object Thirty360 {
@@ -67,31 +65,5 @@ object Thirty360 {
       case Italian => ITImplement
     }
   }
-}
-
-object SimpleDayCountConvention{
-
-  private val simpleImpl = new DayCountConvention  {
-    val name: String = "Simple"
-    private val fallBack = Thirty360()
-    override def dayCount(date1: LocalDate, date2: LocalDate): Int = fallBack.dayCount(date1, date2)
-
-    override def fractionOfYear(date1: LocalDate, date2: LocalDate, date3: LocalDate, freq: Frequency): YearFraction = {
-      val dm1 = date1.getDayOfMonth
-      val dm2 = date2.getDayOfMonth
-
-      if (dm1 == dm2 ||
-        // e.g., Aug 30 -> Feb 28 ?
-        (dm1 > dm2 && date2.isEndOfMoth) ||
-        // e.g., Feb 28 -> Aug 30 ?
-        (dm1 < dm2 && date1.isEndOfMoth)) {
-        (date2.getYear - date1.getYear) + (date2.getMonthOfYear - date1.getMonthOfYear) / 12.0
-      } else {
-        fallBack.fractionOfYear(date1, date2, date3, freq)
-      }
-    }
-  }
-
-  def apply(): DayCountConvention = simpleImpl
 }
 

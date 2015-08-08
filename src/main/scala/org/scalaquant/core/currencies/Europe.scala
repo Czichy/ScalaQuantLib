@@ -1,9 +1,5 @@
 package org.scalaquant.core.currencies
 
-/**
- * Created by neo on 2015-02-28.
- * Created by neo on 2015-02-28.
- */
 object Europe {
   case class BGLCurrency(definition: CurrencyDefinition = CurrencyDefinition("Bulgarian lev", "BGL", 100, "lv", "", 100)) extends Currency
 

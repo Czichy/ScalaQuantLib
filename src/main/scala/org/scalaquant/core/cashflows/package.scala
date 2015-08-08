@@ -1,16 +1,14 @@
 package org.scalaquant.core
 
-import org.joda.time.LocalDate
+import org.scalaquant.core.cashflows.CashFlows._
 
 package object cashflows {
 
-  type Leg = List[CashFlow]
-
-  case class SimpleCashFlow(amount: Double, date: LocalDate) extends CashFlow
-
-  case class Redemption(amount: Double, date: LocalDate) extends CashFlow
-
-  case class AmortizingPayment(amount: Double, date: LocalDate) extends CashFlow
+  implicit class CashFlowsFunctionsClass(val leg: Leg)
+    extends DateInspectors
+      with CouponFunctions
+      with YieldTermStructureFunctions
+      with IRRFunctions
 
 }
 

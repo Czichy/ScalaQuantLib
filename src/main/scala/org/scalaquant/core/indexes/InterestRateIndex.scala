@@ -6,8 +6,9 @@ import org.scalaquant.common.time.{TimeUnit, Period}
 import org.scalaquant.common.time.calendars.BusinessCalendar
 import org.scalaquant.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.currencies.Currency
-import org.scalaquant.common.time.JodaDateTimeHelper._
-import rx.lang.scala.Observer
+
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
 
 
 abstract class InterestRateIndex(familyName: String,
