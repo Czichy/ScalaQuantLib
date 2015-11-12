@@ -3,11 +3,11 @@ package org.scalaquant.core.termstructures
 import java.time.Month
 
 import org.joda.time.{DateTimeConstants, LocalDate}
-import org.scalaquant.common.time.Frequency._
+import org.scalaquant.core.common.time.Frequency._
 import DateTimeConstants._
-import org.scalaquant.common.time.Period
-import org.scalaquant.common.time.calendars.BusinessCalendar
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.Period
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.termstructures.inflation.Seasonality
 import org.scalaquant.core.types.Rate
 

@@ -1,10 +1,10 @@
 package org.scalaquant.core.termstructures.inflation
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.JodaDateTimeHelper._
-import org.scalaquant.common.time.daycounts.DayCountConvention
-import org.scalaquant.common.time.{Frequency, TimeUnit, Period}
-import org.scalaquant.common.time.Frequency._
+import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.{Frequency, TimeUnit, Period}
+import org.scalaquant.core.common.time.Frequency._
 import org.scalaquant.core.termstructures.InflationTermStructure
 import org.scalaquant.core.types.Rate
 
@@ -17,9 +17,6 @@ trait Seasonality {
   def isConsistent(iTS: InflationTermStructure): Boolean = true
 
 }
-
-
-
 
 class MultiplicativePriceSeasonality(val seasonalityBaseDate: LocalDate,
                                      val frequency: Frequency,

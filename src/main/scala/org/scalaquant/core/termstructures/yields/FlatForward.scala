@@ -1,12 +1,12 @@
 package org.scalaquant.core.termstructures.yields
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.Compounding._
-import org.scalaquant.common.InterestRate
-import org.scalaquant.common.time.Frequency._
-import org.scalaquant.common.time.JodaDateTimeHelper
-import org.scalaquant.common.time.calendars.BusinessCalendar
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.Compounding._
+import org.scalaquant.core.common.InterestRate
+import org.scalaquant.core.common.time.Frequency._
+import org.scalaquant.core.common.time.JodaDateTimeHelper
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.quotes.ValidQuote
 import org.scalaquant.core.termstructures.YieldTermStructure
 import org.scalaquant.core.types.{DiscountFactor, YearFraction}

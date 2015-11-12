@@ -2,16 +2,9 @@ package org.scalaquant.core.quotes
 
 
 trait Quote {
-  import Quote._
-
   def value: Double
   protected def isValid: Boolean
 
-  def flatMap(f: Double => ValidQuote): Quote = {
-    if (isValid) f(value) else InvalidQuote
-  }
-
-  def map(f: Calculation): Quote
 }
 
 trait ValidQuote extends Quote {
@@ -19,10 +12,8 @@ trait ValidQuote extends Quote {
 }
 
 case object InvalidQuote extends Quote {
-  import Quote._
   final protected val isValid = false
   final val value = Double.NaN
-  def map(f: Calculation): Quote = this
 }
 
 
@@ -37,4 +28,9 @@ object Quote {
   type Calculation = Double => Double
 
   def apply(value: Double): Quote = if (value == Double.NaN) InvalidQuote else SimpleQuote(value)
+
+  val testing: (Double, Double) => String = {
+    case (amount, balance) =>
+      {}
+  }
 }

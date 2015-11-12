@@ -1,8 +1,8 @@
 package org.scalaquant.core.quotes
 
-import org.scalaquant.common.Settings
-import org.scalaquant.common.time.BusinessDayConvention.Following
-import org.scalaquant.common.time.Period
+import org.scalaquant.core.common.Settings
+import org.scalaquant.core.common.time.BusinessDayConvention.Following
+import org.scalaquant.core.common.time.Period
 import org.scalaquant.core.indexes.swap.SwapIndex
 
 case class ForwardSwapQuote(swapIndex: SwapIndex, spread: Quote, fwdStart: Period) extends Quote{

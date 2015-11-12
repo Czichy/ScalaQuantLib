@@ -5,19 +5,18 @@ import Constants._
 import math._
 
 object Functions {
+  type GammaFunction = (Double, Double, Double, Int) => Double
 
-  def incompleteGammaFunction(a: Double, x: Double, accuracy: Double = 1.0e-13, maxIteration: Int = 100): Double = {
-    require( a > 0.0, "non-positive a is not allowed")
+  //val incompleteGammaFunction: GammaFunction = (a, x, accuracy, maxIteration) =>
+  def incompleteGammaFunction(a: Double, x: Double, accuracy: Double = 1.0e-13, maxIteration: Int = 100): Double =
+  {
+    require( a > 0.0, "non-positive a is not allowed" )
     require( x >= 0.0, "negative x not allowed")
 
-    if (x < (a+1.0)) {
-      // Use the series representation
-       incompleteGammaFunctionSeriesRepr(a, x, accuracy, maxIteration)
-    } else {
-      // Use the continued fraction representation
-      1.0-incompleteGammaFunctionContinuedFractionRepr(a, x, accuracy, maxIteration)
-    }
-
+    if (x < (a+1.0))
+      incompleteGammaFunctionSeriesRepr(a, x, accuracy, maxIteration) // Use the series representation
+    else
+      1.0 - incompleteGammaFunctionContinuedFractionRepr(a, x, accuracy, maxIteration) // Use the continued fraction representation
   }
 
   private def incompleteGammaFunctionSeriesRepr(a: Double, x: Double, accuracy: Double = 1.0e-13, maxIteration: Int = 100) = {

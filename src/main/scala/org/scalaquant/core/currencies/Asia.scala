@@ -2,57 +2,36 @@ package org.scalaquant.core.currencies
 
 object Asia {
 
-  case class BDTCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Bangladesh taka", "BDT", 50, "Bt", "", 100)) extends Currency
+  val BDT = Currency("Bangladesh taka", "BDT", 50, "Bt", "", 100)
 
-  case class CNYCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Chinese yuan", "CNY", 156, "Y", "", 100)) extends Currency
+  val CNY = Currency("Chinese yuan", "CNY", 156, "Y", "", 100)
 
-  case class HKDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Hong Kong dollar", "HKD", 344,
-      "HK$", "", 100)) extends Currency
+  val HKD = Currency("Hong Kong dollar", "HKD", 344, "HK$", "", 100)
 
-  case class ILSCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Israeli shekel", "ILS", 376,
-      "NIS", "", 100)) extends Currency
+  val ILS = Currency("Israeli shekel", "ILS", 376, "NIS", "", 100)
 
-  case class INRCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Indian rupee", "INR", 356,
-      "Rs", "", 100)) extends Currency
+  val INR = Currency("Indian rupee", "INR", 356, "Rs", "", 100)
 
-  case class IQDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Iraqi dinar", "IQD", 368,
-      "ID", "", 1000)) extends Currency
+  val IQD = Currency("Iraqi dinar", "IQD", 368, "ID", "", 1000)
 
-  case class IRRCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Iranian rial", "IRR", 364,
-      "Rls", "", 1)) extends Currency
+  val IRR = Currency("Iranian rial", "IRR", 364, "Rls", "", 1)
 
-  case class JPYCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Japanese yen", "JPY", 392, "0xA5", "", 100)) extends Currency
+  val JPY = Currency("Japanese yen", "JPY", 392, "0xA5", "", 100)
 
-  case class KRWCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("South-Korean won", "KRW", 410, "W", "", 100)) extends Currency
+  val KRW = Currency("South-Korean won", "KRW", 410, "W", "", 100)
 
-  case class KWDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Kuwaiti dinar", "KWD", 414, "KD", "", 1000)) extends Currency
+  val KWD = Currency("Kuwaiti dinar", "KWD", 414, "KD", "", 1000)
 
-  case class NPRCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Nepal rupee", "NPR", 524,
-      "NRs", "", 100)) extends Currency
+  val NPR = Currency("Nepal rupee", "NPR", 524, "NRs", "", 100)
 
-  case class PKRCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Pakistani rupee", "PKR", 586, "Rs", "", 100)) extends Currency
+  val PKR = Currency("Pakistani rupee", "PKR", 586, "Rs", "", 100)
 
-  case class SARCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Saudi riyal", "SAR", 682, "SRls", "", 100)) extends Currency
+  val SAR = Currency("Saudi riyal", "SAR", 682, "SRls", "", 100)
 
-  case class SGDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Singapore dollar", "SGD", 702, "S$", "", 100)) extends Currency
+  val SGD = Currency("Singapore dollar", "SGD", 702, "S$", "", 100)
 
-  case class THBCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Thai baht", "THB", 764, "Bht", "", 100)) extends Currency
+  val THB = Currency("Thai baht", "THB", 764, "Bht", "", 100)
 
-  case class TWDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Taiwan dollar", "TWD", 901, "NT$", "", 100)) extends Currency
+  val TWD = Currency("Taiwan dollar", "TWD", 901, "NT$", "", 100)
+
 }

@@ -33,7 +33,7 @@ object GammaFunction{
          value(x+1.0) / x
       } else {
         // \Gamma(-x) = -\frac{\pi}{\Gamma(x)\sin(\pi x) x}
-         -M_PI / ( value(-x) * x * Math.sin(M_PI * x) )
+         - M_PI / ( value(-x) * x * Math.sin(M_PI * x) )
       }
     }
   }

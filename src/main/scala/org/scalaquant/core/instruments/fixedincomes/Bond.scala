@@ -1,13 +1,13 @@
 package org.scalaquant.core.instruments.fixedincomes
 
-import org.scalaquant.common.Compounding.Compounding
-import org.scalaquant.common.time.Frequency.Frequency
+import org.scalaquant.core.common.Compounding.Compounding
+import org.scalaquant.core.common.time.Frequency.Frequency
 import org.scalaquant.core.cashflows.CashFlowsFunction._
 import org.scalaquant.core.cashflows.coupons.Coupon
 import org.scalaquant.core.cashflows._
 
-import org.scalaquant.common.time.calendars.BusinessCalendar
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.instruments.{ExpirationDate, Instrument}
 import org.joda.time.LocalDate
 

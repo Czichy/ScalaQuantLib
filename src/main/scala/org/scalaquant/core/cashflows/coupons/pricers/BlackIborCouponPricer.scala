@@ -1,31 +1,60 @@
 package org.scalaquant.core.cashflows.coupons.pricers
 
-import org.scalaquant.core.cashflows.coupons.FloatingRateCoupon
+import org.joda.time.LocalDate
+import org.scalaquant.core.cashflows.coupons.iborcoupons.IBORCoupon
+import org.scalaquant.core.cashflows.coupons.{Pricer}
 import org.scalaquant.core.instruments.options.Option
+import org.scalaquant.core.termstructures.OptionletVolatilityStructure
 import org.scalaquant.core.types._
 
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
 
-final class BlackIborCouponPricer(capletVolatility: OptionletVolatilityStructure) extends IborCouponPricer(capletVolatility){
 
-  protected def optionletPrice(optionType: Option.Type, effStrike: Rate): Rate
+case class BlackIborCouponPricer(capletVolatility: OptionletVolatilityStructure)(implicit coupon: IBORCoupon) extends Pricer[IBORCoupon](coupon){
 
-  override def swapletPrice: Double = gearing *  adjustedFixing * accrualPeriod * discount + spreadLegValue
+  private val gearing = coupon.gearing
+  private val spread = coupon.spread
 
-  override def swapletRate: Double = swapletPrice / (accrualPeriod * discount)
+  private val accrualPeriod = coupon.accrualPeriod(capletVolatility.dc)
+  require(accrualPeriod != 0.0, "null accrual period")
 
-  override def capletPrice(effectiveCap: Rate): Rate = optionletPrice(Option.Call, effectiveCap) * capletPrice
+  private val index = coupon.index
+  private val rateCurve = index.forwardingTermStructure
 
-  override def capletRate(effectiveCap: Rate): Rate = capletPrice(effectiveCap) / (accrualPeriod * discount)
+  private val discount = if (coupon.date > rateCurve.referenceDate) rateCurve.discount(coupon.date) else 1.0
+  private val spreadLegValue = spread * accrualPeriod * discount
 
-  override def floorletPrice(effectiveFloor: Rate): Rate = optionletPrice(Option.Put, effectiveFloor) * floorletPrice
+  protected def optionletPrice(optionType: Option.OptionType, effStrike: Rate): Rate = ???
 
-  override def floorletRate(effectiveFloor: Rate): Rate = floorletPrice(effectiveFloor) / (accrualPeriod_*discount_)
-}
+  protected def adjustedFixing(fixing: Rate = coupon.indexFixing(LocalDate.now())) = {
+    val date1 = coupon.fixingDate
+    val referenceDate = capletVolatility.referenceDate
+    if (date1 <= referenceDate) {
+      fixing
+    } else {
+      // see Hull, 4th ed., page 550
+      val date2 = index.valueDate(date1)
+      val date3 = index.maturityDate(date2)
+      val tau = index.dayCounter.fractionOfYear(date2, date3)
+      val variance = capletVolatility.blackVariance(date1, fixing)
+      val adjustement = fixing * fixing * variance * tau / (1.0 + fixing * tau)
 
-object BlackIborCouponPricer{
-  def initialize(coupon: FloatingRateCoupon): BlackIborCouponPricer = {
+      fixing + adjustement
 
+    }
   }
 
+  def swapletPrice = gearing * adjustedFixing() * accrualPeriod * discount + spreadLegValue
+
+  def swapletRate = swapletPrice / (accrualPeriod * discount)
+
+  def capletPrice(effectiveCap: Rate) = gearing * optionletPrice(Option.Call, effectiveCap)
+
+  def capletRate(effectiveCap: Rate) = capletPrice(effectiveCap) / (accrualPeriod * discount)
+
+  def floorletPrice(effectiveFloor: Rate) = gearing *  optionletPrice(Option.Put, effectiveFloor)
+
+  def floorletRate(effectiveFloor: Rate) = floorletPrice(effectiveFloor) / (accrualPeriod * discount)
 
 }

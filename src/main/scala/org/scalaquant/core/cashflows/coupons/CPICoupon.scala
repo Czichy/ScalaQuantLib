@@ -2,7 +2,7 @@ package org.scalaquant.core.cashflows.coupons
 
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.cashflows.CPI.InterpolationType
 import org.scalaquant.core.indexes.inflation.ZeroInflationIndex
 import org.scalaquant.core.types._

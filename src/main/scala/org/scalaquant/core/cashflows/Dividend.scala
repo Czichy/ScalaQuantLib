@@ -2,16 +2,13 @@ package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
 
-abstract class Dividend(val date: LocalDate) extends CashFlow {
-  def amount(underlying: Double): Double
-}
+//abstract class Dividend extends CashFlow {
+//  def amount(underlying: Double): Double
+//}
 
-case class FixedDividend(amount: Double, override val date: LocalDate) extends Dividend(date){
-  override def amount(underlying: Double): Double = amount
-}
+sealed trait Dividend extends CashFlow
 
-case class FractionalDividend(rate: Double, nominal: Double, override val date: LocalDate) extends Dividend(date){
-  override def amount: Double =  rate * nominal
-  override def amount(underlying: Double): Double = rate * underlying
-}
+case class FixedDividend(amount: Double, date: LocalDate) extends Dividend
+
+case class FractionalDividend(rate: Double, nominal: Double, underlying: Double, date: LocalDate) extends Dividend
 

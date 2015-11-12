@@ -2,8 +2,8 @@ package org.scalaquant.core.indexes
 
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.TimeSeries
-import org.scalaquant.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.TimeSeries
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
 
 import scala.collection.convert.Wrappers.MutableMapWrapper
 

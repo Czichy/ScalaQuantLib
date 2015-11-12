@@ -1,27 +1,26 @@
 package org.scalaquant.core.cashflows.coupons
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.BusinessDayConvention._
-import org.scalaquant.common.time.Period
-import org.scalaquant.common.time.daycounts.DayCountConvention
-import org.scalaquant.common.time.TimeUnit._
+import org.scalaquant.core.common.time.BusinessDayConvention._
+import org.scalaquant.core.common.time.Period
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.TimeUnit._
 import org.scalaquant.core.indexes.inflation.InflationIndex
 import org.scalaquant.core.termstructures.YieldTermStructure
 import org.scalaquant.core.types.Rate
 
-abstract class InflationCoupon(paymentDate: LocalDate,
+abstract class InflationCoupon(paymentDate: LocalDate, //the upcoming payment date of this coupon
                                nominal: Rate,
-                               startDate: LocalDate,
-                               endDate: LocalDate,
+                               accrualStartDate: LocalDate, //usually the payment date of last coupon
+                               accrualEndDate: LocalDate, //usually the sttlement date of the coupon
+                               refPeriodStart: Option[LocalDate],
+                               refPeriodEnd: Option[LocalDate],
                                val fixingDays: Int,
                                val index: InflationIndex,
                                val observationLag: Period,
                                val dayCounter: DayCountConvention,
-                               refPeriodStart: LocalDate,
-                               refPeriodEnd: LocalDate,
-                               pricer: InflationCouponPricer, //TODO: rethink how price should be set
                                exCouponDate: LocalDate)
-  extends Coupon(paymentDate, nominal, startDate, endDate, exCouponDate){
+  extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd, exCouponDate){
 
 
   def indexFixing: Rate = index.fixing(fixingDate)

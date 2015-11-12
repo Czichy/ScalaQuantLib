@@ -1,13 +1,12 @@
 package org.scalaquant.core.cashflows.coupons
 
+import org.scalaquant.core.cashflows.coupons.iborcoupons.IBORCoupon
+import org.scalaquant.core.termstructures.{SwaptionVolatilityStructure, OptionletVolatilityStructure}
 import org.scalaquant.core.types.Rate
-import org.scalaquant.core.instruments.options.Option
 
-package object pricers {
 
-  sealed trait Pricer
+sealed abstract class Pricer[C <:FloatingRateCoupon](coupon: C){
 
-  trait FloatingRateCouponPricer {
     def swapletPrice: Rate
 
     def swapletRate: Rate
@@ -19,15 +18,9 @@ package object pricers {
     def floorletPrice(effectiveFloor: Rate): Rate
 
     def floorletRate(effectiveFloor: Rate): Rate
-  }
-
-  trait MeanRevertingPricer{
-    def meanReversion: Double
-  }
-
-  class IborCouponPricer(val capletVolatility: OptionletVolatilityStructure) extends FloatingRateCouponPricer
-
-  class CmsCouponPricer(val swaptionVolatility: SwaptionVolatilityStructure) extends FloatingRateCouponPricer
-
 
 }
+
+
+//abstract class CmsCouponPricer(val swaptionVolatility: SwaptionVolatilityStructure) extends Pricer[CMSCoupon]
+

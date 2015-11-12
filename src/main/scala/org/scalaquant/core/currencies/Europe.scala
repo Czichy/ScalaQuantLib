@@ -1,106 +1,75 @@
 package org.scalaquant.core.currencies
 
 object Europe {
-  case class BGLCurrency(definition: CurrencyDefinition = CurrencyDefinition("Bulgarian lev", "BGL", 100, "lv", "", 100)) extends Currency
 
-  case class BYRCurrency(definition: CurrencyDefinition = CurrencyDefinition("Belarussian ruble", "BYR", 974, "BR", "", 1)) extends Currency
+  val BGL = Currency("Bulgarian lev", "BGL", 100, "lv", "", 100)
 
-  case class CHFCurrency(definition: CurrencyDefinition = CurrencyDefinition("Swiss franc", "CHF", 756, "SwF", "", 100)) extends Currency
+  val BYR = Currency("Belarussian ruble", "BYR", 974, "BR", "", 1)
 
-  case class CYPCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Cyprus pound", "CYP", 196, "0xA3", "", 100)) extends Currency
+  val CHF = Currency("Swiss franc", "CHF", 756, "SwF", "", 100)
 
-  case class CZKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Czech koruna", "CZK", 203, "Kc", "", 100)) extends Currency
+  val CYP = Currency("Cyprus pound", "CYP", 196, "0xA3", "", 100)
 
-  case class DKKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Danish krone", "DKK", 208, "Dkr", "", 100)) extends Currency
+  val CZK = Currency("Czech koruna", "CZK", 203, "Kc", "", 100)
 
-  case class EEKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Estonian kroon", "EEK", 233, "KR", "", 100)) extends Currency
+  val DKK = Currency("Danish krone", "DKK", 208, "Dkr", "", 100)
 
-  case class EURCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("European Euro", "EUR", 978, "", "", 100)) extends Currency
+  val EEK = Currency("Estonian kroon", "EEK", 233, "KR", "", 100)
 
-  case class GBPCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("British pound sterling", "GBP", 826, "0xA3", "p", 100)) extends Currency
+  val EUR = Currency("European Euro", "EUR", 978, "", "", 100)
 
-  case class HUFCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Hungarian forint", "HUF", 348, "Ft", "", 1)) extends Currency
+  val GBP = Currency("British pound sterling", "GBP", 826, "0xA3", "p", 100)
 
-  case class ISKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Iceland krona", "ISK", 352, "IKr", "", 100)) extends Currency
+  val HUF = Currency("Hungarian forint", "HUF", 348, "Ft", "", 1)
 
-  case class LTLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Lithuanian litas", "LTL", 440, "Lt", "", 100)) extends Currency
+  val ISK = Currency("Iceland krona", "ISK", 352, "IKr", "", 100)
 
-  case class LVLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Latvian lat", "LVL", 428, "Ls", "", 100)) extends Currency
+  val LTL = Currency("Lithuanian litas", "LTL", 440, "Lt", "", 100)
 
-  case class NOKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Norwegian krone", "NOK", 578, "NKr", "", 100)) extends Currency
+  val LVL = Currency("Latvian lat", "LVL", 428, "Ls", "", 100)
 
-  case class PLNCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Polish zloty", "PLN", 985, "zl", "", 100)) extends Currency
+  val NOK = Currency("Norwegian krone", "NOK", 578, "NKr", "", 100)
 
-  case class ROLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Romanian leu", "ROL", 642, "L", "", 100)) extends Currency
+  val PLN = Currency("Polish zloty", "PLN", 985, "zl", "", 100)
 
-  case class RONCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Romanian new leu", "RON", 946, "L", "", 100)) extends Currency
+  val ROL = Currency("Romanian leu", "ROL", 642, "L", "", 100)
 
-  case class SEKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Swedish krona", "SEK", 752, "kr", "", 100)) extends Currency
+  val RON = Currency("Romanian new leu", "RON", 946, "L", "", 100)
 
-  case class SITCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Slovenian tolar", "SIT", 705, "SlT", "", 100)) extends Currency
+  val SEK = Currency("Swedish krona", "SEK", 752, "kr", "", 100)
 
-  case class TRLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Turkish lira", "TRL", 792, "TL", "", 100)) extends Currency
+  val SIT = Currency("Slovenian tolar", "SIT", 705, "SlT", "", 100)
 
-  case class TRYCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("New Turkish lira", "TRY", 949, "YTL", "", 100)) extends Currency
+  val TRL = Currency("Turkish lira", "TRL", 792, "TL", "", 100)
 
-  case class ATSCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Austrian shilling", "ATS", 40, "", "", 100)) extends Currency
+  val TRY = Currency("New Turkish lira", "TRY", 949, "YTL", "", 100)
 
-  case class BEFCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Belgian franc", "BEF", 56, "", "", 1)) extends Currency
+  val ATS = Currency("Austrian shilling", "ATS", 40, "", "", 100)
 
-  case class DEMCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Deutsche mark", "DEM", 276, "DM", "", 100)) extends Currency
+  val BEF = Currency("Belgian franc", "BEF", 56, "", "", 1)
 
-  case class ESPCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Spanish peseta", "ESP", 724, "Pta", "", 100)) extends Currency
+  val DEM = Currency("Deutsche mark", "DEM", 276, "DM", "", 100)
 
-  case class FIMCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Finnish markka", "FIM", 246, "mk", "", 100)) extends Currency
+  val ESP = Currency("Spanish peseta", "ESP", 724, "Pta", "", 100)
 
-  case class FRFCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("French franc", "FRF", 250, "", "", 100)) extends Currency
+  val FIM = Currency("Finnish markka", "FIM", 246, "mk", "", 100)
 
-  case class GRDCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Greek drachma", "GRD", 300, "", "", 100)) extends Currency
+  val FRF = Currency("French franc", "FRF", 250, "", "", 100)
 
-  case class IEPCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Irish punt", "IEP", 372, "", "", 100)) extends Currency
+  val GRD = Currency("Greek drachma", "GRD", 300, "", "", 100)
 
-  case class ITLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Italian lira", "ITL", 380, "L", "", 1)) extends Currency
+  val IEP = Currency("Irish punt", "IEP", 372, "", "", 100)
 
-  case class LUFCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Luxembourg franc", "LUF", 442, "F", "", 100)) extends Currency
+  val ITL = Currency("Italian lira", "ITL", 380, "L", "", 1)
 
-  case class MTLCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Maltese lira", "MTL", 470, "Lm", "", 100)) extends Currency
+  val LUF = Currency("Luxembourg franc", "LUF", 442, "F", "", 100)
 
-  case class NLGCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Dutch guilder", "NLG", 528, "f", "", 100)) extends Currency
+  val MTL = Currency("Maltese lira", "MTL", 470, "Lm", "", 100)
 
-  case class PTECurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Portuguese escudo", "PTE", 620, "Esc", "", 100)) extends Currency
+  val NLG = Currency("Dutch guilder", "NLG", 528, "f", "", 100)
 
-  case class SKKCurrency(
-    definition: CurrencyDefinition = CurrencyDefinition("Slovak koruna", "SKK", 703, "Sk", "", 100)) extends Currency
+  val PTE = Currency("Portuguese escudo", "PTE", 620, "Esc", "", 100)
+
+  val SKK = Currency("Slovak koruna", "SKK", 703, "Sk", "", 100)
 
 }

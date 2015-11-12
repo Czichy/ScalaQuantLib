@@ -1,7 +1,7 @@
 package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.JodaDateTimeHelper
+import org.scalaquant.core.common.time.JodaDateTimeHelper
 
 class SimpleCashFlow(val amount: Double, val date: LocalDate) extends CashFlow {
   override def exCouponDate: LocalDate = JodaDateTimeHelper.theBeginningOfTime

@@ -3,28 +3,29 @@ package org.scalaquant.core.cashflows
 import org.joda.time.LocalDate
 
 import org.scalaquant.core.cashflows.coupons.Coupon
-import org.scalaquant.common.InterestRate
-import org.scalaquant.common.time.JodaDateTimeHelper
+import org.scalaquant.core.common.{Event, InterestRate}
+import org.scalaquant.core.common.time.JodaDateTimeHelper
 import org.scalaquant.core.termstructures.YieldTermStructure
 import org.scalaquant.core.types._
-
 
 object CashFlows {
 
   type Leg = Seq[CashFlow]
 
-  type CashFlowFunction[T] = (LocalDate, Boolean) => T
-  type CashFlowResult[R] = CashFlowFunction[R] => R
+//  type CashFlowFunction[T] = (LocalDate, Boolean) => T
+//  type CashFlowResult[R] = CashFlowFunction[R] => R
+//
+//  type CouponFunction[T] = CashFlowFunction[T]
+//  type CouponResult[R] = CashFlowFunction[R]
+//
+//  type YieldTermStructureFunction = (YieldTermStructure, LocalDate, Boolean, LocalDate) => Rate
+//  type IRRFunction = (InterestRate, LocalDate, Boolean, LocalDate) => Rate
 
-  type CouponFunction[T] = CashFlowFunction[T]
-  type CouponResult[R] = CashFlowFunction[R]
+  private def occurredAt(date: LocalDate, includeDate: Boolean) = Event.hasOccurred(_, date, includeDate)
 
-  type YieldTermStructureFunction = (YieldTermStructure, LocalDate, Boolean, LocalDate) => Rate
-  type IRRFunction = (InterestRate, LocalDate, Boolean, LocalDate) => Rate
+  private val occurredCashFlow: CashFlow => CashFlowFunction[Boolean] =
+    cashFlow => (date, include) => Event.hasOccurred(cashFlow, date, include) && cashFlow.tradingExCoupon(date)
 
-  trait CashFlowBearing {
-    def cashflows: Leg
-  }
 
   trait DateInspectors {
     protected def leg: Leg
@@ -47,10 +48,12 @@ object CashFlows {
     }
 
     def isExpired(settlementDate: LocalDate, includeSettlementDateFlows: Boolean): Boolean = {
+      def hasOccurred = occurredAt(settlementDate, includeSettlementDateFlows)
+
       if (leg.isEmpty) {
         true
       } else {
-        leg.forall(_.hasOccurred(settlementDate, includeSettlementDateFlows))
+        leg.forall(hasOccurred)
       }
     }
 
@@ -64,14 +67,14 @@ object CashFlows {
     protected def leg: Leg
 
 
-    val previousCashFlow: CashFlowFunction[Option[CashFlow]] = (date, includeDate) => leg.reverse.find(_.hasOccurred(date, includeDate))
-    val nextCashFlow: CashFlowFunction[Option[CashFlow]] = (date, includeDate) => leg.find(!_.hasOccurred(date, includeDate))
+    val previousCashFlow: CashFlowFunction[Option[CashFlow]] = (date, include) => leg.reverse.find(occurredAt(date, include))
+    val nextCashFlow: CashFlowFunction[Option[CashFlow]] = (date, include) => leg.find(!occurredAt(date, include)(_))
 
-    val previousCashFlowDate: CashFlowFunction[Option[LocalDate]] = previousCashFlow(_,_).map(_.date)
-    val nextCashFlowDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_,_).map(_.date)
+    val previousCashFlowDate: CashFlowFunction[Option[LocalDate]] = previousCashFlow(_, _).map(_.date)
+    val nextCashFlowDate: CashFlowFunction[Option[LocalDate]] = nextCashFlow(_, _).map(_.date)
 
-    val previousCashFlowAmount: CashFlowFunction[Double] = previousCashFlow(_,_).map(_.amount).sum
-    val nextCashFlowAmount: CashFlowFunction[Double] = nextCashFlow(_,_).map(_.amount).sum
+    val previousCashFlowAmount: CashFlowFunction[Double] = previousCashFlow(_, _).map(_.amount).sum
+    val nextCashFlowAmount: CashFlowFunction[Double] = nextCashFlow(_, _).map(_.amount).sum
 
   }
 
@@ -101,12 +104,10 @@ object CashFlows {
   trait YieldTermStructureFunctions {
 
     protected def leg: Leg
-    private val occurredCashFlow: CashFlow => CashFlowFunction[Boolean] =
-      cashFlow => (date, include) => cashFlow.hasOccurred(date, include) && cashFlow.tradingExCoupon(date)
 
     private val basisPoint = 1.0e-4
-    private val npvSum = (_:Leg).map(cashFlow => cashFlow.amount * (_: YieldTermStructure).discount(cashFlow.date)).sum
-    private val bpsSum = (_:Leg).collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * (_: YieldTermStructure).discount(cp.date)}.sum
+    private val npvSum = (_: Leg).map(cashFlow => cashFlow.amount * (_: YieldTermStructure).discount(cashFlow.date)).sum
+    private val bpsSum = (_: Leg).collect{ case cp: Coupon => cp.nominal * cp.accrualPeriod * (_: YieldTermStructure).discount(cp.date)}.sum
 
     val npv: YieldTermStructureFunction = (discountCurve, settlementDate, includeSettlementDateFlows, npvDate) => {
 
@@ -138,13 +139,8 @@ object CashFlows {
 
   }
    trait IRRFunctions {
-     import org.scalaquant.math.Comparing.Implicits._
-     import org.scalaquant.math.Comparing.ImplicitsOps._
 
      protected def leg: Leg
-
-     private val occurredCashFlow: CashFlow => CashFlowFunction[Boolean] =
-       cashFlow => (date, include) => cashFlow.hasOccurred(date, include) && cashFlow.tradingExCoupon(date)
 
 
      def npv(y: InterestRate,
@@ -176,7 +172,7 @@ object CashFlows {
         case cashflows =>
           val filteredLeg = cashflows.filterNot(occurredCashFlow(_)(settlementDate, includeSettlementDateFlows))
           val (p, dPdy) = filteredLeg.collect(PdPdy).reduce((left, right) => (left._1 + right._1, left._2 + right._2))
-        p / dPdy
+          p / dPdy
       }
 
 
@@ -186,7 +182,6 @@ object CashFlows {
             includeSettlementDateFlows:Boolean,
             settlementDate: LocalDate,
             npvDate: LocalDate) = {
-
 
 
       leg match {

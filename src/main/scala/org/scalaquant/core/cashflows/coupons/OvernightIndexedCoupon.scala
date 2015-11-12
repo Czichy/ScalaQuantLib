@@ -1,7 +1,7 @@
 package org.scalaquant.core.cashflows.coupons
 
-import org.scalaquant.common.time.daycounts.DayCountConvention
-import org.scalaquant.common.time.Frequency
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.Frequency
 
 import org.joda.time.LocalDate
 import org.scalaquant.core.cashflows.coupons.pricers.FloatingRateCouponPricer

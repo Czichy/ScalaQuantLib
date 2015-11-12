@@ -1,6 +1,6 @@
 package org.scalaquant.core.cashflows
 
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.cashflows.coupons.Coupon
 import org.scalaquant.core.cashflows.coupons.pricers.Pricer
 import org.scalaquant.core.types.{YearFraction, Rate}

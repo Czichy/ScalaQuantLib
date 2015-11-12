@@ -1,7 +1,7 @@
 package org.scalaquant.core.instruments
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.cashflows.Leg
+import org.scalaquant.core.cashflows.CashFlows.Leg
 import org.scalaquant.core.pricingengines.PricingEngine
 
 /*! The cash flows belonging to the first leg are paid;

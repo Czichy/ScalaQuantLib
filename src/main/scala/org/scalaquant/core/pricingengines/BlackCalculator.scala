@@ -8,7 +8,7 @@ import org.scalaquant.math.Comparison._
 import org.scalaquant.math.distributions._
 import org.scalaquant.core.instruments.options.Option
 
-class BlackCalculator(payoff :StrikedTypePayoff, val forward: Double, val stdDev: Double, val discount: Double = 1.0 ) {
+class BlackCalculator(payoff :StrikedPayoff, val forward: Double, val stdDev: Double, val discount: Double = 1.0 ) {
 
   require(payoff.strike >= 0.0, s"strike (${payoff.strike}) must be non-negative")
   require(forward > 0.0, s"forward ($forward) must be positive")

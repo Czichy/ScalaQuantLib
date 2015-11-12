@@ -1,25 +1,21 @@
 package org.scalaquant.core.cashflows
 
 import org.joda.time.LocalDate
+import org.scalaquant.core.common.Event
 
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
+import org.scalaquant.math.Comparison.Order
 
-import org.scalaquant.common.Event
-
-abstract class CashFlow extends Event {
-
-  def amount: Double
-
-  def exCouponDate: LocalDate
-
-  def tradingExCoupon(refDate: LocalDate): Boolean = exCouponDate <= refDate
-
-}
+class CashFlow(val date: LocalDate, val amount: Double)
 
 object CashFlow{
 
-  def unapply(cashFlow: CashFlow): Option[(Double, LocalDate)] = {
-    Some((cashFlow.amount, cashFlow.date))
+  type Amount = CashFlow => Double
+
+  implicit object CashFlowRelational extends Order[CashFlow]{
+    def >(x: CashFlow, y: CashFlow) : Boolean = x.date > y.date
+    def <(x: CashFlow, y: CashFlow) : Boolean = x.date < y.date
   }
+
 }

@@ -1,8 +1,8 @@
 package org.scalaquant.core.indexes.swap
 
-import org.scalaquant.common.time.Period
-import org.scalaquant.common.time.calendars.BusinessCalendar
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.Period
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.currencies.Currency
 import org.scalaquant.core.indexes.InterestRateIndex
 import org.scalaquant.core.indexes.ibor.IborIndex

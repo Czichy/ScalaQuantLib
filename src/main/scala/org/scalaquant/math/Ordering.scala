@@ -1,6 +1,6 @@
 package org.scalaquant.math
 
-import org.scalaquant.common.Event
+import org.scalaquant.core.common.Event
 
 object Ordering {
   object Implicits{

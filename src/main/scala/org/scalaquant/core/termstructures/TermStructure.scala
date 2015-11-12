@@ -2,8 +2,8 @@ package org.scalaquant.core.termstructures
 
 import org.joda.time.LocalDate
 
-import org.scalaquant.common.time.calendars.BusinessCalendar
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.calendars.BusinessCalendar
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.types.YearFraction
 
 import org.scalaquant.math.Comparing.Implicits._
@@ -24,7 +24,7 @@ abstract class TermStructure(val settlementDays: Int,
   protected def checkRange(date: LocalDate, extrapolate: Boolean) = {
     require(date >= referenceDate, s"date ($date) before reference date ($referenceDate)")
     require(extrapolate || allowsExtrapolation || date <= maxDate,
-            s"date ($date) is past max curve date ($maxDate)")
+      s"date ($date) is past max curve date ($maxDate)")
   }
 
   protected def checkRange(time: YearFraction, extrapolate: Boolean) = {

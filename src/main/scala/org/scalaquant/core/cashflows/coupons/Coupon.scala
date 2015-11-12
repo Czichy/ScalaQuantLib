@@ -1,8 +1,8 @@
 package org.scalaquant.core.cashflows.coupons
 
 import org.joda.time.LocalDate
-import org.scalaquant.common.time.JodaDateTimeHelper._
-import org.scalaquant.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.common.time.JodaDateTimeHelper._
+import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.cashflows.CashFlow
 import org.scalaquant.core.types.{YearFraction, Rate}
 
@@ -15,47 +15,37 @@ abstract class Coupon(val paymentDate: LocalDate, //the upcoming payment date of
                       val accrualEndDate: LocalDate, //usually the settlement date of the coupon
                       val refPeriodStart: Option[LocalDate],
                       val refPeriodEnd: Option[LocalDate],
-                      val exCouponDate: LocalDate) extends CashFlow with Accured {
+                      val exCouponDate: Option[LocalDate])
+  extends CashFlow(exCouponDate, nominal) {
 
-  override def date: LocalDate = paymentDate
+  protected def notInRange = date <= accrualStartDate || date > paymentDate
 
-  def rate: Rate
+  protected def period = (_: DayCountConvention).fractionOfYear(accrualStartDate, _: LocalDate, refPeriodStart, refPeriodEnd)
 
-  def dayCounter: DayCountConvention
-}
+  protected def days = (_: DayCountConvention).dayCount(accrualStartDate, _: LocalDate)
 
-trait Accrual{
-  def dayCounter: DayCountConvention
-  def accrualStartDate: LocalDate //usually the payment date of last coupon
-  def accrualEndDate: LocalDate //usually the settlement date of the coupon
-  def refPeriodStart: Option[LocalDate]
-  def refPeriodEnd: Option[LocalDate]
+  protected def minDate: LocalDate = min(date, accrualEndDate)
 
-  def accrualDays: Int = dayCounter.dayCount(accrualStartDate, accrualEndDate)
+  def accruedAmountAt(date: LocalDate): Double
 
-  def accrualPeriod: YearFraction = {
-    dayCounter.fractionOfYear(accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd)
+  def tradingExCoupon(refDate: Option[LocalDate])(implicit evaluationDate: LocalDate): Boolean = {
+     exCouponDate exists { _ <= refDate.getOrElse(evaluationDate) }
+  }
+
+  def accrualDays(dayCounter: DayCountConvention): Int = {
+    if (notInRange) 0 else days(dayCounter, accrualEndDate)
+  }
+
+  def accrualPeriod(dayCounter: DayCountConvention): YearFraction = {
+    if (notInRange) 0.0 else period(dayCounter, accrualEndDate)
+  }
+
+  def accruedDays(dayCounter: DayCountConvention): Int = {
+    if (notInRange) 0 else days(dayCounter, minDate)
+  }
+
+  def accruedPeriod(dayCounter: DayCountConvention): YearFraction = {
+    if (notInRange) 0.0 else period(dayCounter, minDate)
   }
 
 }
-
-trait Accured extends Accrual{
-
-  def paymentDate: LocalDate
-
-  private def isNotInAccrualPeriod(d: LocalDate) = d <= accrualStartDate || d > paymentDate
-
-  def accruedPeriod(date: LocalDate): YearFraction = {
-    if (isNotInAccrualPeriod(date)) 0.0
-    else dayCounter.fractionOfYear(accrualStartDate, min(date, accrualEndDate), refPeriodStart, refPeriodEnd)
-  }
-
-  def accruedDays(date: LocalDate): Int = {
-    if (isNotInAccrualPeriod(date)) 0
-    else dayCounter.dayCount(accrualStartDate, min(date, accrualEndDate))
-  }
-
-  def accruedAmount(date: LocalDate): Double
-
-}
-
