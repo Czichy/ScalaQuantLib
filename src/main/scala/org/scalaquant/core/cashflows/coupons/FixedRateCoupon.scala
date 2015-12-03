@@ -17,19 +17,23 @@ class FixedRateCoupon(paymentDate: LocalDate, //the upcoming payment date of thi
                       refPeriodEnd: Option[LocalDate],
                       exCouponDate: Option[LocalDate],
                       val rate: InterestRate)
-  extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd, exCouponDate) {
+  extends Coupon(paymentDate,
+                 nominal * (rate.compoundFactor(accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd) - 1.0),
+                 accrualStartDate,
+                 accrualEndDate,
+                 refPeriodStart,
+                 refPeriodEnd,
+                 exCouponDate) {
 
- // def dayCounter = rate.dc
-
-  //def amount: Double = nominal * rate.compoundFactor(accrualStartDate, accrualEndDate, paymentDate)
-
-  def accruedAmountAt(date: LocalDate)(implicit evaluationDate: LocalDate): Double = {
-    if (notInRange) {
-      0.0
-    } else if (tradingExCoupon(Some(date))) {
-       -nominal * rate.compoundFactor(date, accrualEndDate, accrualStartDate) - 1.0)
-    } else {
-      nominal * rate.compoundFactor(accrualStartDate, accrualEndDate, date) - 1.0)
-    }
+  def accruedAmount(asOf: LocalDate): Double = {
+    accruedAmount(
+      rate.dc,
+      asOf,
+      if (tradingExCoupon(Some(asOf))) {
+        -nominal * (rate.compoundFactor(asOf, accrualEndDate, refPeriodStart, refPeriodEnd) - 1.0)
+      } else {
+        nominal * (rate.compoundFactor(accrualStartDate, min(asOf, accrualEndDate), refPeriodStart, refPeriodEnd) - 1.0)
+      }
+    )
   }
 }

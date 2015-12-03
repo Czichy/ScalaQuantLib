@@ -22,6 +22,7 @@ object Frequency {
       case OtherFrequency.value => "Unknown frequency"
       case e => "Invalid value for ("+ e +") event frequency"
     }
+
   }
 
   val NoFrequency = new Frequency(-1)

@@ -1,11 +1,8 @@
 package org.scalaquant.core.cashflows.coupons
 
-import org.scalaquant.core.cashflows.coupons.iborcoupons.IBORCoupon
-import org.scalaquant.core.termstructures.{SwaptionVolatilityStructure, OptionletVolatilityStructure}
 import org.scalaquant.core.types.Rate
 
-
-sealed abstract class Pricer[C <:FloatingRateCoupon](coupon: C){
+sealed abstract class Pricer[+Coupon](coupon: Coupon){
 
     def swapletPrice: Rate
 

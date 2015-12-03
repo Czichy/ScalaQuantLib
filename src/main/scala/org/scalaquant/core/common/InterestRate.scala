@@ -59,7 +59,7 @@ case class InterestRate(rate: Double, dc: DayCountConvention, comp: Compounding,
                      date1: LocalDate,
                      date2: LocalDate,
                      refStart: Option[LocalDate] = None,
-                       refEnd: Option[LocalDate] = None): InterestRate  = {
+                     refEnd: Option[LocalDate] = None): InterestRate  = {
     require(date2 >= date1, s"date1($date1) later than date2($date2)")
 
     val compound = compoundFactor(dc.fractionOfYear(date1, date2, refStart, refEnd))

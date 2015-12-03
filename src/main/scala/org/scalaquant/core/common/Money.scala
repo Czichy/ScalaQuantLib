@@ -13,13 +13,13 @@ object Money {
   case object AutomatedConversion extends ConversionType
 
   implicit object MoneyRelational extends Equality[Money] with Order[Money]{
-    val exchangeRateManager: ExchangeRateManager = DefaultExchangeRateManager //TODO: refactor to DI
+    def exchangeRateManager: ExchangeRateManager = DefaultExchangeRateManager //TODO: refactor to DI
 
-      private def convert(money: Money, target: Currency): Money =
-      if (money.currency == target)
-        money
-      else
-        exchangeRateManager.lookup(money.currency, target).exchange(money).rounded
+    private def convert(money: Money, target: Currency): Money =
+    if (money.currency == target)
+      money
+    else
+      exchangeRateManager.lookup(money.currency, target).exchange(money).rounded
 
 
     private def relationalOperation(x: Money, y: Money)(operator: Comparison.Operator)(implicit conversionType: ConversionType): Boolean =
@@ -50,7 +50,7 @@ object Money {
 }
 
 case class Money(value: Double, currency: Currency) extends NumberLike[Money] {
-  def rounded: Money = Money(currency.definition.rounding(value), currency)
+  def rounded: Money = Money(currency.rounding(value), currency)
   def unary_ = Money(-this.value, this.currency)
 }
 

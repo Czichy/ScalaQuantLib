@@ -23,9 +23,9 @@ object CashFlows {
 
   private def occurredAt(date: LocalDate, includeDate: Boolean) = Event.hasOccurred(_, date, includeDate)
 
-  private val occurredCashFlow: CashFlow => CashFlowFunction[Boolean] =
-    cashFlow => (date, include) => Event.hasOccurred(cashFlow, date, include) && cashFlow.tradingExCoupon(date)
-
+//  private val occurredCashFlow: CashFlow => CashFlowFunction[Boolean] =
+//    cashFlow => (date, include) => Event.hasOccurred(cashFlow.date, date, include) && cashFlow.(date)
+//
 
   trait DateInspectors {
     protected def leg: Leg

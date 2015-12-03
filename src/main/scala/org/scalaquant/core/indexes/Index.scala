@@ -12,7 +12,7 @@ trait Index{
   def name: String
   def fixingCalendar: BusinessCalendar
   def isValidFixingDate(fixingDate: LocalDate): Boolean
-  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Option[Double]
+  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Double
   def timeSeries: TimeSeries[LocalDate, Double] = IndexManager.getHistory(name).getOrElse(IndexManager.emptyIndex)
 
 }

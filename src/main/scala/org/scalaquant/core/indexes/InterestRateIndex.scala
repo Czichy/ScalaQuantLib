@@ -10,45 +10,48 @@ import org.scalaquant.core.currencies.Currency
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
+abstract class InterestRateIndex(val familyName: String,
+                                 val tenor: Period,
+                                 val fixingDays: Int,
+                                 val currency: Currency,
+                                 val fixingCalendar: BusinessCalendar,
+                                 val dayCounter: DayCountConvention) extends Index{
 
-abstract class InterestRateIndex( val familyName: String,
-                                  val tenor: Period,
-                                  val fixingDays: Int,
-                                  val currency: Currency,
-                                  val fixingCalendar: BusinessCalendar,
-                                  val dayCounter: DayCountConvention){
+  private def requireFixingDate(value: LocalDate): Unit = {
+    require(isValidFixingDate(value), value + "is not a valid fixing date.")
+  }
 
   def isValidFixingDate(fixingDate: LocalDate): Boolean = fixingCalendar.considerBusinessDay(fixingDate)
 
-//  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Double = {
-//    require(isValidFixingDate(fixingDate), "Fixing date " + fixingDate + " is not valid")
-//
-//    val today = Settings.evaluationDate
-//
-//    if (fixingDate > today || (fixingDate==today && forecastTodaysFixing)) {
-//       forecastFixing(fixingDate)
-//    } else if (fixingDate < today || Settings.enforcesTodaysHistoricFixings ) {
-//       pastFixing(fixingDate)
-//    } else {
-//       pastFixing(fixingDate).getOrElse(forecastFixing(fixingDate))
-//    }
-//  }
+  def fixing(fixingDate: LocalDate, forecastTodaysFixing: Boolean = false): Double = {
+    requireFixingDate(fixingDate)
 
-  def fixingDate(valueDate: LocalDate): LocalDate = {
-    fixingCalendar.advance(valueDate, -fixingDays, TimeUnit.Days)
+    val today = Settings.evaluationDate
+
+    if (fixingDate > today || (fixingDate == today && forecastTodaysFixing) ) {
+       forecastFixing(fixingDate)
+    } else if (fixingDate < today || Settings.enforcesTodaysHistoricFixings ) {
+       pastFixing(fixingDate).get
+    } else {
+       pastFixing(fixingDate).getOrElse(forecastFixing(fixingDate))
+    }
   }
 
+  def fixingDate(valueDate: LocalDate): LocalDate = fixingCalendar.advance(valueDate, -fixingDays, TimeUnit.Days)
+
   def valueDate(fixingDate: LocalDate): LocalDate = {
-    require(isValidFixingDate(fixingDate), fixingDate + "is not a valid fixing date.")
+    requireFixingDate(fixingDate)
+    
     fixingCalendar.advance(fixingDate, fixingDays, TimeUnit.Days)
   }
 
   def maturityDate(fixingDate: LocalDate): LocalDate
 
-//  def pastFixing(fixingDate: LocalDate): Option[Double] = {
-//    require(isValidFixingDate(fixingDate), fixingDate + "is not a valid fixing date.")
-//    timeSeries.find(fixingDate)
-//  }
+  def pastFixing(fixingDate: LocalDate): Option[Double] = {
+    requireFixingDate(fixingDate)
+    
+    timeSeries.find(fixingDate)
+  }
 
   def forecastFixing(fixingDate: LocalDate): Double
 
@@ -56,7 +59,7 @@ abstract class InterestRateIndex( val familyName: String,
     val days = {
       val normalizedTenor = tenor.normalize
       if (normalizedTenor.units == TimeUnit.Days) {
-        fixingDays match{
+        fixingDays match {
           case 0 => "ON"
           case 1 => "TN"
           case 2 => "SN"

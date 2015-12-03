@@ -16,36 +16,34 @@ abstract class Coupon(val paymentDate: LocalDate, //the upcoming payment date of
                       val refPeriodStart: Option[LocalDate],
                       val refPeriodEnd: Option[LocalDate],
                       val exCouponDate: Option[LocalDate])
-  extends CashFlow(exCouponDate, nominal) {
-
-  protected def notInRange = date <= accrualStartDate || date > paymentDate
+  extends CashFlow(paymentDate, nominal) {
 
   protected def period = (_: DayCountConvention).fractionOfYear(accrualStartDate, _: LocalDate, refPeriodStart, refPeriodEnd)
 
   protected def days = (_: DayCountConvention).dayCount(accrualStartDate, _: LocalDate)
 
-  protected def minDate: LocalDate = min(date, accrualEndDate)
-
-  def accruedAmountAt(date: LocalDate): Double
+  protected def accruedAmount(dayCounter: DayCountConvention, asOf: LocalDate, subFunction: => Double): Double = {
+    if (asOf <= accrualStartDate || asOf > paymentDate) 0.0 else subFunction
+  }
 
   def tradingExCoupon(refDate: Option[LocalDate])(implicit evaluationDate: LocalDate): Boolean = {
      exCouponDate exists { _ <= refDate.getOrElse(evaluationDate) }
   }
 
   def accrualDays(dayCounter: DayCountConvention): Int = {
-    if (notInRange) 0 else days(dayCounter, accrualEndDate)
+    days(dayCounter, accrualEndDate)
   }
 
   def accrualPeriod(dayCounter: DayCountConvention): YearFraction = {
-    if (notInRange) 0.0 else period(dayCounter, accrualEndDate)
+    period(dayCounter, accrualEndDate)
   }
 
-  def accruedDays(dayCounter: DayCountConvention): Int = {
-    if (notInRange) 0 else days(dayCounter, minDate)
+  def accruedDays(dayCounter: DayCountConvention, asOf: LocalDate): Int = {
+    if (asOf <= accrualStartDate || asOf > paymentDate) 0 else days(dayCounter, min(asOf, accrualEndDate))
   }
 
-  def accruedPeriod(dayCounter: DayCountConvention): YearFraction = {
-    if (notInRange) 0.0 else period(dayCounter, minDate)
+  def accruedPeriod(dayCounter: DayCountConvention, asOf: LocalDate): YearFraction = {
+    if (asOf <= accrualStartDate || asOf > paymentDate) 0.0 else period(dayCounter, min(asOf, accrualEndDate))
   }
 
 }

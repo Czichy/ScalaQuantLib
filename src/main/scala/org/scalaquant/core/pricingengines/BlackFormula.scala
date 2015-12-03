@@ -3,33 +3,33 @@ package org.scalaquant.core.pricingengines
 import org.scalaquant.core.instruments.options.Option
 import org.scalaquant.core.instruments.options.Option.{Call, Put}
 import org.scalaquant.math.Constants
-import org.scalaquant.math.Comparison._
+
 import scala.math._
 import org.scalaquant.core.instruments.payoffs.PlainVanillaPayoff
 import org.scalaquant.math.distributions.{NormalDistribution, CumulativeNormalDistribution}
 
 object BlackFormula {
 
-  private def checkParameters(implicit strike: Double, forward: Double, displacement: Double): Unit = {
+  private def checkParameters(strike: Double, forward: Double, displacement: Double): Unit = {
     require(displacement >= 0.0, s"displacement ($displacement) must be non-negative" )
     require(strike + displacement >= 0.0, s"strike + displacement ($strike + $displacement) must be non-negative")
     require(forward + displacement > 0.0, s"forward + displacement ($forward + $displacement) must be positive")
   }
 
-  private def checkStdDev(implicit stdDeviation: Double): Unit = {
-    require(stdDeviation>=0.0, s"stdDev ($stdDeviation) must be non-negative")
+  private def checkStdDev(value: Double): Unit = {
+    require(value>=0.0, s"stdDev ($value) must be non-negative")
   }
 
-  private def checkDiscount(implicit discount: Double): Unit = {
-    require(discount>0.0, s"stdDev ($discount) must be positive")
+  private def checkDiscount(value: Double): Unit = {
+    require(value>0.0, s"discount ($value) must be positive")
   }
 
-  private def checkBlackPrice(implicit blackPrice: Double): Unit = {
-    require(blackPrice>=0.0, s"blackPrice ($blackPrice) must be non-negative")
+  private def checkBlackPrice(value: Double): Unit = {
+    require(value>=0.0, s"blackPrice ($value) must be non-negative")
   }
 
-  private def checkBlackAtmPrice(implicit blackAtmPrice: Double): Unit = {
-    require(blackAtmPrice >= 0.0, s"blackAtmPrice ($blackAtmPrice) must be non-negative")
+  private def checkBlackAtmPrice(value: Double): Unit = {
+    require(value >= 0.0, s"blackAtmPrice ($value) must be non-negative")
   }
   /**
    *  Black 1976 formula
@@ -37,34 +37,34 @@ object BlackFormula {
    *  i.e. volatility*sqrt(timeToMaturity)
    **/
   def apply(optionType: Option.Type,
-             strike: Double,
-             forward: Double,
-             stdDeviation: Double,
-             discount: Double = 1.0,
-             displacement: Double = 0.0): Double = {
+            strike: Double,
+            forward: Double,
+            stdDeviation: Double,
+            discount: Double = 1.0,
+            displacement: Double = 0.0): Double = {
 
-    checkParameters
-    checkStdDev
-    checkDiscount
+    checkParameters(strike, forward, displacement)
+    checkStdDev(stdDeviation)
+    checkDiscount(discount)
 
     if (stdDeviation == 0.0) {
      max((forward - strike) * optionType.value, 0.0) * discount
     } else {
-      val _forward = forward + displacement
-      val _strike = strike + displacement
+      val offsetForward = forward + displacement
+      val offsetStrike = strike + displacement
 
       // since displacement is non-negative strike==0 iff displacement==0
       // so returning forward*discount is OK
-      if (_strike == 0.0) {
-        if (optionType == Option.Call) _forward * discount else 0.0
+      if (offsetStrike == 0.0) {
+        if (optionType == Option.Call) offsetForward * discount else 0.0
       } else {
-        val d1 = log(_forward / _strike) / stdDeviation + 0.5 * stdDeviation
+        val d1 = log(offsetForward / offsetStrike) / stdDeviation + 0.5 * stdDeviation
         val d2 = d1 - stdDeviation
         val phi = CumulativeNormalDistribution()
         val nd1 = phi(optionType * d1)
         val nd2 = phi(optionType * d2)
 
-        discount * (optionType * (_forward * nd1 - _strike * nd2))
+        discount * (optionType * (offsetForward * nd1 - offsetStrike * nd2))
       }
     }
   } ensuring (_ >= 0.0, s"negative value for $stdDeviation stdDev, $optionType option, $strike strike $forward forward")
@@ -78,12 +78,7 @@ object BlackFormula {
                    stdDeviation: Double,
                    discount: Double = 1.0,
                    displacement: Double = 0.0): Double = {
-    apply(payoff.optionType,
-         payoff.strike,
-         forward,
-         stdDeviation,
-         discount,
-         displacement)
+    apply(payoff.optionType, payoff.strike, forward, stdDeviation, discount, displacement)
   }
 
 
@@ -99,27 +94,29 @@ object BlackFormula {
                                              blackPrice: Double,
                                              discount: Double = 1.0,
                                              displacement: Double = 0.0): Double = {
-    checkParameters
-    checkBlackPrice
-    checkDiscount
 
-    val _forward = forward + displacement
-    val _strike = strike + displacement
-    if (_strike == _forward)
-    // Brenner-Subrahmanyan (1988) and Feinstein (1988) ATM approx.
-      blackPrice / discount * sqrt(2.0 * Constants.M_PI) / _forward
-    else {
+    checkParameters(strike, forward, displacement)
+    checkBlackPrice(blackPrice)
+    checkDiscount(discount)
+
+    val offsetForward = forward + displacement
+    val offsetStrike = strike + displacement
+    if (offsetStrike == offsetForward) {
+      // Brenner-Subrahmanyan (1988) and Feinstein (1988) ATM approx.
+      blackPrice / discount * sqrt(2.0 * Constants.M_PI) / offsetForward
+    } else {
       // Corrado and Miller extended moneyness approximation
-      val moneynessDelta = optionType * (_forward - _strike)
+      val moneynessDelta = optionType * (offsetForward - offsetStrike)
       val moneynessDelta_2 = moneynessDelta / 2.0
       val temp = blackPrice / discount - moneynessDelta_2
       val moneynessDelta_PI = moneynessDelta * moneynessDelta / Constants.M_PI
       val temp2 = temp * temp - moneynessDelta_PI
       val temp3 = if (temp2 < 0.0) 0.0 else temp2// approximation breaks down, 2 alternatives: // 1. zero it
-        // 2. Manaster-Koehler (1982) efficient Newton-Raphson seed
+
+      // 2. Manaster-Koehler (1982) efficient Newton-Raphson seed
       //return abs(log(_forward/strike))*sqrt(2.0);
 
-      (temp + sqrt(temp3)) * sqrt(2.0 * Constants.M_PI) / (_forward + _strike)
+      (temp + sqrt(temp3)) * sqrt(2.0 * Constants.M_PI) / (offsetForward + offsetStrike)
     }
   } ensuring (_ >= 0.0, s"stdDev must be non-negative")
 
@@ -153,10 +150,12 @@ object BlackFormula {
                             discount: Double,
                             displacement: Double): Double = {
 
-      checkParameters
-      checkBlackPrice
-      checkBlackAtmPrice
-      checkDiscount
+
+
+    checkParameters(strike, forward, displacement)
+    checkBlackPrice(blackPrice)
+    checkBlackAtmPrice(blackAtmPrice)
+    checkDiscount(discount)
 
       val _forward = forward + displacement
       val _strike = strike + displacement
@@ -189,22 +188,22 @@ object BlackFormula {
                                          forward: Double,
                                          undiscountedBlackPrice: Double,
                                          displacement: Double = 0.0) extends (Double => Double) {
-    checkParameters
+    checkParameters(strike, forward, displacement)
     checkBlackPrice(undiscountedBlackPrice)
 
-    private val halfOptionType = optionType * 0.5
+    private val halfType = optionType * 0.5
     private val signedStrike = optionType * (strike + displacement)
     private val signedForward = optionType * (forward + displacement)
     private val N = CumulativeNormalDistribution()
     private val signedMoneyness = optionType * log((forward+displacement)/(strike+displacement))
 
     def apply(stdDev: Double): Double = {
-      checkStdDev
+      checkStdDev(stdDev)
 
       if (stdDev == 0.0) {
         max(signedForward - signedStrike, 0.0) - undiscountedBlackPrice
       } else {
-        val temp = halfOptionType * stdDev
+        val temp = halfType * stdDev
         val d = signedMoneyness / stdDev
         val signedD1 = d + temp
         val signedD2 = d - temp
@@ -215,7 +214,7 @@ object BlackFormula {
     }
 
     def derivative(stdDev: Double): Double ={
-       signedForward * N.derivative(signedMoneyness / stdDev + halfOptionType * stdDev)
+       signedForward * N.derivative(signedMoneyness / stdDev + halfType * stdDev)
     }
   }
   /** Black 1976 implied standard deviation,
@@ -227,14 +226,16 @@ object BlackFormula {
                                 blackPrice: Double,
                                 discount: Double = 1.0,
                                 displacement: Double = 0.0,
-                                guess: Double,
+                                guess: Option[Double] = None,
                                 accuracy: Double = 1.0e-6,
                                 maxIterations: Int = 100): Double = {
-    checkParameters
-    checkDiscount
-    checkBlackPrice
-    require(guess>=0.0, s"stdDev guess ($guess) must be non-negative")
-    val otherOptionPrice = blackPrice - optionType * (forward-strike) * discount
+
+    checkParameters(strike, forward, displacement)
+    checkDiscount(discount)
+    checkBlackPrice(blackPrice)
+    //require(guess,get >= 0.0, s"stdDev guess ($guess) must be non-negative")
+
+    def otherOptionPrice = blackPrice - optionType * (forward-strike) * discount
     require(otherOptionPrice >= 0.0,
         s"negative ${optionType.other} price ($otherOptionPrice) implied by put-call parity. " +
         s"No solution exists for $optionType strike $strike, forward $forward, price $blackPrice, deflator $discount")
@@ -242,24 +243,42 @@ object BlackFormula {
     // solve for the out-of-the-money option which has
     // greater vega/price ratio, i.e.
     // it is numerically more robust for implied vol calculations
-    val (_optionType, _blackPrice) = if (strike>forward) {
-      if (optionType==Put) (Call, otherOptionPrice) else (Put, blackPrice)
-    } else if (strike<forward) {
-      if (optionType==Call) (Put, otherOptionPrice) else (Call, blackPrice)
-    } else {
-      (optionType, blackPrice)
-    }
+    val (refinedOptionType, refinedBlackPrice) =
+      strike compareTo forward match {
+        case 1 =>
+          optionType match {
+            case Put => (Call, otherOptionPrice)
+            case _ => (Put, blackPrice)
+          }
+        case -1 =>
+          optionType match {
+            case Call => (Put, otherOptionPrice)
+            case _ => (Call, blackPrice)
+          }
+        case _ => (optionType, blackPrice)
+      }
 
-    val _strike = strike + displacement
-    val _forward = forward + displacement
-    val _guess = impliedStdDevApproximation(_optionType, _strike, _forward, _blackPrice, discount, displacement)
+    val offsetStrike = strike + displacement
+    val offsetForward = forward + displacement
+    val approximation =
+      guess.map{ number =>
+        require(number >= 0.0, s"stdDev guess ($number) must be non-negative")
+        number
+      }.getOrElse{
+         impliedStdDevApproximation(refinedOptionType,
+                                    offsetStrike,
+                                    offsetForward,
+                                    refinedBlackPrice,
+                                    discount,
+                                    displacement)
+      }
 
-    ImpliedStdDevHelper(_optionType, _strike, _forward, _blackPrice/discount)
-    NewtonSafe solver;
-    solver.setMaxEvaluations(maxIterations)
+    val f = ImpliedStdDevHelper(refinedOptionType, offsetStrike, offsetForward, refinedBlackPrice / discount)
+    val solver =  NewtonSafe(maxIterations)
     val minSdtDev = 0.0
     val maxStdDev = 24.0 // 24 = 300% * sqrt(60)
-     solver.solve(f, accuracy, guess, minSdtDev, maxStdDev);
+
+    solver.apply(f, accuracy, approximation, minSdtDev, maxStdDev);
 
   } ensuring (_ >= 0.0, "stdDev must be non-negative")
 
@@ -346,12 +365,12 @@ object BlackFormula {
   /*! Black 1976 formula for  derivative with respect to implied vol, this
       is basically the vega, but if you want 1% change multiply by 1%
  */
-  def volDerivative(Real strike,
-    Real forward,
-    Real stdDev,
-    Real expiry,
-    Real discount = 1.0,
-    Real displacement = 0.0);
+  def volDerivative(strike: Double,
+                    forward: Double,
+                    stdDev: Double,
+                    expiry: Double,
+                    discount: Double = 1.0,
+                    displacement: Double = 0.0): Double = ???
 
 
   /*! Black 1976 formula for standard deviation derivative
@@ -361,12 +380,11 @@ object BlackFormula {
                If T is the time to maturity Black vega would be
                blackStdDevDerivative(strike, forward, stdDev)*sqrt(T)
   */
-  def stdDevDerivative(
-    const boost::shared_ptr<PlainVanillaPayoff>& payoff,
-    Real forward,
-    Real stdDev,
-    Real discount = 1.0,
-    Real displacement = 0.0);
+  def stdDevDerivative(payoff: PlainVanillaPayoff,
+                       forward: Double,
+                       stdDev: Double,
+                       discount: Double = 1.0,
+                       displacement: Double = 0.0): Double = ???
 
 
   /*! Black style formula when forward is normal rather than
@@ -376,11 +394,11 @@ object BlackFormula {
                percentage volatility. Standard deviation is
                absoluteVolatility*sqrt(timeToMaturity)
   */
-  def bachelier(Option::Type optionType,
-    Real strike,
-    Real forward,
-    Real stdDev,
-    Real discount = 1.0);
+  def bachelier(optionType: Option.Type, 
+                strike: Double, 
+                forward: Double, 
+                stdDev: Double, 
+                discount: Double = 1.0): Double = ???
 
   /*! Black style formula when forward is normal rather than
       log-normal. This is essentially the model of Bachelier.
@@ -389,11 +407,10 @@ object BlackFormula {
                percentage volatility. Standard deviation is
                absoluteVolatility*sqrt(timeToMaturity)
   */
-  def bachelier(
-    const boost::shared_ptr<PlainVanillaPayoff>& payoff,
-    Real forward,
-    Real stdDev,
-    Real discount = 1.0);
+  def bachelier(payoff: PlainVanillaPayoff,
+                forward: Double,
+                stdDev: Double,
+                discount: Double = 1.0): Double = ???
   /*! Approximated Bachelier implied volatility
 
       It is calculated using  the analytic implied volatility approximation
@@ -401,12 +418,12 @@ object BlackFormula {
       Implied Volatility Under Arithmetic Brownian Motion”,
       Applied Math. Finance, 16(3), pp. 261-268.
   */
-  def bachelierimpliedVol(Option::Type optionType,
-    Real strike,
-    Real forward,
-    Real tte,
-    Real bachelierPrice,
-    Real discount = 1.0);
+  def bachelierimpliedVol(optionType: Option.Type ,
+                           strike: Double,
+                           forward: Double,
+                           tte: Double,
+                           bachelierPrice: Double,
+                           discount: Double = 1.0): Double = ???
 
-}
+
 }

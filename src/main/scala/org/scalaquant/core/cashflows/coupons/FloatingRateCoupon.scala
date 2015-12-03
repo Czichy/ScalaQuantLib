@@ -22,6 +22,7 @@ abstract class FloatingRateCoupon(paymentDate: LocalDate, //the upcoming payment
                                   val gearing: Double = 1.0,
                                   val spread: Spread = 0.0,
                                   val daycounter: DayCountConvention,
+                                  val pricer: Pricer[FloatingRateCoupon],
                                   val isInArrears: Boolean = false)
   extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd, None) {
 
@@ -29,12 +30,13 @@ abstract class FloatingRateCoupon(paymentDate: LocalDate, //the upcoming payment
 
   def rate: Double = pricer.swapletRate
 
-  def accruedAmountAt(date: LocalDate): Double = {
-    if (notInRange) 0.0
-    else {
-       nominal * rate * index.dayCounter.fractionOfYear(accrualStartDate, min(date, accrualEndDate), refPeriodStart, refPeriodEnd);
-    }
-  }
+  def accruedAmount(asOf: LocalDate): Double =
+    accruedAmount(
+      daycounter,
+      asOf,
+      nominal * rate * index.dayCounter.fractionOfYear(accrualStartDate, min(date, accrualEndDate), refPeriodStart, refPeriodEnd)
+    )
+
 
   def fixingDate: LocalDate = {
     val refDate = if (isInArrears) accrualEndDate else accrualStartDate
@@ -45,11 +47,12 @@ abstract class FloatingRateCoupon(paymentDate: LocalDate, //the upcoming payment
 
   def indexFixing: Double = index.fixing(fixingDate)
 
- // def adjustedFixing: Double = rate - spread / gearing
+  def adjustedFixing: Double = rate - spread / gearing
 
- // protected def convexityAdjustmentImpl(fixing: Rate): Rate = if (gearing == 0.0) 0.0 else adjustedFixing - fixing
+  protected def convexityAdjustmentImpl(fixing: Rate): Rate = if (gearing == 0.0) 0.0 else adjustedFixing - fixing
 
- // def convexityAdjustment: Double = convexityAdjustmentImpl(indexFixing)
+  def convexityAdjustment: Double = convexityAdjustmentImpl(indexFixing)
+
 }
 
 //object FloatingRateCoupon{

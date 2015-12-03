@@ -11,7 +11,7 @@ object Comparing {
       def ==(other: T): Boolean = implicitly[Equality[T]].==(self, other)
     }
 
-    implicit class OrderOpsClass[T : Order](val self: T) extends OrderOps[T] {
+    implicit class OrderOpsClass[T: Order](val self: T) extends OrderOps[T] {
       private val F = implicitly[Order[T]]
       def >(other: T): Boolean = F.>(self, other)
       def <(other: T): Boolean = F.<(self, other)

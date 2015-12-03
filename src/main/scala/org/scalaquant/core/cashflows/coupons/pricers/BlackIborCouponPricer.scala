@@ -25,7 +25,7 @@ case class BlackIborCouponPricer(capletVolatility: OptionletVolatilityStructure)
   private val discount = if (coupon.date > rateCurve.referenceDate) rateCurve.discount(coupon.date) else 1.0
   private val spreadLegValue = spread * accrualPeriod * discount
 
-  protected def optionletPrice(optionType: Option.OptionType, effStrike: Rate): Rate = ???
+  protected def optionletPrice(optionType: Option.Type, effStrike: Rate): Rate = ???
 
   protected def adjustedFixing(fixing: Rate = coupon.indexFixing(LocalDate.now())) = {
     val date1 = coupon.fixingDate

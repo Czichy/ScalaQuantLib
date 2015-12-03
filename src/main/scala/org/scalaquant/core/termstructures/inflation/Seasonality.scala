@@ -34,7 +34,7 @@ class MultiplicativePriceSeasonality(val seasonalityBaseDate: LocalDate,
     val lim = InflationTermStructure.inflationPeriod(iTS.baseDate, iTS.frequency)
     val curveBaseDate = lim._2
 
-    seasonalityCorrection(r, d, iTS.dayCounter, curveBaseDate, true)
+    seasonalityCorrection(r, date, iTS.dc, curveBaseDate, true)
   }
 
   override def correctYoYRate(date: LocalDate, r: Double, iTS: InflationTermStructure): Double = ???
@@ -68,72 +68,73 @@ class MultiplicativePriceSeasonality(val seasonalityBaseDate: LocalDate,
 //
 //  }
 
-  def seasonalityFactor(to: LocalDate): Double = {
-    val from = seasonalityBaseDate
-    val factorFrequency = frequency
-    val nFactors = seasonalityFactors.size
-    val factorPeriod = Period(factorFrequency)
-    Size which = 0;
-    if (from==to) {
-      which = 0;
-    } else {
-      // days, weeks, months, years are the only time unit possibilities
-      Integer diffDays = std::abs(to - from);  // in days
-      Integer dir = 1;
-      if(from > to)dir = -1;
-      Integer diff;
-      if (factorPeriod.units() == Days) {
-        diff = dir*diffDays;
-      } else if (factorPeriod.units() == Weeks) {
-        diff = dir * (diffDays / 7);
-      } else if (factorPeriod.units() == Months) {
-        std::pair<Date,Date> lim = inflationPeriod(to, factorFrequency);
-        diff = diffDays / (31*factorPeriod.length());
-        Date go = from + dir*diff*factorPeriod;
-        while ( !(lim.first <= go && go <= lim.second) ) {
-          go += dir*factorPeriod;
-          diff++;
-        }
-        diff=dir*diff;
-      } else if (factorPeriod.units() == Years) {
-        QL_FAIL("seasonality period time unit is not allowed to be : " << factorPeriod.units());
-      } else {
-        QL_FAIL("Unknown time unit: " << factorPeriod.units());
-      }
-      // now adjust to the available number of factors, direction dependent
-
-      if (dir==1) {
-        which = diff % nFactors;
-      } else {
-        which = (nFactors - (-diff % nFactors)) % nFactors;
-      }
-    }
-
-    return seasonalityFactors()[which];
-  }
-  def seasonalityCorrection(rate: Rate,
-                            atDate: LocalDate,
-                            dc: DayCountConvention,
-                            curveBaseDate: LocalDate,
-                            isZeroRate: Boolean): Rate = {
-    val factorAt = this.seasonalityFactor(atDate)
-
-    //Getting seasonality correction for either ZC or YoY
-    val f =
-      if (isZeroRate) {
-        val factorBase = this.seasonalityFactor(curveBaseDate)
-        val seasonalityAt = factorAt / factorBase
-        val timeFromCurveBase = dc.fractionOfYear(curveBaseDate, atDate)
-
-        Math.pow(seasonalityAt, 1/timeFromCurveBase)
-      }
-      else {
-        val factor1Ybefore = this.seasonalityFactor(atDate - Period(1, TimeUnit.Years))
-
-        factorAt / factor1Ybefore
-      }
-
-     (rate + 1) * f - 1
-  }
+//  def seasonalityFactor(to: LocalDate): Double = {
+//    val from = seasonalityBaseDate
+//    val factorFrequency = frequency
+//    val nFactors = seasonalityFactors.size
+//    val factorPeriod = Period(factorFrequency)
+//    Size which = 0;
+//    if (from==to) {
+//      which = 0;
+//    } else {
+//      // days, weeks, months, years are the only time unit possibilities
+//      Integer diffDays = std::abs(to - from);  // in days
+//      Integer dir = 1;
+//      if(from > to)dir = -1;
+//      Integer diff;
+//      if (factorPeriod.units() == Days) {
+//        diff = dir*diffDays;
+//      } else if (factorPeriod.units() == Weeks) {
+//        diff = dir * (diffDays / 7);
+//      } else if (factorPeriod.units() == Months) {
+//        std::pair<Date,Date> lim = inflationPeriod(to, factorFrequency);
+//        diff = diffDays / (31*factorPeriod.length());
+//        Date go = from + dir*diff*factorPeriod;
+//        while ( !(lim.first <= go && go <= lim.second) ) {
+//          go += dir*factorPeriod;
+//          diff++;
+//        }
+//        diff=dir*diff;
+//      } else if (factorPeriod.units() == Years) {
+//        QL_FAIL("seasonality period time unit is not allowed to be : " << factorPeriod.units());
+//      } else {
+//        QL_FAIL("Unknown time unit: " << factorPeriod.units());
+//      }
+//      // now adjust to the available number of factors, direction dependent
+//
+//      if (dir==1) {
+//        which = diff % nFactors;
+//      } else {
+//        which = (nFactors - (-diff % nFactors)) % nFactors;
+//      }
+//    }
+//
+//    return seasonalityFactors()[which];
+//  }
+//
+//  def seasonalityCorrection(rate: Rate,
+//                            atDate: LocalDate,
+//                            dc: DayCountConvention,
+//                            curveBaseDate: LocalDate,
+//                            isZeroRate: Boolean): Rate = {
+//    val factorAt = this.seasonalityFactor(atDate)
+//
+//    //Getting seasonality correction for either ZC or YoY
+//    val f =
+//      if (isZeroRate) {
+//        val factorBase = this.seasonalityFactor(curveBaseDate)
+//        val seasonalityAt = factorAt / factorBase
+//        val timeFromCurveBase = dc.fractionOfYear(curveBaseDate, atDate)
+//
+//        Math.pow(seasonalityAt, 1/timeFromCurveBase)
+//      }
+//      else {
+//        val factor1Ybefore = this.seasonalityFactor(atDate - Period(1, TimeUnit.Years))
+//
+//        factorAt / factor1Ybefore
+//      }
+//
+//     (rate + 1) * f - 1
+//  }
 
 }

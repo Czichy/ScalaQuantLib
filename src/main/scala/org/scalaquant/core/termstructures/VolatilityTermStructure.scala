@@ -1,9 +1,13 @@
 package org.scalaquant.core.termstructures
 
+
+import org.scalaquant.core.types.YearFraction
+
 import org.joda.time.LocalDate
 import org.scalaquant.core.common.time.{TimeUnit, Period, BusinessDayConvention}
 import org.scalaquant.core.common.time.calendars.BusinessCalendar
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
+import org.scalaquant.core.termstructures.volatility.SmileSection
 import org.scalaquant.core.types._
 
 abstract class VolatilityTermStructure( settlementDays: Int,
@@ -26,17 +30,20 @@ abstract class VolatilityTermStructure( settlementDays: Int,
 
 }
 
-case class OptionletVolatilityStructure(override val settlementDays: Int,
-                                        override val referenceDate: LocalDate,
-                                        override val calendar: BusinessCalendar,
-                                        override val dc: DayCountConvention,
-                                        override val bdc: BusinessDayConvention)
+abstract class OptionletVolatilityStructure(settlementDays: Int,
+                                            referenceDate: LocalDate,
+                                            calendar: BusinessCalendar,
+                                            dc: DayCountConvention,
+                                            bdc: BusinessDayConvention)
   extends VolatilityTermStructure(settlementDays, referenceDate, calendar, dc, bdc){
 
   type Volatility = (Any, Rate, Boolean) => Double
   type BlackVariance = Volatility
 
-  protected smileSectionImpl(optionDate: LocalDate): SmileSection
+  protected def volatilityImpl(optionDate: LocalDate, strike: Rate )
+  //! implements the actual volatility calculation in derived classes
+  protected def volatilityImpl(optionTime: YearFraction , strike: Rate )
+  protected def smileSectionImpl(optionDate: LocalDate): SmileSection
 
   val volatility: Volatility = {
     case (optionTenor: Period, strike, extrapolate) =>

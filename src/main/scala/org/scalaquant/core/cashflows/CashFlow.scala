@@ -11,8 +11,6 @@ class CashFlow(val date: LocalDate, val amount: Double)
 
 object CashFlow{
 
-  type Amount = CashFlow => Double
-
   implicit object CashFlowRelational extends Order[CashFlow]{
     def >(x: CashFlow, y: CashFlow) : Boolean = x.date > y.date
     def <(x: CashFlow, y: CashFlow) : Boolean = x.date < y.date

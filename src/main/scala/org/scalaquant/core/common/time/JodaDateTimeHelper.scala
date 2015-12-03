@@ -5,6 +5,15 @@ import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
 
 object JodaDateTimeHelper {
 
+  def firstDayOf(month: Int, year: Int): LocalDate = {
+    LocalDate.now.withDayOfMonth(1).withMonthOfYear(month).withYear(year)
+  }
+
+  def lastDayOf(month: Int, year: Int): LocalDate = {
+    firstDayOf(month,year).plusMonths(1).plusDays(-1)
+  }
+
+
   implicit class JodaDateWrapper(val date: LocalDate) extends AnyVal {
 
     def isEndOfMoth: Boolean = date.dayOfMonth.withMaximumValue().isEqual(date)

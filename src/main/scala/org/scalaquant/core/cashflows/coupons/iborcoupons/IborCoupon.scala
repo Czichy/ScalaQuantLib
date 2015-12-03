@@ -1,7 +1,8 @@
 package org.scalaquant.core.cashflows.coupons.iborcoupons
 
 import org.joda.time.LocalDate
-import org.scalaquant.core.cashflows.coupons.FloatingRateCoupon
+import org.scalaquant.core.cashflows.coupons.{Pricer, FloatingRateCoupon}
+import org.scalaquant.core.cashflows.coupons.pricers.BlackIborCouponPricer
 import org.scalaquant.core.common.time.TimeUnit.Days
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.indexes.ibor.IBORIndex
@@ -21,6 +22,7 @@ case class IBORCoupon(override val paymentDate: LocalDate, //the upcoming paymen
                       override val gearing: Double = 1.0,
                       override val spread: Spread = 0.0,
                       override val daycounter: DayCountConvention,
+                      override val pricer: Pricer[IBORCoupon],
                       override val isInArrears: Boolean = false)
   extends FloatingRateCoupon( paymentDate,
                               nominal,
@@ -33,6 +35,7 @@ case class IBORCoupon(override val paymentDate: LocalDate, //the upcoming paymen
                               gearing,
                               spread,
                               daycounter,
+                              pricer,
                               isInArrears) {
   private val fixingCalendar = index.fixingCalendar
   private val indexFixingDays = index.fixingDays
