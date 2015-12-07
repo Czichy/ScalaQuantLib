@@ -10,4 +10,5 @@ package object types {
   type Probability = Double
   type YearFraction = Double
   type TimeBasket = Map[LocalDate, Double]
+  type Natural = Int
 }

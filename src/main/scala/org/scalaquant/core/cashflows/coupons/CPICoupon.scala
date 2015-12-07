@@ -2,63 +2,56 @@ package org.scalaquant.core.cashflows.coupons
 
 
 import org.joda.time.LocalDate
+import org.scalaquant.core.common.time.Period
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
-import org.scalaquant.core.cashflows.CPI.InterpolationType
+import CPI.InterpolationType
 import org.scalaquant.core.indexes.inflation.ZeroInflationIndex
 import org.scalaquant.core.types._
 
+object CPI {
+
+  sealed trait InterpolationType
+
+  case object AsIndex extends InterpolationType   //!< same interpolation as index
+  case object Flat extends InterpolationType     //!< flat from previous fixing
+  case object Linear extends InterpolationType    //!< linearly between bracketing fixings
+}
+
 class CPICoupon(val baseCPI: Double,
- paymentDate: LocalDate,
- nominal: LocalDate,
- startDate: LocalDate,
- endDate: LocalDate,
- fixingDays: Int,
- index: ZeroInflationIndex,
- observationLag: Period,
- observationInterpolation: InterpolationType,
-                dayCounter: DayCountConvention,
- fixedRate: Rate, // aka gearing
- spread: Spread = 0.0,
-refPeriodStart: LocalDate,
-refPeriodEnd: LocalDate,
+                 paymentDate: LocalDate,
+                 nominal: Rate,
+                 accrualStartDate: LocalDate, //usually the payment date of last coupon
+                 accrualEndDate: LocalDate, //usually the sttlement date of the coupon
+                 refPeriodStart: Option[LocalDate],
+                 refPeriodEnd: Option[LocalDate],
+                 fixingDays: Natural,
+                 index: ZeroInflationIndex,
+                 observationLag: Period,
+                 val observationInterpolation: InterpolationType,
+                 dayCounter: DayCountConvention,
+                 val fixedRate: Rate, // aka gearing
+                 val spread: Spread = 0.0,
+                 exCouponDate: Option[LocalDate])
+  extends InflationCoupon(paymentDate,
+                          nominal,
+                          accrualStartDate,
+                          accrualEndDate,
+                          refPeriodStart,
+                          refPeriodEnd,
+                          fixingDays,
+                          index,
+                          observationLag,
+                          dayCounter,
+                          exCouponDate){
 
-exCouponDate: LocalDate) extends InflationCoupon(
-  paymentDate,
-  nominal,
-  startDate,
-  endDate,
-  fixingDays,
-index,
- observationLag,
- dayCounter: DayCountConvention,
-refPeriodStart: LocalDate,
-refPeriodEnd: LocalDate,
-exCouponDate: LocalDate
-)
-)
-
-//! \name Inspectors
-//@{
-//! fixed rate that will be inflated by the index ratio
-Real fixedRate() const;
-//! spread paid over the fixing of the underlying index
-Spread spread() const;
+  require(Math.abs(baseCPI) > 1e-16, "|baseCPI| < 1e-16, future divide-by-zero problem")
 
 //! adjusted fixing (already divided by the base fixing)
-Rate adjustedFixing() const;
+def adjustedFixing: Rate
 //! allows for a different interpolation from the index
-Rate indexFixing() const;
-//! base value for the CPI index
-/*! \warning make sure that the interpolation used to create
-             this is what you are using for the fixing,
-             i.e. the observationInterpolation.
-*/
-Rate baseCPI() const;
-//! how do you observe the index?  as-is, flat, linear?
-CPI::InterpolationType observationInterpolation() const;
-//! utility method, calls indexFixing
-Rate indexObservation(const Date& onDate) const;
+//private def indexFixing: Rate
+//  def indexObservation(onDate:LocalDate): Double
 //! index used
-boost::shared_ptr<ZeroInflationIndex> cpiIndex() const;) {
+def cpiIndex: ZeroInflationIndex
 
 }

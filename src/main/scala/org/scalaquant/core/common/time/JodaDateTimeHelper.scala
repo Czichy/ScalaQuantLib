@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time
 
-import org.joda.time.LocalDate
+import org.joda.time.{Days, LocalDate}
 import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
 
 object JodaDateTimeHelper {
@@ -23,6 +23,8 @@ object JodaDateTimeHelper {
     def YMD: (Int, Int, Int) = (date.getYear, date.getMonthOfYear, date.getDayOfMonth)
 
     def -(period: Period) = date.plusDays(-period.days.toInt)
+
+    def -(that: LocalDate): Int = Days.daysBetween(date, that).getDays
 
     def +(period: Period) = date.plusDays(period.days.toInt)
   }

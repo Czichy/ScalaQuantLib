@@ -18,12 +18,14 @@ class FixedRateCoupon(paymentDate: LocalDate, //the upcoming payment date of thi
                       exCouponDate: Option[LocalDate],
                       val rate: InterestRate)
   extends Coupon(paymentDate,
-                 nominal * (rate.compoundFactor(accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd) - 1.0),
+                 nominal,
                  accrualStartDate,
                  accrualEndDate,
                  refPeriodStart,
                  refPeriodEnd,
                  exCouponDate) {
+
+  def amount = nominal * (rate.compoundFactor(accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd) - 1.0)
 
   def accruedAmount(asOf: LocalDate): Double = {
     accruedAmount(

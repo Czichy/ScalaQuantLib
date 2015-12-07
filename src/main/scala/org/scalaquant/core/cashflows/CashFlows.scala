@@ -32,7 +32,7 @@ object CashFlows {
 
     private val couponOrCashflow: PartialFunction[CashFlow, LocalDate] = {
       case c: Coupon => c.accrualStartDate
-      case CashFlow(_, date) => date
+      case cf: CashFlow => cf.date
     }
 
     def startDate: LocalDate = {

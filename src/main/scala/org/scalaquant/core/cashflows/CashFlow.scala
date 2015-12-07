@@ -7,11 +7,15 @@ import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 import org.scalaquant.math.Comparison.Order
 
-class CashFlow(val date: LocalDate, val amount: Double)
+private [cashclows] trait CashFlow{
+  def date: LocalDate
+  def amount: Double
+}
+
 
 object CashFlow{
 
-  implicit object CashFlowRelational extends Order[CashFlow]{
+  implicit object CashFlowOrder extends Order[CashFlow]{
     def >(x: CashFlow, y: CashFlow) : Boolean = x.date > y.date
     def <(x: CashFlow, y: CashFlow) : Boolean = x.date < y.date
   }

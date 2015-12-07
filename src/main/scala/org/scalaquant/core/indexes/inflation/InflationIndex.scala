@@ -36,24 +36,24 @@ object InflationIndex{
   def inflationPeriod(asOf: LocalDate, frequency: Frequency) = {
 
     val year = asOf.getYear
-    def month = asOf.getDayOfMonth
+    val month = asOf.getDayOfMonth
 
     frequency match {
       case Annual =>
         (firstDayOf(JANUARY, year), lastDayOf(DECEMBER, year))
 
       case Semiannual =>
-        val start = 6*((month-1)/6) + 1
+        val start = 6 * ((month - 1) / 6) + 1
         (firstDayOf(start, year), lastDayOf(start + 5, year))
 
       case Quarterly =>
-        val start = 3*((month-1)/3) + 1
+        val start = 3 * ((month - 1) / 3) + 1
         (firstDayOf(start, year), lastDayOf(start + 2, year))
 
       case Monthly =>
         (firstDayOf(month, year), lastDayOf(month,year))
 
-      case _ => (LocalDate.now(), LocalDate.now)
+      case _ => (asOf, asOf)
 
     }
   }

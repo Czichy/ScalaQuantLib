@@ -16,7 +16,9 @@ abstract class Coupon(val paymentDate: LocalDate, //the upcoming payment date of
                       val refPeriodStart: Option[LocalDate],
                       val refPeriodEnd: Option[LocalDate],
                       val exCouponDate: Option[LocalDate])
-  extends CashFlow(paymentDate, nominal) {
+  extends CashFlow {
+
+  def date = paymentDate
 
   protected def period = (_: DayCountConvention).fractionOfYear(accrualStartDate, _: LocalDate, refPeriodStart, refPeriodEnd)
 
