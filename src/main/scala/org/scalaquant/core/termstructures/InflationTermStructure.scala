@@ -13,18 +13,19 @@ import org.scalaquant.core.types._
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
-abstract class InflationTermStructure(val baseRate: Rate,
-                                      val observationLag: Period,
-                                      val frequency: Frequency,
-                                      val indexIsInterpolated: Boolean,
-                                      val yTS: YieldTermStructure,
-                                      val seasonality: Seasonality,
-                                      settlementDays: Int,
-                                      referenceDate: LocalDate,
-                                      calendar: BusinessCalendar,
-                                      dc: DayCountConvention,
-                                      val allowsExtrapolation: Boolean = false)
-  extends TermStructure(settlementDays, referenceDate, calendar, dc){
+trait InflationTermStructure{ self: TermStructure =>
+
+  def baseRate: Rate
+
+  def observationLag: Period
+
+  def frequency: Frequency
+
+  def indexIsInterpolated: Boolean
+
+  def yTS: YieldTermStructure
+
+  def seasonality: Seasonality
 
   def baseDate: LocalDate
 

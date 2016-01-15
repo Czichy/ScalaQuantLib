@@ -39,7 +39,7 @@ object Comparing {
     type D = {def date: LocalDate}
 
     implicit object RelationalWithDate extends Equality[D]  with Order[D] {
-      import Implicits.{ LocalDateRelational => F}
+      import Implicits.{ LocalDateRelational => F }
       def ==(x: D, y: D): Boolean = F.==(x.date, y.date)
       def <(x: D,y: D): Boolean = F.<(x.date, y.date)
       def >(x: D,y: D): Boolean = F.>(x.date, y.date)

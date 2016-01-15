@@ -9,7 +9,7 @@ case class FuturesConvAdjustmentQuote(value: Double,
                                       volatility: Double,
                                       meanReversion: Double,
                                       immDate: LocalDate) extends ValidQuote {
-  override def map(f: Quote.Calculation): Quote = if (isValid) copy(f(value)) else InvalidQuote
+  override def map(f: Double => Double): Quote = if (isValid) copy(f(value)) else InvalidQuote
 
 }
 

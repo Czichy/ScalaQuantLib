@@ -1,7 +1,9 @@
 package org.scalaquant.core.common.time
 
 import org.joda.time.DateTimeConstants._
-
+/*
+ * Joda time and this library use the ISO definitions, where 1 is Monday and 7 is Sunday.
+ */
 object DayOfWeek extends Enumeration(1) {
   type DayOfWeek = Value
 
@@ -9,6 +11,12 @@ object DayOfWeek extends Enumeration(1) {
 
   implicit class WeekdayWrapper(val dayOfWeek: DayOfWeek) extends AnyVal{
 
+    def >=(other: DayOfWeek) = dayOfWeek.id >= other.id
+    def >=(other: Int) = dayOfWeek.id >= other
+
+
+    def -(other: Int) = dayOfWeek.id - other
+    def +(other: Int) = dayOfWeek.id + other
     def asLongWeekDay: String = dayOfWeek.id match {
         case SUNDAY => "Sunday"
         case MONDAY => "Monday"

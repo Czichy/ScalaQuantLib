@@ -9,14 +9,14 @@ import org.scalaquant.core.currencies.Currency
 import org.scalaquant.core.indexes.InterestRateIndex
 import org.scalaquant.core.termstructures.YieldTermStructure
 
-class IBORIndex(val familyName: String,
-                    tenor: Period,
-                    settlementDays: Int,
-                    currency: Currency,
-                    fixingCalendar: BusinessCalendar,
-                    convention: BusinessDayConvention,
-                    endOfMonth: Boolean,
-                    dayCounter: DayCountConvention,
+class IBORIndex(familyName: String,
+                tenor: Period,
+                settlementDays: Int,
+                currency: Currency,
+                fixingCalendar: BusinessCalendar,
+                convention: BusinessDayConvention,
+                endOfMonth: Boolean,
+                dayCounter: DayCountConvention,
                 val forwardingTermStructure: YieldTermStructure)
   extends InterestRateIndex(familyName,
                             tenor,
@@ -51,7 +51,7 @@ class IBORIndex(val familyName: String,
 
 case class OvernightIndex(override val familyName: String,
                           settlementDays: Int,
-                          currency: Currency ,
+                          override val currency: Currency ,
                           override val fixingCalendar: BusinessCalendar,
                           override val dayCounter: DayCountConvention,
                           h: YieldTermStructure) extends IBORIndex(familyName,

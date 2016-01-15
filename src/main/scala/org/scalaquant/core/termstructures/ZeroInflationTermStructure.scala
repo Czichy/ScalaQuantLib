@@ -12,28 +12,8 @@ import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.termstructures.inflation.Seasonality
 import org.scalaquant.core.types.{YearFraction, Rate}
 
-abstract class ZeroInflationTermStructure(baseRate: Rate,
-                                          observationLag: Period,
-                                          frequency: Frequency,
-                                          indexIsInterpolated: Boolean,
-                                          yTS: YieldTermStructure,
-                                          seasonality: Seasonality,
-                                          settlementDays: Int,
-                                          referenceDate: LocalDate,
-                                          calendar: BusinessCalendar,
-                                          dc: DayCountConvention,
-                                          allowsExtrapolation: Boolean = false)
-  extends InflationTermStructure(baseRate,
-                                 observationLag,
-                                 frequency,
-                                 indexIsInterpolated,
-                                 yTS,
-                                 seasonality,
-                                 settlementDays,
-                                 referenceDate,
-                                 calendar,
-                                 dc,
-                                 allowsExtrapolation) {
+trait ZeroInflationTermStructure{
+    self : InflationTermStructure =>
 
     protected def zeroRateImpl(time: YearFraction): Rate
 
@@ -72,7 +52,5 @@ abstract class ZeroInflationTermStructure(baseRate: Rate,
             zeroRate
         }
     }
-
-
 
 }

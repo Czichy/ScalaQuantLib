@@ -1,6 +1,15 @@
 package org.scalaquant.core.common
 
 import org.joda.time.LocalDate
+import org.scalaquant.math.Comparing.Implicits._
+import org.scalaquant.math.Comparing.ImplicitsOps._
+
+object Exercise {
+  sealed trait Type
+  case object American extends Type
+  case object Bermudan extends Type
+  case object European extends Type
+}
 
 abstract class Exercise(exerciseType: Exercise.Type) {
   protected val dates: List[LocalDate]
@@ -26,13 +35,7 @@ final case class BermudanExercise(override val dates: List[LocalDate],
                                   override val payoffAtExpiry: Boolean = false)
   extends EarlyExercise(Exercise.Bermudan, payoffAtExpiry)
 
-case class EuropeanExercise(date: LocalDate) extends Exercise(Exercise.European) {
+final case class EuropeanExercise(date: LocalDate) extends Exercise(Exercise.European) {
   override val dates = List(date)
 }
 
-object Exercise {
-  sealed trait Type
-  case object American extends Type
-  case object Bermudan extends Type
-  case object European extends Type
-}

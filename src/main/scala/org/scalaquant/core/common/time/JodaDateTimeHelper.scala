@@ -5,6 +5,16 @@ import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
 
 object JodaDateTimeHelper {
 
+  def previousWednesday(date: LocalDate): LocalDate = {
+    val w = DayOfWeek(date.getDayOfWeek)
+    if (w >= DayOfWeek.Thursday) // roll back w-4 days
+       date - Period(w - 4 , TimeUnit.Days)
+    else // roll forward 4-w days and back one week
+       date + Period(-(w + 3), TimeUnit.Days)
+  }
+
+  def nextWednesday(date: LocalDate): LocalDate = previousWednesday(date.plusDays(7))
+
   def firstDayOf(month: Int, year: Int): LocalDate = {
     LocalDate.now.withDayOfMonth(1).withMonthOfYear(month).withYear(year)
   }
@@ -27,6 +37,10 @@ object JodaDateTimeHelper {
     def -(that: LocalDate): Int = Days.daysBetween(date, that).getDays
 
     def +(period: Period) = date.plusDays(period.days.toInt)
+
+    def +(period: Period) = date.plusDays(period.days.toInt)
+
+   // def +(period: Period) = date.plusDays(period.days.toInt)
   }
 
   def min(date1: LocalDate, date2: LocalDate): LocalDate = {

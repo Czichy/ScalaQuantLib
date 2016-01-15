@@ -54,21 +54,7 @@ class CPICashFlow(notional: Double,
   override def amount = {
 
       val I0 = baseFixing
-      val I1 = if (interpolation == CPI.AsIndex ) {
-        index.fixing(fixingDate)
-      } else {
-
-        val (startDate, endDate) = InflationIndex.inflationPeriod(fixingDate, frequency)
-        val indexStart = index.fixing(startDate)
-
-        if (interpolation == CPI.Linear) {
-          val indexEnd = index.fixing(endDate + Period(1, TimeUnit.Days))
-          indexStart + (indexEnd - indexStart) * (fixingDate - startDate) / ( endDate + Period(1, TimeUnit.Days) - startDate ) // can't get to next period's value within current period
-        } else {
-          indexStart
-        }
-
-      }
+      val I1 = CPI.indexFixing(fixingDate, interpolation, index, frequency)
 
       if (growthOnly) notional * (I1 / I0 - 1.0) else notional * (I1 / I0)
   }

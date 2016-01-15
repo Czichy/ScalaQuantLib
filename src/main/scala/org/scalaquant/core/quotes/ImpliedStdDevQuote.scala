@@ -4,7 +4,7 @@ import org.scalaquant.core.instruments.options.Option
 import org.scalaquant.core.pricingengines.BlackFormula
 
 case class ImpliedStdDevQuote(value: Double) extends ValidQuote{
-  override def map(f: Quote.Calculation): Quote = if (isValid) ImpliedStdDevQuote(f(value)) else InvalidQuote
+   def map(f: Double => Double): Quote = if (isValid) ImpliedStdDevQuote(f(value)) else InvalidQuote
 }
 
 object ImpliedStdDevQuote{

@@ -62,7 +62,7 @@ abstract class YieldTermStructure(override val settlementDays: Int,
 
   def zeroRate(time: Double,
                comp: Compounding,
-               freq: Frequency,
+               freq: Frequency = Annual,
                extrapolate: Boolean = false): InterestRate = {
     val t = if (time == 0.0) YieldTermStructure.dt else time
     InterestRate.impliedRate(1.0 / discount(t, extrapolate), dc, comp, freq, t)
@@ -71,7 +71,7 @@ abstract class YieldTermStructure(override val settlementDays: Int,
   def forwardRate(date1: LocalDate, date2: LocalDate,
                   resultDC: DayCountConvention,
                   comp: Compounding,
-                  freq: Frequency,
+                  freq: Frequency = Annual,
                   extrapolate: Boolean = false): InterestRate = {
     require(date1 <= date2, "date1 later than date2")
     if (date1 == date2) {
@@ -86,14 +86,14 @@ abstract class YieldTermStructure(override val settlementDays: Int,
   def forwardRate(date: LocalDate, period: Period,
                   resultDC: DayCountConvention,
                   comp: Compounding,
-                  freq: Frequency,
+                  freq: Frequency = Annual,
                   extrapolate: Boolean = false): InterestRate = {
     forwardRate(date, date.plusDays(period.days.toInt), dc, comp, freq, extrapolate)
   }
 
   def forwardRate(time1: Double, time2: Double,
                   comp: Compounding,
-                  freq: Frequency,
+                  freq: Frequency = Annual,
                   extrapolate: Boolean = false): InterestRate = {
     require(time1 <= time2, "time1 bigger than time2")
 

@@ -12,14 +12,14 @@ object CashFlows {
 
   type Leg = Seq[CashFlow]
 
-//  type CashFlowFunction[T] = (LocalDate, Boolean) => T
-//  type CashFlowResult[R] = CashFlowFunction[R] => R
-//
-//  type CouponFunction[T] = CashFlowFunction[T]
-//  type CouponResult[R] = CashFlowFunction[R]
-//
-//  type YieldTermStructureFunction = (YieldTermStructure, LocalDate, Boolean, LocalDate) => Rate
-//  type IRRFunction = (InterestRate, LocalDate, Boolean, LocalDate) => Rate
+  type CashFlowFunction[T] = (LocalDate, Boolean) => T
+  type CashFlowResult[R] = CashFlowFunction[R] => R
+
+  type CouponFunction[T] = CashFlowFunction[T]
+  type CouponResult[R] = CashFlowFunction[R]
+
+  type YieldTermStructureFunction = (YieldTermStructure, LocalDate, Boolean, LocalDate) => Rate
+  type IRRFunction = (InterestRate, LocalDate, Boolean, LocalDate) => Rate
 
   private def occurredAt(date: LocalDate, includeDate: Boolean) = Event.hasOccurred(_, date, includeDate)
 

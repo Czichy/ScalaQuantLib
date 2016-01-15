@@ -8,11 +8,12 @@ import org.scalaquant.core.types._
   * Created by neo on 12/5/15.
   */
 
- class YoYInflationCouponPricer(capletVolatility: YoYOptionletVolatilitySurface)(implicit coupon: YoYInflationCoupon) extends Pricer[InflationCoupon](coupon){
+ class YoYInflationCouponPricer(capletVolatility: YoYOptionletVolatilitySurface, coupon: YoYInflationCoupon) extends Pricer{
   private val gearing = coupon.gearing
   private val spread = coupon.spread
   private val paymentDate = coupon.date
   private val rateCurve = coupon.index.yoyInflationTermStructure.nominalTermStructure
+
   def swapletPrice: Rate
 
   def swapletRate: Rate
@@ -26,6 +27,6 @@ import org.scalaquant.core.types._
   def floorletRate(effectiveFloor: Rate): Rate
 }
 
-class BlackYoYInflationCouponPricer(capletVolatility: OptionletVolatilityStructure)(implicit coupon: InflationCoupon)  extends Pricer[InflationCoupon](coupon){
-
-}
+//class BlackYoYInflationCouponPricer(capletVolatility: OptionletVolatilityStructure, coupon: InflationCoupon)  extends Pricer{
+//
+//}

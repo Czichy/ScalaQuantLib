@@ -5,37 +5,27 @@ import org.scalaquant.core.types.YearFraction
 
 import org.joda.time.LocalDate
 import org.scalaquant.core.common.time.{TimeUnit, Period, BusinessDayConvention}
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.termstructures.volatility.SmileSection
 import org.scalaquant.core.types._
 
-abstract class VolatilityTermStructure( settlementDays: Int,
-                                        referenceDate: LocalDate,
-                                        calendar: BusinessCalendar,
-                                        dc: DayCountConvention,
-                                        val bdc: BusinessDayConvention )
-  extends TermStructure(settlementDays, referenceDate, calendar, dc){
+trait VolatilityTermStructure { self: TermStructure =>
+
+  def bdc: BusinessDayConvention
 
   def minStrike: Double
 
   def maxStrike: Double
+
+  def optionDateFromTenor(p: Period) = calendar.advance(referenceDate, p.days.toInt, TimeUnit.Days, bdc )
 
   protected def checkStrike(k: Double, extrapolate: Boolean) = {
     require(extrapolate || allowsExtrapolation || (k >= minStrike && k <= maxStrike),
       s"strike ($k) is outside the curve domain [${minStrike}, ${maxStrike}]")
   }
 
-  def optionDateFromTenor(p: Period) = calendar.advance(referenceDate, p.days.toInt, TimeUnit.Days, bdc )
-
 }
 
-abstract class OptionletVolatilityStructure(settlementDays: Int,
-                                            referenceDate: LocalDate,
-                                            calendar: BusinessCalendar,
-                                            dc: DayCountConvention,
-                                            bdc: BusinessDayConvention)
-  extends VolatilityTermStructure(settlementDays, referenceDate, calendar, dc, bdc){
+trait OptionletVolatilityStructure{ self: VolatilityTermStructure =>
 
   type Volatility = (Any, Rate, Boolean) => Double
   type BlackVariance = Volatility
@@ -81,4 +71,4 @@ abstract class OptionletVolatilityStructure(settlementDays: Int,
   def smileSection(Time optionTime, bool extr = false) const;
 }
 
-case class SwaptionVolatilityStructure extends VolatilityTermStructure
+//case class SwaptionVolatilityStructure() extends VolatilityTermStructure

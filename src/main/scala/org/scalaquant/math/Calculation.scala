@@ -55,19 +55,11 @@ object Calculation {
 object Calculating{
   import Calculation._
 
-  implicit class ArithmeticOpsClass[T](val self: T)(implicit val F: Arithmetic[T] with ArithmeticWithAnyVal[T] ) extends ArithmeticOps[T]{
+  implicit class ArithmeticOpsClass[T](val self: T)(implicit val F: Arithmetic[T] ) extends ArithmeticOps[T]{
      def +(y: T): T = F.+(self, y)
      def /(y: T): T = F./(self, y)
      def -(y: T): T = F.-(self, y)
      def *(y: T): T = F.*(self, y)
-     def +(y: I): T = F.+(self, y)
-     def -(y: I): T = F./(self, y)
-     def *(y: I): T = F.-(self, y)
-     def /(y: I): T = F.*(self, y)
-     def :+(y: I): T = F.+(y,self)
-     def :*(y: I): T = F.*(y,self)
-     def :-(y: I): T = F.-(y,self)
-     def :/(y: I): T = F./(y,self)
 
   }
 }

@@ -2,12 +2,63 @@ package org.scalaquant.core.common.time
 
 import org.scalaquant.core.common.time.Frequency._
 import org.scalaquant.core.common.time.TimeUnit._
+import org.scalaquant.math.Comparison.Order
 
 object Period {
   val Empty = Period()
   val Unknown = Period(999)
 
   import Frequency._
+
+  val daysMinMax: Period => (Int, Int) = {
+    case Period(length, Days) => (length, length)
+    case Period(length, Weeks) => (7 * length, 7 * length)
+    case Period(length, Months) => (28 * length, 31* length)
+    case Period(length, Years) => (365 * length, 366 * length)
+  }
+
+  implicit object PeriodOrder extends Order[Period]{
+
+    def <(p1: Period, p2: Period): Boolean = {
+
+      (p1, p2) match {
+        case (Period(0, _), Period(y, _)) => y > 0
+        case (Period(x, _), Period(0, _)) => x < 0
+        case (Period(x, xunits), Period(y, yunits)) if xunits == yunits => x < y
+        case (Period(x, Months), Period(y, Years)) => x < 12 * y
+        case (Period(x, Years), Period(y, Months)) => 12 * x < y
+        case (Period(x, Days), Period(y, Weeks)) => x < 7 * y
+        case (Period(x, Weeks), Period(y, Days)) => 7 * x < y
+        case _ =>
+          val (xmin, xmax) = daysMinMax(p1)
+          val (ymin, ymax) = daysMinMax(p2)
+
+          xmax < ymin
+
+      }
+
+    }
+
+    def >(p1: Period, p2: Period): Boolean = {
+
+      (p1, p2) match {
+        case (Period(0, _), Period(y, _)) => y < 0
+        case (Period(x, _), Period(0, _)) => x > 0
+        case (Period(x, xunits), Period(y, yunits)) if xunits == yunits => x > y
+        case (Period(x, Months), Period(y, Years)) => x > 12 * y
+        case (Period(x, Years), Period(y, Months)) => 12 * x > y
+        case (Period(x, Days), Period(y, Weeks)) => x > 7 * y
+        case (Period(x, Weeks), Period(y, Days)) => 7 * x > y
+        case _ =>
+          val (xmin, xmax) = daysMinMax(p1)
+          val (ymin, ymax) = daysMinMax(p2)
+
+          xmax > ymin
+
+      }
+
+    }
+  }
 
   def apply(freq: Frequency): Period = freq.value match {
       case NoFrequency.value => Empty
@@ -21,17 +72,16 @@ object Period {
       case _ => Unknown
     }
 
-}
+
+  }
 
 case class Period(length: Int = 0, units: TimeUnit = Days) {
   
   def normalize: Period = {
     if (length != 0) {
       units match {
-        case Days =>
-          if (length % 7 == 0) Period(length / 7, Weeks) else this
-        case Months =>
-          if (length % 12 == 0) Period(length / 12, Years) else this
+        case Days => if (length % 7 == 0) Period(length / 7, Weeks) else this
+        case Months => if (length % 12 == 0) Period(length / 12, Years) else this
         case _ => this
       }
     } else {
@@ -45,10 +95,8 @@ case class Period(length: Int = 0, units: TimeUnit = Days) {
 
   def *:(n: Int) = *(n)
 
-  //def *(other: Period) =
-  //    def /(other: Period) =
-  //    def >(other: Period) =
-  //    def <(other: Period) =
+
+
   private def descriptions(toDays: => String)(toWeeks: => String)(toMonths: => String)(toYears: => String): String = {
     units match {
       case Days => toDays

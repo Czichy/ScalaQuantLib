@@ -4,18 +4,13 @@ import org.joda.time.LocalDate
 import org.scalaquant.core.cashflows.CashFlows.Leg
 import org.scalaquant.core.pricingengines.PricingEngine
 
+//! Interest rate swap
 /*! The cash flows belonging to the first leg are paid;
-            the ones belonging to the second leg are received.
-        */
-abstract class Swap(val firstLeg: Leg, val secondLeg: Leg, results: Swap.Results ) {
-  private var _legs = List((firstLeg, -1.0), (secondLeg, 1.0))
-  private var _results = results
+    the ones belonging to the second leg are received.
 
-  def this(legs: List[(Leg, Double)], results: Swap.Results) = {
-    this
-    _legs = legs
-    _results = results
-  }
+*/
+
+abstract class Swap(val firstLeg: Leg, val secondLeg: Leg ) {
 
   def legs: List[(Leg, Double)] = _legs
 
