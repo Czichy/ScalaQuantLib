@@ -3,8 +3,8 @@ package org.scalaquant.core.common.time.calendars
 
 import java.util.concurrent.ConcurrentSkipListSet
 
-import org.joda.time.DateTimeConstants._
-import org.joda.time.{Days, LocalDate}
+import java.time.DateTimeConstants._
+import java.time.{Days, LocalDate}
 
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._

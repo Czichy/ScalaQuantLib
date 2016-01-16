@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time
 
-import org.joda.time.DateTimeConstants._
+import java.time.DateTimeConstants._
 /*
  * Joda time and this library use the ISO definitions, where 1 is Monday and 7 is Sunday.
  */

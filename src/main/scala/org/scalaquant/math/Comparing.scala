@@ -1,6 +1,6 @@
 package org.scalaquant.math
 
-import org.joda.time.{LocalDate, LocalTime}
+import java.time.{LocalDate, LocalTime}
 import org.scalaquant.math.Comparison._
 
 object Comparing {

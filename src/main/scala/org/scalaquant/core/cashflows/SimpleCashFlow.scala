@@ -1,6 +1,6 @@
 package org.scalaquant.core.cashflows
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.time.JodaDateTimeHelper
 
 class SimpleCashFlow(val amount: Double, val date: LocalDate) extends CashFlow {

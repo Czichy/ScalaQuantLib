@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time.daycounts
 
-import org.joda.time.{ Days, LocalDate }
+import java.time.{ Days, LocalDate }
 import org.scalaquant.core.types.YearFraction
 import org.scalaquant.math.Comparison.Equality
 

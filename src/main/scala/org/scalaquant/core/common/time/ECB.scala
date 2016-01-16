@@ -2,7 +2,7 @@ package org.scalaquant.core.common.time
 
 import java.util.concurrent.ConcurrentSkipListSet
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.Settings
 
 /** European Central Bank reserve maintenance dates */

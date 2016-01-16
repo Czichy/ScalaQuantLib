@@ -1,6 +1,6 @@
 package org.scalaquant.core.common
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 

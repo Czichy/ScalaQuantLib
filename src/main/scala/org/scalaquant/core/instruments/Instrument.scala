@@ -1,6 +1,6 @@
 package org.scalaquant.core.instruments
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 abstract class Instrument {
 

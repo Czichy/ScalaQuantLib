@@ -3,7 +3,7 @@ package org.scalaquant.core.cashflows.coupons
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.common.time.Frequency
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.cashflows.coupons.pricers.FloatingRateCouponPricer
 import org.scalaquant.core.indexes.ibor.OvernightIndex
 

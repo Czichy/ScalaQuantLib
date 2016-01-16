@@ -1,6 +1,6 @@
 package org.scalaquant.core.cashflows.coupons.iborcoupons
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.cashflows.coupons.FloatingRateCoupon
 import org.scalaquant.core.cashflows.coupons.pricers.Pricer
 import org.scalaquant.core.common.time.TimeUnit.Days

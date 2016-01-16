@@ -1,7 +1,7 @@
 package org.scalaquant.core.termstructures
 
 
-import org.joda.time.{DateTimeConstants, LocalDate}
+import java.time.{DateTimeConstants, LocalDate}
 import org.scalaquant.core.common.time.Frequency._
 import DateTimeConstants._
 import org.scalaquant.core.common.time.Period

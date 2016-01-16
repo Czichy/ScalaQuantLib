@@ -1,6 +1,6 @@
 package org.scalaquant.core.cashflows.coupons
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.cashflows.CashFlow
 import org.scalaquant.core.common.Compounding.Simple
 import org.scalaquant.core.common.InterestRate

@@ -1,6 +1,6 @@
 package org.scalaquant.core.indexes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.TimeSeries
 
 import scala.collection.concurrent._

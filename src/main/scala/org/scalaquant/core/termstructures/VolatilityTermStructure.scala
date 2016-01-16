@@ -3,7 +3,7 @@ package org.scalaquant.core.termstructures
 
 import org.scalaquant.core.types.YearFraction
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.time.{TimeUnit, Period, BusinessDayConvention}
 import org.scalaquant.core.termstructures.volatility.SmileSection
 import org.scalaquant.core.types._

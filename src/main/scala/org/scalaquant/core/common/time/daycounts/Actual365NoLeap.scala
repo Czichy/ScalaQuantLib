@@ -1,7 +1,7 @@
 package org.scalaquant.core.common.time.daycounts
 
-import org.joda.time.LocalDate
-import org.joda.time.DateTimeConstants._
+import java.time.LocalDate
+import java.time.DateTimeConstants._
 
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 

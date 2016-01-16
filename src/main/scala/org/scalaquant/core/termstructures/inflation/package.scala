@@ -1,6 +1,6 @@
 package org.scalaquant.core.termstructures
 
-import org.joda.time.{Period, LocalDate}
+import java.time.{Period, LocalDate}
 import org.scalaquant.core.common.time.Frequency
 import org.scalaquant.core.common.time.Frequency._
 import org.scalaquant.core.common.time.daycounts.DayCountConvention

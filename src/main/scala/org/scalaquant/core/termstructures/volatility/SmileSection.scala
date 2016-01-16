@@ -1,7 +1,7 @@
 package org.scalaquant.core.termstructures.volatility
 
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.pricingengines.BlackFormula
 import org.scalaquant.core.types.Rate

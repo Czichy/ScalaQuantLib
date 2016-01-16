@@ -1,7 +1,7 @@
 package org.scalaquant.core.cashflows.coupons
 
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.time.Frequency.Frequency
 import org.scalaquant.core.common.time.{TimeUnit, Period}
 import org.scalaquant.core.common.time.daycounts.DayCountConvention

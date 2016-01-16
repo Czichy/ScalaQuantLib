@@ -1,6 +1,6 @@
 package org.scalaquant.core.cashflows
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.cashflows.coupons.CPI
 import org.scalaquant.core.cashflows.coupons.CPI.InterpolationType
 

@@ -1,6 +1,6 @@
 package org.scalaquant.core.currencies
 
-import org.joda.time.{DateTime, LocalTime, LocalDate}
+import java.time.{DateTime, LocalTime, LocalDate}
 import org.scalaquant.core.common.Settings
 import org.scalaquant.core.common.time.JodaDateTimeHelper
 import org.scalaquant.core.currencies.America.{ PEHCurrency, PENCurrency, PEICurrency }
@@ -41,7 +41,7 @@ trait DailyRates {
 }
 
 object ExchangeRateManager {
-  import org.joda.time.DateTimeConstants._
+  import java.time.DateTimeConstants._
   private val knownRates = TrieMap(
     Key(EUR, ATS) -> Entry(ExchangeRate(EUR, ATS, 13.7603), new LocalDate(1999, JANUARY, 1), farFuture),
     Key(EUR, BEF) -> Entry(ExchangeRate(EUR, BEF, 40.3399), new LocalDate(1999, JANUARY, 1), farFuture),

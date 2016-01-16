@@ -1,6 +1,6 @@
 package org.scalaquant.core.termstructures.inflation
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.common.time.{Frequency, TimeUnit, Period}

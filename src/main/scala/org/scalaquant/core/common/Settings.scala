@@ -1,6 +1,6 @@
 package org.scalaquant.core.common
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 object Settings {
   def evaluationDate: LocalDate = LocalDate.now

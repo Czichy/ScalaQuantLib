@@ -2,7 +2,7 @@ package org.scalaquant.core.common.time
 
 
 import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 import org.scalaquant.math.Comparing.ImplicitsOps._
 import org.scalaquant.math.Comparing.Implicits._

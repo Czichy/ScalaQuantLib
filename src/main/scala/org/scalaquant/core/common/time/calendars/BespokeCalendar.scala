@@ -2,7 +2,7 @@ package org.scalaquant.core.common.time.calendars
 
 import java.util.concurrent.ConcurrentSkipListSet
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 class BespokeCalendar(override val name: String) extends BusinessCalendar{
 

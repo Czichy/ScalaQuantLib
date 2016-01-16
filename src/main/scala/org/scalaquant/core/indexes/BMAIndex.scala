@@ -1,6 +1,6 @@
 package org.scalaquant.core.indexes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.Compounding
 import org.scalaquant.core.common.time.calendars.UnitedStates.NYSE
 import org.scalaquant.core.common.time.daycounts.ActualActual.ISDA

@@ -1,6 +1,6 @@
 package org.scalaquant.core.quotes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.Settings
 import org.scalaquant.core.indexes.ibor.IborIndex
 

@@ -1,6 +1,6 @@
 package org.scalaquant.core.common
 
-import org.joda.time.ReadablePartial
+import java.time.ReadablePartial
 
 case class TimeSeries[T <: ReadablePartial, V <: AnyVal](pairs: Map[T, V]) {
   def firstDate: T = pairs.keys.head

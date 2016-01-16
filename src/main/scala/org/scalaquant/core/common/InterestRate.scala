@@ -1,6 +1,6 @@
 package org.scalaquant.core.common
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.common.Compounding._
 
 import org.scalaquant.core.common.time.Frequency._

@@ -7,7 +7,7 @@ import org.scalaquant.core.common.time.{TimeUnit, Period}
 import org.scalaquant.core.currencies.Currency
 import org.scalaquant.core.indexes.Region
 import org.scalaquant.core.indexes.Index
-import org.joda.time.{Days, DateTimeConstants, LocalDate}
+import java.time.{Days, DateTimeConstants, LocalDate}
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 import org.scalaquant.core.termstructures.ZeroInflationTermStructure
 

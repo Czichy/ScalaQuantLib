@@ -9,7 +9,7 @@ import org.scalaquant.core.cashflows._
 import org.scalaquant.core.common.time.calendars.BusinessCalendar
 import org.scalaquant.core.common.time.daycounts.DayCountConvention
 import org.scalaquant.core.instruments.{ExpirationDate, Instrument}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 
 

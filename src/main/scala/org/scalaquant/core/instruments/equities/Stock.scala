@@ -1,6 +1,6 @@
 package org.scalaquant.core.instruments.equities
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalaquant.core.instruments.{NoExpiration, Instrument}
 import org.scalaquant.core.quotes.Quote
 

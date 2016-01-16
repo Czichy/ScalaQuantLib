@@ -1,6 +1,6 @@
 package org.scalaquant.core
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 package object types {
   type Rate = Double

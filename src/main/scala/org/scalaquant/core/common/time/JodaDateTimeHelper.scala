@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time
 
-import org.joda.time.{Days, LocalDate}
+import java.time.{Days, LocalDate}
 import org.scalaquant.core.common.time.DayOfWeek.DayOfWeek
 
 object JodaDateTimeHelper {

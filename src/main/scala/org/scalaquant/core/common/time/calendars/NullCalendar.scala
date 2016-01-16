@@ -1,6 +1,6 @@
 package org.scalaquant.core.common.time.calendars
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 object NullCalendar {
 
