@@ -1,9 +1,8 @@
 package org.scalaquant.core.cashflows.coupons.pricers
 
 import java.time.LocalDate
-import org.scalaquant.core.cashflows.coupons.iborcoupons.IBORCoupon
 import org.scalaquant.core.cashflows.coupons.pricers.{Pricer, Pricing}
-import org.scalaquant.core.cashflows.coupons.{Coupon, Pricer}
+import org.scalaquant.core.cashflows.coupons.{IBORCoupon, Coupon, Pricer}
 import org.scalaquant.core.instruments.options.Option
 import org.scalaquant.core.termstructures.OptionletVolatilityStructure
 import org.scalaquant.core.types._

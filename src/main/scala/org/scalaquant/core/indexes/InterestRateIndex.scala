@@ -10,12 +10,17 @@ import org.scalaquant.core.currencies.Currency
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
-abstract class InterestRateIndex(val familyName: String,
-                                 val tenor: Period,
-                                 val fixingDays: Int,
-                                 val currency: Currency,
-                                 val fixingCalendar: BusinessCalendar,
-                                 val dayCounter: DayCountConvention) extends Index{
+trait InterestRateIndex extends Index{
+
+  def familyName: String
+
+  def tenor: Period
+
+  def fixingDays: Int
+
+  def currency: Currency
+
+  def dayCounter: DayCountConvention
 
   private def requireFixingDate(value: LocalDate): Unit = {
     require(isValidFixingDate(value), value + "is not a valid fixing date.")

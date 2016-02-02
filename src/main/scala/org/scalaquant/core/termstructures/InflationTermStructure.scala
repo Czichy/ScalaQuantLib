@@ -1,7 +1,7 @@
 package org.scalaquant.core.termstructures
 
 
-import java.time.{DateTimeConstants, LocalDate}
+import java.time.{Month, DateTimeConstants, LocalDate}
 import org.scalaquant.core.common.time.Frequency._
 import DateTimeConstants._
 import org.scalaquant.core.common.time.Period
@@ -13,7 +13,7 @@ import org.scalaquant.core.types._
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
-trait InflationTermStructure{ self: TermStructure =>
+trait InflationTermStructure extends TermStructure {
 
   def baseRate: Rate
 
@@ -45,11 +45,11 @@ object InflationTermStructure {
 
   def inflationPeriod(d: LocalDate,frequency: Frequency): (LocalDate, LocalDate) = {
 
-    val month = d.getMonthOfYear
+    val month = d.getMonth
     val year = d.getYear
 
     val (startMonth, endMonth) =  frequency match {
-      case Annual => (JANUARY, DECEMBER)
+      case Annual => (Month.JANUARY, Month.DECEMBER)
       case Semiannual =>
         val startMonth = 6 * ((month - 1)/6) + 1
         (startMonth, startMonth + 5)
@@ -66,3 +66,4 @@ object InflationTermStructure {
     (startDate, endDate)
   }
 }
+

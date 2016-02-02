@@ -40,7 +40,7 @@ class ZARegion extends Region{
 
 object Region{
 
-  private[pacakge] case class Data(name :String, code: String)
+  private[pacakge] final case class Data(name :String, code: String)
 
   private[pacakge] val AUData = Data("Australia","AU")
   private[pacakge] val EUData = Data("EU","EU")

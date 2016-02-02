@@ -1,15 +1,13 @@
 package org.scalaquant.core.termstructures
 
 
-import java.time.{ Days, LocalDate }
-import org.scalaquant.core.common.time.Frequency._
+import java.time.{ Period => jdkPeriod, LocalDate}
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
+
 
 import org.scalaquant.core.indexes.inflation.InflationIndex.inflationPeriod
 import org.scalaquant.core.common.time.{TimeUnit, Period}
-import org.scalaquant.core.common.time.calendars.BusinessCalendar
-import org.scalaquant.core.common.time.daycounts.DayCountConvention
-import org.scalaquant.core.termstructures.inflation.Seasonality
+
 import org.scalaquant.core.types.{YearFraction, Rate}
 
 trait ZeroInflationTermStructure{
@@ -27,15 +25,15 @@ trait ZeroInflationTermStructure{
 
         val zeroRate = if (forceLinearInterpolation) {
 
-            val dp = Days.daysBetween(endDate + Period(1, TimeUnit.Days), startDate).getDays
-            val dt = Days.daysBetween(asOf , startDate).getDays
+            val dp = jdkPeriod.between(endDate + Period(1, TimeUnit.Days), startDate).getDays
+            val dt = jdkPeriod.between(asOf , startDate).getDays
             // if we are interpolating we only check the exact point
             // this prevents falling off the end at curve maturity
             checkRange(asOf, extrapolate)
             val z1 = zeroRateImpl(timeFromReference(startDate))
             val z2 = zeroRateImpl(timeFromReference(endDate))
 
-             z1 + (z2 - z1) * (dt/dp)
+             z1 + (z2 - z1) * (dt / dp)
         } else {
             if (indexIsInterpolated) {
                 checkRange(asOf - useLag, extrapolate)

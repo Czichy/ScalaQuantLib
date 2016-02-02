@@ -41,8 +41,8 @@ object CouponPricing {
 
  // type Pricing = (Pricer, Coupon) => Rate
 
-  trait Pricing[C] {
-    def rate(coupon: C) = .swapletRate
+  trait PricingOps[C, P] {
+    def rate: Rate
   }
 
 }

@@ -6,9 +6,9 @@ import org.scalaquant.core.common.time.calendars.UnitedStates.NYSE
 import org.scalaquant.core.common.time.daycounts.ActualActual.ISDA
 import org.scalaquant.core.common.time.{Period, TimeUnit}
 import org.scalaquant.core.common.time.calendars.{BusinessCalendar, UnitedStates}
-import org.scalaquant.core.common.time.daycounts.ActualActual
+import org.scalaquant.core.common.time.daycounts.{DayCountConvention, ActualActual}
 import org.scalaquant.core.termstructures.YieldTermStructure
-import org.scalaquant.core.currencies.America
+import org.scalaquant.core.currencies.{Currency, America}
 import org.scalaquant.core.types.Rate
 import org.scalaquant.core.common.time.JodaDateTimeHelper._
 
@@ -20,13 +20,14 @@ import org.scalaquant.core.common.time.JodaDateTimeHelper._
     correspondent of the 1M USD-Libor.
 */
 
-class BMAIndex(val forwardingTermStructure: YieldTermStructure)
-  extends InterestRateIndex("BMA",
-                            Period(1, TimeUnit.Weeks),
-                            1,
-                            America.USD,
-                            UnitedStates(NYSE),
-                            ActualActual(ISDA)){
+case class BMAIndex(forwardingTermStructure: YieldTermStructure,
+                    familyName: String = "BMA",
+                    tenor: Period = Period(1, TimeUnit.Weeks),
+                    fixingDays: Int = 1,
+                    currency: Currency =America.USD,
+                    fixingCalendar: BusinessCalendar = UnitedStates(NYSE),
+                    dayCounter: DayCountConvention = ActualActual(ISDA))
+  extends InterestRateIndex{
 
   override def name = familyName
 

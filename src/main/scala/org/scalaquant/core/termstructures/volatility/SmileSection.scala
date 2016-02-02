@@ -16,11 +16,13 @@ import org.scalaquant.math.Comparing.ImplicitsOps._
 /**
   * Created by neo on 11/12/15.
   */
-abstract class SmileSection(val exerciseDate: LocalDate,
-                   val daycounter: DayCountConvention,
-                   val referenceDate: LocalDate,
-                   val volatilityType: VolatilityType,
-                   val shift: Rate) {
+trait SmileSection {
+
+  def exerciseDate: LocalDate
+  def daycounter: DayCountConvention
+  def referenceDate: LocalDate
+  def volatilityType: VolatilityType
+  def shift: Rate
 
   require(exerciseDate >= referenceDate,
           s"expiry date ($exerciseDate) must be greater than reference date ($referenceDate)")

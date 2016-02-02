@@ -6,7 +6,7 @@ import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 import org.scalaquant.math.Comparison.Order
 
-private [cashclows] trait CashFlow{
+trait CashFlow{
   def date: LocalDate
   def amount: Double
 }

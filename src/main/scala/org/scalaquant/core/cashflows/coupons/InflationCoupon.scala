@@ -14,19 +14,13 @@ import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 import org.scalaquant.core.types.Natural
 
-abstract class InflationCoupon(paymentDate: LocalDate, //the upcoming payment date of this coupon
-                               nominal: Rate,
-                               accrualStartDate: LocalDate, //usually the payment date of last coupon
-                               accrualEndDate: LocalDate, //usually the sttlement date of the coupon
-                               refPeriodStart: Option[LocalDate],
-                               refPeriodEnd: Option[LocalDate],
-                               exCouponDate: Option[LocalDate],
-                               val fixingDays: Natural,
-                               val index: InflationIndex,
-                               val observationLag: Period,
-                               val dayCounter: DayCountConvention,
-                               val pricer: InflationCoupon => Pricer)
-  extends Coupon(paymentDate, nominal, accrualStartDate, accrualEndDate, refPeriodStart, refPeriodEnd, exCouponDate){
+trait InflationCoupon extends Coupon {
+
+  def fixingDays: Natural
+  def index: InflationIndex
+  def observationLag: Period
+  def dayCounter: DayCountConvention
+ // val pricer: InflationCoupon => Pricer)
 
   def indexFixing: Option[Rate] = fixingDate.map( index.fixing(_) )
 
@@ -36,14 +30,14 @@ abstract class InflationCoupon(paymentDate: LocalDate, //the upcoming payment da
     }
 
 
-  def rate = pricer.apply(this).swapletRate
-
-  def accruedAmount(asOf: LocalDate): Rate = {
-    if (date <= accrualStartDate || date > paymentDate)
-      0.0
-    else
-      nominal * rate * dayCounter.fractionOfYear(accrualStartDate, min(date, accrualEndDate))
-  }
+//  def rate = pricer.apply(this).swapletRate
+//
+//  def accruedAmount(asOf: LocalDate): Rate = {
+//    if (date <= accrualStartDate || date > paymentDate)
+//      0.0
+//    else
+//      nominal * rate * dayCounter.fractionOfYear(accrualStartDate, min(date, accrualEndDate))
+//  }
 
   def price(discountingCurve: YieldTermStructure): Double = amount * discountingCurve.discount(date)
 

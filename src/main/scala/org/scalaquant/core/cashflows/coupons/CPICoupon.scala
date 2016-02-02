@@ -52,24 +52,22 @@ case class CPICoupon(baseCPI: Double,
                      accrualEndDate: LocalDate, //usually the sttlement date of the coupon
                      refPeriodStart: Option[LocalDate],
                      refPeriodEnd: Option[LocalDate],
+                     exCouponDate: Option[LocalDate],
                      fixingDays: Natural,
                      index: ZeroInflationIndex,
                      observationLag: Period,
                      observationInterpolation: CPI.InterpolationType,
                      dayCounter: DayCountConvention,
                      fixedRate: Rate, // aka gearing
-                     spread: Spread = 0.0,
-                     exCouponDate: Option[LocalDate]){
+                     spread: Spread = 0.0)
+  extends InflationCoupon {
 
   require(Math.abs(baseCPI) > 1e-16, "|baseCPI| < 1e-16, future divide-by-zero problem")
-
 
   def indexFixing(fixingDate: LocalDate): Rate = {
     CPI.indexFixing(fixingDate, observationInterpolation, index, index.frequency)
   }
 
-  def adjustedFixing = rate - spread / fixedRate
+  //def adjustedFixing = rate - spread / fixedRate
 
 }
-
-object CPICoupon

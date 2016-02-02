@@ -8,7 +8,7 @@ import org.scalaquant.core.common.time.{TimeUnit, Period, BusinessDayConvention}
 import org.scalaquant.core.termstructures.volatility.SmileSection
 import org.scalaquant.core.types._
 
-trait VolatilityTermStructure { self: TermStructure =>
+trait VolatilityTermStructure  extends TermStructure {
 
   def bdc: BusinessDayConvention
 
@@ -25,14 +25,14 @@ trait VolatilityTermStructure { self: TermStructure =>
 
 }
 
-trait OptionletVolatilityStructure{ self: VolatilityTermStructure =>
+trait OptionletVolatilityStructure extends VolatilityTermStructure {
 
   type Volatility = (Any, Rate, Boolean) => Double
   type BlackVariance = Volatility
 
-  protected def volatilityImpl(optionDate: LocalDate, strike: Rate )
+  protected def volatilityImpl(optionDate: LocalDate, strike: Rate ): Volatility
   //! implements the actual volatility calculation in derived classes
-  protected def volatilityImpl(optionTime: YearFraction , strike: Rate )
+  protected def volatilityImpl(optionTime: YearFraction , strike: Rate ) : Volatility
   protected def smileSectionImpl(optionDate: LocalDate): SmileSection
 
   val volatility: Volatility = {

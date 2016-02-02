@@ -148,22 +148,22 @@ abstract class ZeroInflationIndex(familyName: String,
   }
 }
 
-//
-//class YoYInflationIndex(familyName: String,
-//                        region: Region,
-//                        revised: Boolean,
-//                        interpolated: Boolean,
-//                        frequency: Frequency,
-//                        availabilityLag: Period,
-//                        currency: Currency,
-//                        val ratio: Boolean,
-//                        val termStructure: YoYInflationTermStructure)
-//  extends InflationIndex( familyName,
-//                          region,
-//                          revised,
-//                          interpolated,
-//                          frequency,
-//                          availabilityLag,
-//                          currency) {
-//
-//}
+
+class YoYInflationIndex(familyName: String,
+                        region: Region,
+                        revised: Boolean,
+                        interpolated: Boolean,
+                        frequency: Frequency,
+                        availabilityLag: Period,
+                        currency: Currency,
+                        val ratio: Boolean,
+                        val termStructure: YoYInflationTermStructure)
+  extends InflationIndex( familyName,
+                          region,
+                          revised,
+                          interpolated,
+                          frequency,
+                          availabilityLag,
+                          currency) {
+
+}
