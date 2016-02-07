@@ -9,14 +9,20 @@ import org.scalaquant.core.types.{YearFraction, Rate}
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
-trait Coupon extends CashFlow {
+trait Coupon {
 
   def paymentDate: LocalDate //the upcoming payment date of this coupon
+
   def nominal: Rate
+
   def accrualStartDate: LocalDate //usually the payment date of last coupon
+
   def accrualEndDate: LocalDate //usually the settlement date of the coupon
+
   def refPeriodStart: Option[LocalDate]
+
   def refPeriodEnd: Option[LocalDate]
+
   def exCouponDate: Option[LocalDate]
 
   def date = paymentDate

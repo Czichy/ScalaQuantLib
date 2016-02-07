@@ -10,10 +10,7 @@ import org.scalaquant.core.types._
 import org.scalaquant.math.Comparing.Implicits._
 import org.scalaquant.math.Comparing.ImplicitsOps._
 
-object BlackIborCouponPricer{
-
-  def apply(capletVolatility: OptionletVolatilityStructure, coupon: IBORCoupon): Pricer = new Pricer {
-
+final case class BlackIborCouponPricer(capletVolatility: OptionletVolatilityStructure, coupon: IBORCoupon){
     private val accrualPeriod = coupon.accrualPeriod(capletVolatility.dc)
     require(accrualPeriod != 0.0, "null accrual period")
 

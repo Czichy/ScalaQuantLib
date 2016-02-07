@@ -2,7 +2,9 @@ package org.scalaquant.core.cashflows.coupons
 
 import org.scalaquant.core.types.Rate
 
-case class CappedFlooredCoupon(underlying: FloatingRateCoupon, floor: Option[Rate], cap: Option[Rate]) {
+final case class CappedFlooredCoupon(underlying: FloatingRateCoupon,
+                                     floor: Option[Rate],
+                                     cap: Option[Rate]) {
 
   (floor,cap) match {
     case (Some(floorRate), Some(capRate)) =>

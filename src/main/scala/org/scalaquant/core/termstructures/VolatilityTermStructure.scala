@@ -12,7 +12,7 @@ trait VolatilityTermStructure  extends TermStructure {
 
   def bdc: BusinessDayConvention
 
-  def minStrike: Double
+  def minStrike: Double =
 
   def maxStrike: Double
 
@@ -27,48 +27,57 @@ trait VolatilityTermStructure  extends TermStructure {
 
 trait OptionletVolatilityStructure extends VolatilityTermStructure {
 
-  type Volatility = (Any, Rate, Boolean) => Double
-  type BlackVariance = Volatility
+
+  def volatility(optionTenor: Period, strike: Rate, extrapolate: Boolean):Double = {
+      volatility(optionDateFromTenor(optionTenor), strike, extrapolate)
+    }
+
+  def volatility(optionDate: LocalDate, strike: Rate, extrapolate: Boolean): Volatility = {
+    checkRange(optionDate, extrapolate)
+    checkStrike(strike, extrapolate)
+    volatilityImpl(optionDate, strike)
+  }
+
+  def volatility(optionTime: YearFraction, strike: Rate, extrapolate: Boolean): Volatility = {
+    checkRange(optionTime, extrapolate)
+    checkStrike(strike, extrapolate)
+    volatilityImpl(optionTime, strike)
+  }
+
+  def blackVariance(optionTenor: Period, strike: Rate, extrapolate: Boolean): Volatility  = {
+    blackVariance(optionDateFromTenor(optionTenor), strike, extrapolate)
+  }
+
+  def blackVariance(optionDate: LocalDate, strike: Rate, extrapolate: Boolean): Volatility  = {
+    val v = volatility(optionDate, strike, extrapolate)
+    val t = timeFromReference(optionDate)
+    v * v * t
+  }
+
+  def blackVariance(optionTime: YearFraction, strike: Rate, extrapolate: Boolean): Volatility  = {
+    val v = volatility(optionTime, strike, extrapolate)
+    v * v * optionTime
+  }
+
+  def smileSection(optionDate: LocalDate, extrapolate: Boolean = false): SmileSection = {
+    checkRange(optionDate, extrapolate)
+    smileSectionImpl(optionDate)
+  }
+
+  def smileSection(optionTime: YearFraction, extrapolate: Boolean = false): SmileSection = {
+    checkRange(optionTime, extrapolate)
+    smileSectionImpl(optionTime)
+  }
+
 
   protected def volatilityImpl(optionDate: LocalDate, strike: Rate ): Volatility
-  //! implements the actual volatility calculation in derived classes
+
   protected def volatilityImpl(optionTime: YearFraction , strike: Rate ) : Volatility
+
   protected def smileSectionImpl(optionDate: LocalDate): SmileSection
 
-  val volatility: Volatility = {
-    case (optionTenor: Period, strike, extrapolate) =>
-      volatility(optionDateFromTenor(optionTenor), strike, extrapolate)
-    case (optionDate: LocalDate, strike, extrapolate) =>
-      checkRange(optionDate, extrapolate)
-      checkStrike(strike, extrapolate)
-      volatilityImpl(optionDate, strike)
-    case (optionTime: YearFraction, strike, extrapolate) =>
-      checkRange(optionTime, extrapolate)
-      checkStrike(strike, extrapolate)
-      volatilityImpl(optionTime, strike)
-    case (_,_,_) => Double.NaN
-  }
+  protected def smileSectionImpl(optionTime: YearFraction): SmileSection
 
-  val blackVariance: BlackVariance ={
-    case (optionTenor: Period, strike, extrapolate) =>
-      blackVariance(optionDateFromTenor(optionTenor), strike, extrapolate)
-    case (optionDate: LocalDate, strike, extrapolate) =>
-      val v = volatility(optionDate, strike, extrapolate)
-      val t = timeFromReference(optionDate);
-      v * v * t
-    case (optionTime: YearFraction, strike, extrapolate) =>
-      val v = volatility(optionTime, strike, extrapolate)
-      v * v * optionTime;
-    case (_,_,_) => Double.NaN
-  }
-
-
-  //! returns the smile for a given option tenor
-  def smileSection(const Period& optionTenor, bool extr = false) const;
-  //! returns the smile for a given option date
-  def smileSection(const Date& optionDate, bool extr = false) const;
-  //! returns the smile for a given option time
-  def smileSection(Time optionTime, bool extr = false) const;
 }
 
 //case class SwaptionVolatilityStructure() extends VolatilityTermStructure
